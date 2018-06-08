@@ -1,2 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cn.lemonit.lemage" />
+    package="cn.lemonit.lemage">
+
+    <application>
+        <activity android:name=".activity.LemageActivity" />
+    </application>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+</manifest>
