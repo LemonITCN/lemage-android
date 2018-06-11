@@ -3,20 +3,22 @@ package cn.lemonit.lemage.activity;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.print.PrinterId;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import java.util.Collection;
 
 import cn.lemonit.lemage.adapter.PhotoAdapter;
 import cn.lemonit.lemage.bean.Album;
-import cn.lemonit.lemage.interfaces.PhotoScanCompleteCallback;
 import cn.lemonit.lemage.core.LemageScanner;
+import cn.lemonit.lemage.interfaces.PhotoScanCompleteCallback;
+import cn.lemonit.lemage.util.ScreenUtil;
+import cn.lemonit.lemage.view.AlbumSelectButton;
 
 /**
  * Lemage主界面
@@ -46,9 +48,6 @@ public class LemageActivity extends AppCompatActivity {
      * 图片列表控件的适配器
      */
     private PhotoAdapter photoAdapter;
-
-    private static final int LOADER_ALL = 0;         // 获取所有图片
-    private static final int LOADER_CATEGORY = 1;    // 获取某个文件夹中的所有图片
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,12 +93,20 @@ public class LemageActivity extends AppCompatActivity {
             navigationBar = new RelativeLayout(this);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
-                    dip2px(56)
+                    ScreenUtil.dp2px(this, 56)
             );
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
             navigationBar.setId(100);
             navigationBar.setLayoutParams(layoutParams);
             navigationBar.setBackgroundColor(Color.parseColor("#444444"));
+            AlbumSelectButton albumSelectButton = new AlbumSelectButton(this, Color.WHITE);
+            RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(
+                    ScreenUtil.dp2px(this, 200), ViewGroup.LayoutParams.MATCH_PARENT
+            );
+            buttonLayoutParams.addRule(RelativeLayout.ALIGN_LEFT, RelativeLayout.TRUE);
+            buttonLayoutParams.leftMargin = ScreenUtil.dp2px(this, 14);
+            albumSelectButton.setLayoutParams(buttonLayoutParams);
+            navigationBar.addView(albumSelectButton);
         }
         return navigationBar;
     }
@@ -117,8 +124,14 @@ public class LemageActivity extends AppCompatActivity {
             imageListView.addItemDecoration(new RecyclerView.ItemDecoration() {
                 @Override
                 public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                    outRect.left = 8;
+                    outRect.left = 10;
                     outRect.top = 10;
+                }
+            });
+            imageListView.setLayoutManager(new RecyclerView.LayoutManager() {
+                @Override
+                public RecyclerView.LayoutParams generateDefaultLayoutParams() {
+                    return null;
                 }
             });
             final GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
@@ -132,10 +145,5 @@ public class LemageActivity extends AppCompatActivity {
             photoAdapter = new PhotoAdapter(this, album);
         }
         return photoAdapter;
-    }
-
-    public int dip2px(float dpValue) {
-        final float scale = this.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
     }
 }

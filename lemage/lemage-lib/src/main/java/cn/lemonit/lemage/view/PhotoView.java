@@ -1,6 +1,7 @@
 package cn.lemonit.lemage.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -14,20 +15,21 @@ public class PhotoView extends RelativeLayout {
 
     private ImageView imageView;
 
-    public PhotoView(Context context) {
+    public PhotoView(Context context, int width) {
         super(context);
-        init();
+        init(width);
     }
 
-    private void init() {
-        addView(getImageView());
+    private void init(int width) {
+        imageView = new ImageView(getContext());
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, width);
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+        imageView.setBackgroundColor(Color.RED);
+        imageView.setLayoutParams(params);
+        addView(imageView);
     }
 
     public ImageView getImageView() {
-        if (imageView == null) {
-            imageView = new ImageView(getContext());
-            imageView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
         return imageView;
     }
 }

@@ -1,23 +1,20 @@
 package cn.lemonit.lemage.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 
 import com.bumptech.glide.Glide;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import cn.lemonit.lemage.bean.Album;
-import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.PhotoView;
 
+/**
+ * 照片选择器的适配器
+ *
+ * @author LemonIT.CN
+ */
 public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /**
@@ -28,23 +25,42 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      * 上下文对象
      */
     private Context context;
+    /**
+     * 每个图片的宽度
+     */
+    private int imgWidth = 0;
 
     public PhotoAdapter(Context context, Album currentAlbum) {
         this.context = context;
         this.currentAlbum = currentAlbum;
     }
 
+    /**
+     * 获取图片选择器中的每个图片选项的宽度
+     *
+     * @return 宽度数值
+     */
+    private int getImgWidth() {
+        if (imgWidth == 0) {
+            imgWidth = (ScreenUtil.getScreenWidth(context) - 50) / 4;
+        }
+        return imgWidth;
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PhotoViewHolder(new PhotoView(context));
+        return new PhotoViewHolder(new PhotoView(context, getImgWidth()));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        int width = (int) ((ScreenUtil.getScreenWidth(context) - 60) / 4.0);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, width);
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(getImgWidth(), getImgWidth());
+        // 最后一个图片，让其有下边距，使滑动空间变大
+        if (position == (getItemCount() - 1)) {
+            params.bottomMargin = 200;
+        }
         holder.itemView.setLayoutParams(params);
-        PhotoViewHolder photoViewHolder = (PhotoViewHolder) holder;
+        // 加载图片
         Glide.with(context).load(currentAlbum.getPhotoList().get(position % currentAlbum.getPhotoList().size()).getPath()).centerCrop().into(((PhotoViewHolder) holder).getPhotoView().getImageView());
     }
 
@@ -53,19 +69,24 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (currentAlbum == null) {
             return 0;
         }
-        return currentAlbum.getPhotoList().size() * 20;
+        return currentAlbum.getPhotoList().size() * 19 + 1;
     }
 
+    /**
+     * 照片选择项视图的ViewHolder
+     *
+     * @author LemonIT.CN
+     */
     private class PhotoViewHolder extends RecyclerView.ViewHolder {
 
         private PhotoView photoView;
 
-        public PhotoViewHolder(PhotoView photoView) {
+        PhotoViewHolder(PhotoView photoView) {
             super(photoView);
             this.photoView = photoView;
         }
 
-        public PhotoView getPhotoView() {
+        PhotoView getPhotoView() {
             return photoView;
         }
     }
