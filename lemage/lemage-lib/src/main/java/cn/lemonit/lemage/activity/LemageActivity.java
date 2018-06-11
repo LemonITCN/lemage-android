@@ -96,9 +96,8 @@ public class LemageActivity extends AppCompatActivity {
                     ScreenUtil.dp2px(this, 56)
             );
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-            navigationBar.setId(100);
             navigationBar.setLayoutParams(layoutParams);
-            navigationBar.setBackgroundColor(Color.parseColor("#444444"));
+            navigationBar.setBackgroundColor(Color.argb(200, 0, 0, 0));
             AlbumSelectButton albumSelectButton = new AlbumSelectButton(this, Color.WHITE);
             RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(
                     ScreenUtil.dp2px(this, 200), ViewGroup.LayoutParams.MATCH_PARENT
@@ -118,16 +117,9 @@ public class LemageActivity extends AppCompatActivity {
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT
             );
-            layoutParams.addRule(RelativeLayout.BELOW, getNavigationBar().getId());
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             imageListView.setLayoutParams(layoutParams);
-            imageListView.addItemDecoration(new RecyclerView.ItemDecoration() {
-                @Override
-                public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                    outRect.left = 10;
-                    outRect.top = 10;
-                }
-            });
             imageListView.setLayoutManager(new RecyclerView.LayoutManager() {
                 @Override
                 public RecyclerView.LayoutParams generateDefaultLayoutParams() {

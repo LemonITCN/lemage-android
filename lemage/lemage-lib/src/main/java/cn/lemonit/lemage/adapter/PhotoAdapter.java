@@ -29,6 +29,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      * 每个图片的宽度
      */
     private int imgWidth = 0;
+    /**
+     * 列数量
+     */
+    private int columnCount = 0;
 
     public PhotoAdapter(Context context, Album currentAlbum) {
         this.context = context;
@@ -42,7 +46,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     private int getImgWidth() {
         if (imgWidth == 0) {
-            imgWidth = (ScreenUtil.getScreenWidth(context) - 50) / 4;
+            imgWidth = (ScreenUtil.getScreenWidth(context) - (getColumnCount() + 1) * 10) / getColumnCount();
         }
         return imgWidth;
     }
@@ -59,6 +63,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (position == (getItemCount() - 1)) {
             params.bottomMargin = 200;
         }
+        params.leftMargin = 10;
+        if (position < getColumnCount()) {
+            params.topMargin = 120;
+        } else {
+            params.topMargin = 10;
+        }
         holder.itemView.setLayoutParams(params);
         // 加载图片
         Glide.with(context).load(currentAlbum.getPhotoList().get(position % currentAlbum.getPhotoList().size()).getPath()).centerCrop().into(((PhotoViewHolder) holder).getPhotoView().getImageView());
@@ -70,6 +80,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return 0;
         }
         return currentAlbum.getPhotoList().size() * 19 + 1;
+    }
+
+    public int getColumnCount() {
+        if (columnCount == 0) {
+            columnCount = 4;
+        }
+        return columnCount;
     }
 
     /**
