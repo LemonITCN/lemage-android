@@ -12,6 +12,12 @@ public class Photo extends FileObj {
      */
     private long time;
 
+    /**
+     *  是否选中状态
+     *  0 未选中 1 选中
+     */
+    private int status;
+
     public Photo() {
     }
 
@@ -33,4 +39,11 @@ public class Photo extends FileObj {
         this.time = time;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 }

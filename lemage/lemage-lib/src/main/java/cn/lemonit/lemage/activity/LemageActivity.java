@@ -6,19 +6,37 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
+import cn.lemonit.lemage.R;
+import cn.lemonit.lemage.adapter.AlbumAdapter;
 import cn.lemonit.lemage.adapter.PhotoAdapter;
 import cn.lemonit.lemage.bean.Album;
+import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.core.LemageScanner;
 import cn.lemonit.lemage.interfaces.PhotoScanCompleteCallback;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
+import cn.lemonit.lemage.view.NavigationBar;
+import cn.lemonit.lemage.view.OperationBar;
+import cn.lemonit.lemage.view.PhotoView;
+
+import static android.view.View.generateViewId;
 
 /**
  * Lemage主界面
@@ -28,6 +46,8 @@ import cn.lemonit.lemage.view.AlbumSelectButton;
  */
 public class LemageActivity extends AppCompatActivity {
 
+    private final String TAG = "LemageActivity";
+
     /**
      * 根视图布局
      */
@@ -35,7 +55,8 @@ public class LemageActivity extends AppCompatActivity {
     /**
      * 导航栏
      */
-    private RelativeLayout navigationBar;
+    private NavigationBar navigationBar;
+
     /**
      * 图片列表控件
      */
@@ -43,11 +64,20 @@ public class LemageActivity extends AppCompatActivity {
     /**
      * 底部操作栏
      */
-    private RelativeLayout operationBar;
+    private OperationBar operationBar;
     /**
      * 图片列表控件的适配器
      */
     private PhotoAdapter photoAdapter;
+
+    /**
+     * 横向滑动的图片文件选择栏
+     */
+    private LinearLayout horizontalLayout;
+
+    private RecyclerView albumRecyclerView;
+
+    private AlbumAdapter mAlbumAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,28 +99,85 @@ public class LemageActivity extends AppCompatActivity {
                 this, new PhotoScanCompleteCallback() {
                     @Override
                     public void scanComplete(Collection<Album> albumList) {
-                        System.out.println("扫描完毕！！！！！！ 相册数量：" + albumList.size());
+//                        Log.e(TAG, "albumList.size === " + albumList.size());
+                        if(albumList.size() > 0) {
+                            for(Album album : albumList) {
+//                                Log.e(TAG, "相册名称 === " + album.getName());
+//                                Log.e(TAG, "相册路径 === " + album.getPath());
+//                                Log.e(TAG, "相片数量 === " + album.getPhotoList().size());
+                            }
+                        }
                         changeAlbum((Album) albumList.toArray()[0]);
+                        getHorizontal(albumList);
                     }
                 });
     }
 
+    /**
+     * 显示表格图片
+     * @param album
+     */
     private void changeAlbum(Album album) {
-        getImageListView().setAdapter(new PhotoAdapter(this, album));
+        getPhotoAdapter(album);
+        getImageListView().setAdapter(photoAdapter);
     }
 
+    /**
+     * 显示横向栏
+     * @return
+     */
+    private void getHorizontal(Collection<Album> albumList) {
+        if(mAlbumAdapter == null) {
+            List<Album> mAlbumList = new ArrayList<Album>();
+            Iterator it = albumList.iterator();
+            while (it.hasNext()) {
+                Album album = (Album) it.next();
+                mAlbumList.add(album);
+            }
+            // 倒序
+            Collections.reverse(mAlbumList);
+            mAlbumAdapter = new AlbumAdapter(this, mAlbumList);
+            mAlbumAdapter.setAlbumItemOnClickListener(mAlbumItemOnClickListener);
+        }
+        albumRecyclerView.setAdapter(mAlbumAdapter);
+    }
+
+
+    /**
+     * 获取整个父布局
+     * @return
+     */
     public RelativeLayout getRootLayout() {
         if (rootLayout == null) {
             rootLayout = new RelativeLayout(this);
             rootLayout.addView(getImageListView());
-            rootLayout.addView(getNavigationBar());
+//            rootLayout.addView(getNavigationBar());
+            navigationBar = getNavigationBar();
+            navigationBar.setId(R.id.navigationBar);
+            rootLayout.addView(navigationBar);
+
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtil.dp2px(this, 86));
+            layoutParams.addRule(RelativeLayout.BELOW, R.id.navigationBar);
+            rootLayout.addView(getHorizontalListView(), layoutParams);
+
+            RelativeLayout.LayoutParams layoutParamsOperation = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ScreenUtil.dp2px(this, 50));
+            layoutParamsOperation.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            layoutParamsOperation.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            layoutParamsOperation.bottomMargin = 50;
+            operationBar = getOperationBar();
+            operationBar.setLayoutParams(layoutParamsOperation);
+            rootLayout.addView(operationBar);
         }
         return rootLayout;
     }
 
-    public RelativeLayout getNavigationBar() {
-        if (navigationBar == null) {
-            navigationBar = new RelativeLayout(this);
+    /**
+     * 获取整个的顶部条
+     * @return
+     */
+    public NavigationBar getNavigationBar() {
+        if(navigationBar == null) {
+            navigationBar = new NavigationBar(this);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     ScreenUtil.dp2px(this, 56)
@@ -98,18 +185,80 @@ public class LemageActivity extends AppCompatActivity {
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
             navigationBar.setLayoutParams(layoutParams);
             navigationBar.setBackgroundColor(Color.argb(200, 0, 0, 0));
-            AlbumSelectButton albumSelectButton = new AlbumSelectButton(this, Color.WHITE);
-            RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(
-                    ScreenUtil.dp2px(this, 200), ViewGroup.LayoutParams.MATCH_PARENT
-            );
-            buttonLayoutParams.addRule(RelativeLayout.ALIGN_LEFT, RelativeLayout.TRUE);
-            buttonLayoutParams.leftMargin = ScreenUtil.dp2px(this, 14);
-            albumSelectButton.setLayoutParams(buttonLayoutParams);
-            navigationBar.addView(albumSelectButton);
+            navigationBar.setLeftViewClickListener(new NavigationBar.LeftViewClickListener() {
+                @Override
+                public void leftClickListener(AlbumSelectButton view) {
+                    view.changeArrow();
+                    if(horizontalLayout != null) {
+                        if(horizontalLayout.isShown()) {
+                            horizontalLayout.setVisibility(View.GONE);
+                        }else {
+                            horizontalLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            });
+            navigationBar.setRightViewClickListener(new NavigationBar.RightViewClickListener() {
+                @Override
+                public void rightClickListener() {
+                    Toast.makeText(LemageActivity.this, "右边按钮抬起了", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
         return navigationBar;
     }
 
+    /**
+     * 横向滑动栏（选择文件夹）
+     * @return
+     */
+    private LinearLayout getHorizontalListView() {
+        if(horizontalLayout == null) {
+            horizontalLayout = new LinearLayout(this);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            horizontalLayout.setLayoutParams(layoutParams);
+            horizontalLayout.setBackgroundColor(Color.argb(200, 0, 0, 0));
+//            horizontalLayout.setBackgroundColor(Color.YELLOW);
+            albumRecyclerView = getAlbumRecyclerView();
+//            horizontalLayout.addView(getAlbumRecyclerView());
+            horizontalLayout.addView(albumRecyclerView);
+        }
+        return horizontalLayout;
+    }
+
+    /**
+     * 获取底部条
+     */
+    private OperationBar getOperationBar() {
+        if(operationBar == null) {
+            operationBar = new OperationBar(this);
+        }
+        return operationBar;
+    }
+
+    /**
+     * 横向滑动栏里面的listview
+     * @return
+     */
+    public RecyclerView getAlbumRecyclerView() {
+        if(albumRecyclerView == null) {
+            albumRecyclerView = new RecyclerView(this);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT
+            );
+            albumRecyclerView.setLayoutParams(layoutParams);
+            LinearLayoutManager ms= new LinearLayoutManager(this);
+            ms.setOrientation(LinearLayoutManager.HORIZONTAL);
+            albumRecyclerView.setLayoutManager(ms);
+        }
+        return albumRecyclerView;
+    }
+
+    /**
+     * 获取表格布局控件
+     * @return
+     */
     public RecyclerView getImageListView() {
         if (imageListView == null) {
             imageListView = new RecyclerView(this);
@@ -132,10 +281,46 @@ public class LemageActivity extends AppCompatActivity {
         return imageListView;
     }
 
+    /**
+     * 获取表格列表适配器
+     * @param album
+     * @return
+     */
     public PhotoAdapter getPhotoAdapter(Album album) {
         if (photoAdapter == null) {
             photoAdapter = new PhotoAdapter(this, album);
+            photoAdapter.setPhotoViewOnClickListener(mPhotoViewOnClickListener);
         }
         return photoAdapter;
     }
+
+    /**
+     * 表格图片列表item点击事件回调
+     */
+    private PhotoAdapter.PhotoViewOnClickListener mPhotoViewOnClickListener = new PhotoAdapter.PhotoViewOnClickListener(){
+        @Override
+        public void onClickListener(List<Photo> list) {
+            Log.e(TAG, "list.size() ==== " + list.size());
+        }
+    };
+
+    /**
+     * 图片文件夹横向列表item回调
+     */
+    private AlbumAdapter.AlbumItemOnClickListener mAlbumItemOnClickListener = new AlbumAdapter.AlbumItemOnClickListener(){
+        @Override
+        public void constantShow() {
+            if(horizontalLayout != null && horizontalLayout.isShown()) {
+                horizontalLayout.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void notifShow(Album mAlbum) {
+            if(horizontalLayout != null && horizontalLayout.isShown()) {
+                horizontalLayout.setVisibility(View.GONE);
+            }
+            Log.e(TAG, "-------刷新图片----- mAlbum.getPhotoList().size() === " + mAlbum.getPhotoList().size());
+        }
+    };
 }

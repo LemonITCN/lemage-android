@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 
 import java.io.File;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class LemageScanner {
                             long time = data.getLong(data.getColumnIndexOrThrow(IMAGE_PROJECTION[2]));
                             int size = data.getInt(data.getColumnIndexOrThrow(IMAGE_PROJECTION[4]));
                             Photo photo = new Photo(name, path, time);
-                            System.out.println("PHOTO PATH = " + photo.getPath());
+//                            System.out.println("PHOTO PATH = " + photo.getPath());
                             if (size >= minSize) {
                                 // 开始存储相册文件夹信息
                                 File albumDir = new File(path).getParentFile();
@@ -76,7 +77,7 @@ public class LemageScanner {
                                             albumDir.getName(),
                                             albumDir.getAbsolutePath()
                                     );
-                                    albumMap.put(albumDir.getAbsolutePath(), album);
+                                    albumMap.put(albumDir.getName(), album);
                                 }
                                 album.getPhotoList().add(photo);
                             }

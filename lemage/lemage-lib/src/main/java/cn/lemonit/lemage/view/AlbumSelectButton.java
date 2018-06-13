@@ -37,6 +37,16 @@ public class AlbumSelectButton extends CompoundButton {
      */
     private int iconHeight;
 
+    /**
+     *  打开还是关闭状态
+     */
+    private boolean isOpen;
+
+    /**
+     * 画笔
+     */
+    private Path iconPath;
+
     public AlbumSelectButton(Context context) {
         super(context);
         this.color = Color.WHITE;
@@ -51,11 +61,22 @@ public class AlbumSelectButton extends CompoundButton {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Path iconPath = new Path();
-        int startY = getHeight() / 2 - getIconHeight() / 2;
-        iconPath.moveTo(0, startY);
-        iconPath.lineTo(getIconWidth() / 2, getHeight() / 2 + getIconHeight() / 2);
-        iconPath.lineTo(getIconWidth(), getHeight() / 2 - getIconHeight() / 2);
+        if(iconPath == null) {
+            iconPath = new Path();
+        }
+        int startY;
+        // 箭头向下
+        if(isOpen) {
+            startY = getHeight() / 2 - getIconHeight() / 2;
+            iconPath.moveTo(0, startY);
+            iconPath.lineTo(getIconWidth() / 2, getHeight() / 2 + getIconHeight() / 2);
+            iconPath.lineTo(getIconWidth(), getHeight() / 2 - getIconHeight() / 2);
+        }else {
+            startY = getHeight() / 2 + getIconHeight() / 2;
+            iconPath.moveTo(0, startY);
+            iconPath.lineTo(getIconWidth() / 2, getHeight() / 2 - getIconHeight() / 2);
+            iconPath.lineTo(getIconWidth(), getHeight() / 2 + getIconHeight() / 2);
+        }
         iconPath.close();
         canvas.drawPath(iconPath, getDefaultPaint());
         canvas.drawText("全部图片", getIconWidth() + ScreenUtil.dp2px(getContext(), 7), getHeight() / 2 + 8, getDefaultPaint());
@@ -83,5 +104,20 @@ public class AlbumSelectButton extends CompoundButton {
             iconHeight = ScreenUtil.dp2px(getContext(), 8);
         }
         return iconHeight;
+    }
+
+    public void changeTextColor(int colorNew) {
+        defaultPaint.setColor(colorNew);
+        invalidate();
+    }
+
+    public void changeArrow() {
+        if(isOpen) {
+            isOpen = false;
+        }else {
+            isOpen = true;
+        }
+        if(iconPath != null) iconPath.reset();
+        invalidate();
     }
 }
