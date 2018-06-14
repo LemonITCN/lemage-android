@@ -120,7 +120,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (currentAlbum == null) {
             return 0;
         }
-//        return currentAlbum.getPhotoList().size() * 19 + 1;
         return currentAlbum.getPhotoList().size();
     }
 

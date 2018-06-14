@@ -30,9 +30,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
     private final String TAG = "AlbumAdapter";
 
     private Context mContext;
-//    private List<Photo> mPhotoList;
-//    private List<String> mNameList;
-    private List<Album> mAlbumList;
+
+    private ArrayList<Album> mAlbumList;
 
     private int imgWidth = 0;
     private int columnCount = 0;
@@ -44,14 +43,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     private AlbumItemOnClickListener mAlbumItemOnClickListener;
 
-//    public AlbumAdapter(Context context, List<Photo> photoList, List<String> nameList, List<PhotoView> listPhotoView) {
-//        mContext = context;
-//        mPhotoList = photoList;
-//        mNameList = nameList;
-//        mListPhotoView = listPhotoView;
-//    }
-
-    public AlbumAdapter(Context context, List<Album> albumList) {
+    public AlbumAdapter(Context context, ArrayList<Album> albumList) {
         mContext = context;
         mAlbumList = albumList;
         init();
@@ -75,25 +67,35 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        // 文字是屏幕高度的 1 / 10
+//        int textHeight = ScreenUtil.getScreenHeight(mContext) / 15;
+
         LinearLayout view = new LinearLayout(mContext);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(getImgWidth(), LinearLayout.LayoutParams.MATCH_PARENT);
         view.setLayoutParams(layoutParams);
         view.setOrientation(LinearLayout.VERTICAL);
         view.setPadding(10,10,10,10);
 
+        // 图片高度和文字高度比为 5 ： 1
         PhotoView mPhotoView = new PhotoView(mContext, getImgWidth());
-        LinearLayout.LayoutParams layoutParamsImg = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, getImgWidth() - 30);
+        LinearLayout.LayoutParams layoutParamsImg = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 5.0f);
+//        LinearLayout.LayoutParams layoutParamsImg = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, getImgWidth() - textHeight);
 //        layoutParamsImg.setMargins(0,0,0, 30);
         mPhotoView.setLayoutParams(layoutParamsImg);
         view.addView(mPhotoView);
 
         TextView mTextView = new TextView(mContext);
-        LinearLayout.LayoutParams layoutParamsText = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParamsText.setMargins(0,5,0,0);
-        mTextView.setTextSize(ScreenUtil.dp2px(mContext, 8));
-        mTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+        LinearLayout.LayoutParams layoutParamsText = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f);
+//        LinearLayout.LayoutParams layoutParamsText = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, textHeight);
+//        layoutParamsText.setMargins(0,5,0,0);
+
+//        mTextView.setTextSize(ScreenUtil.dp2px(mContext, 8));
+        // 暂时以1280的屏幕高度设置为8的字体为标准字体
+        mTextView.setTextSize(ScreenUtil.dp2px(mContext, 8 * ScreenUtil.getScreenHeight(mContext) / 1280));
+        mTextView.setGravity(Gravity.CENTER);
         mTextView.setTextColor(Color.WHITE);
         mTextView.setLayoutParams(layoutParamsText);
+        mTextView.setBackgroundColor(Color.BLUE);
         view.addView(mTextView);
 
         ViewHolder mViewHolder = new ViewHolder(view);

@@ -20,10 +20,10 @@ public class ScreenUtil {
     }
 
     /**
-     * 获得屏幕高度
+     * 获得屏幕宽度
      *
      * @param context context
-     * @return 屏幕高度
+     * @return 屏幕宽度
      */
     public static int getScreenWidth(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -33,10 +33,10 @@ public class ScreenUtil {
     }
 
     /**
-     * 获得屏幕宽度
+     * 获得屏幕高度
      *
      * @param context context
-     * @return 屏幕宽度
+     * @return 屏幕高度
      */
     public static int getScreenHeight(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);

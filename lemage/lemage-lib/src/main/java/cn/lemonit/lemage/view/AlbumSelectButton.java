@@ -40,7 +40,7 @@ public class AlbumSelectButton extends CompoundButton {
     /**
      *  打开还是关闭状态
      */
-    private boolean isOpen;
+    private boolean isOpen = true;
 
     /**
      * 画笔

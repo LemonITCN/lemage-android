@@ -25,6 +25,8 @@ public class NavigationBar extends RelativeLayout {
     private RightViewClickListener mRightViewClickListener;
     private LeftViewClickListener mLeftViewClickListener;
 
+    private AlbumSelectButton albumSelectButton;
+
     public NavigationBar(Context context) {
         super(context);
         init(context);
@@ -36,7 +38,7 @@ public class NavigationBar extends RelativeLayout {
     }
 
     private void addLeftView(Context context) {
-        AlbumSelectButton albumSelectButton = new AlbumSelectButton(context, Color.WHITE);
+        albumSelectButton = new AlbumSelectButton(context, Color.WHITE);
         RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(
                 ScreenUtil.dp2px(context, 200), ViewGroup.LayoutParams.MATCH_PARENT
         );
@@ -117,5 +119,9 @@ public class NavigationBar extends RelativeLayout {
 
     public void setLeftViewClickListener(LeftViewClickListener mLeftViewClickListener) {
         this.mLeftViewClickListener = mLeftViewClickListener;
+    }
+
+    public AlbumSelectButton getAlbumSelectButton() {
+        return albumSelectButton;
     }
 }

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -69,6 +70,10 @@ public class LemageActivity extends AppCompatActivity {
      * 图片列表控件的适配器
      */
     private PhotoAdapter photoAdapter;
+    /**
+     * 图片列表控件的适配器的数据源
+     */
+    private Album phototAdapterData;
 
     /**
      * 横向滑动的图片文件选择栏
@@ -122,20 +127,23 @@ public class LemageActivity extends AppCompatActivity {
         getImageListView().setAdapter(photoAdapter);
     }
 
+
     /**
      * 显示横向栏
      * @return
      */
     private void getHorizontal(Collection<Album> albumList) {
         if(mAlbumAdapter == null) {
-            List<Album> mAlbumList = new ArrayList<Album>();
+            ArrayList<Album> mAlbumList = new ArrayList<Album>();
             Iterator it = albumList.iterator();
             while (it.hasNext()) {
                 Album album = (Album) it.next();
                 mAlbumList.add(album);
             }
-            // 倒序
-            Collections.reverse(mAlbumList);
+            // 倒序(手机不同，获取的原始顺序不同)
+            if(!mAlbumList.get(0).getName().equals("全部照片")) {
+                Collections.reverse(mAlbumList);
+            }
             mAlbumAdapter = new AlbumAdapter(this, mAlbumList);
             mAlbumAdapter.setAlbumItemOnClickListener(mAlbumItemOnClickListener);
         }
@@ -156,9 +164,12 @@ public class LemageActivity extends AppCompatActivity {
             navigationBar.setId(R.id.navigationBar);
             rootLayout.addView(navigationBar);
 
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtil.dp2px(this, 86));
+            // 文件夹横向列表的高度定为屏幕高度的 1 / 7
+            int height = ScreenUtil.getScreenHeight(this) / 7;
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, height);
             layoutParams.addRule(RelativeLayout.BELOW, R.id.navigationBar);
             rootLayout.addView(getHorizontalListView(), layoutParams);
+            horizontalLayout.setVisibility(View.GONE);
 
             RelativeLayout.LayoutParams layoutParamsOperation = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ScreenUtil.dp2px(this, 50));
             layoutParamsOperation.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
@@ -192,8 +203,10 @@ public class LemageActivity extends AppCompatActivity {
                     if(horizontalLayout != null) {
                         if(horizontalLayout.isShown()) {
                             horizontalLayout.setVisibility(View.GONE);
+//                            view.changeArrow(true);
                         }else {
                             horizontalLayout.setVisibility(View.VISIBLE);
+//                            view.changeArrow(false);
                         }
                     }
                 }
@@ -231,7 +244,13 @@ public class LemageActivity extends AppCompatActivity {
      */
     private OperationBar getOperationBar() {
         if(operationBar == null) {
-            operationBar = new OperationBar(this);
+            operationBar = new OperationBar(this, 3);
+            operationBar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    Toast.makeText(LemageActivity.this, "底部条", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
         return operationBar;
     }
@@ -288,7 +307,13 @@ public class LemageActivity extends AppCompatActivity {
      */
     public PhotoAdapter getPhotoAdapter(Album album) {
         if (photoAdapter == null) {
-            photoAdapter = new PhotoAdapter(this, album);
+            // 此处不能直接用=赋值，否则是一个对象，item点击事件时会联动，应该new一个新对象，把属性传递过去即可
+//            phototAdapterData = album;
+            phototAdapterData = new Album(null, null);
+            phototAdapterData.setName(album.getName());
+            phototAdapterData.setPath(album.getPath());
+            phototAdapterData.setPhotoList(album.getPhotoList());
+            photoAdapter = new PhotoAdapter(this, phototAdapterData);
             photoAdapter.setPhotoViewOnClickListener(mPhotoViewOnClickListener);
         }
         return photoAdapter;
@@ -312,6 +337,7 @@ public class LemageActivity extends AppCompatActivity {
         public void constantShow() {
             if(horizontalLayout != null && horizontalLayout.isShown()) {
                 horizontalLayout.setVisibility(View.GONE);
+                navigationBar.getAlbumSelectButton().changeArrow();
             }
         }
 
@@ -319,8 +345,13 @@ public class LemageActivity extends AppCompatActivity {
         public void notifShow(Album mAlbum) {
             if(horizontalLayout != null && horizontalLayout.isShown()) {
                 horizontalLayout.setVisibility(View.GONE);
+                navigationBar.getAlbumSelectButton().changeArrow();
             }
-            Log.e(TAG, "-------刷新图片----- mAlbum.getPhotoList().size() === " + mAlbum.getPhotoList().size());
+            phototAdapterData.setName(mAlbum.getName());
+            phototAdapterData.setPath(mAlbum.getPath());
+            phototAdapterData.setPhotoList(mAlbum.getPhotoList());
+            photoAdapter.notifyDataSetChanged();
+
         }
     };
 }
