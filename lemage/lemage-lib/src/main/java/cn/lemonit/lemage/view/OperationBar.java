@@ -6,7 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import cn.lemonit.lemage.util.ScreenUtil;
@@ -42,6 +44,14 @@ public class OperationBar extends LinearLayout {
     private DrawTextButton rightButton;
     private DrawCircleTextButton centerButton;
 
+    /**
+     * 适配屏幕高度
+     */
+    private int operationHeight;
+    private int operationWidth;
+
+    private OperationBarOnClickListener mOperationBarOnClickListener;
+
     public OperationBar(Context context, int count) {
         super(context);
         mContext = context;
@@ -58,7 +68,10 @@ public class OperationBar extends LinearLayout {
     private void init() {
         // 设置透明色，去掉四个方形的角
         this.setBackgroundColor(Color.parseColor("#00000000"));
-        itemWidth = ScreenUtil.dp2px(mContext, 100);
+        operationHeight = ScreenUtil.getScreenHeight(mContext) / 15;
+        operationWidth = ScreenUtil.getScreenWidth(mContext) / 4;
+//        itemWidth = ScreenUtil.dp2px(mContext, 100);
+        itemWidth = operationWidth;
         mPaint = new Paint();
         mPaint.setStrokeWidth(2);
         mPaint.setAntiAlias(true);//抗锯齿
@@ -70,7 +83,8 @@ public class OperationBar extends LinearLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         width = itemWidth * count;
-        height = ScreenUtil.dp2px(getContext(), 50);
+//        height = ScreenUtil.dp2px(getContext(), 50);
+        height = operationHeight;
         setMeasuredDimension(width, height);
     }
 
@@ -78,6 +92,7 @@ public class OperationBar extends LinearLayout {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        mPaint.setColor(Color.BLACK);
         Path mPath = new Path();
         // 圆弧半径，X, Y相同
         float radiuXY = height / 2;
@@ -99,6 +114,12 @@ public class OperationBar extends LinearLayout {
         leftButton = new DrawTextButton(mContext, "预览");
         leftButton.setLayoutParams(layoutParams);
         leftButton.setGravity(Gravity.CENTER);
+        leftButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOperationBarOnClickListener.leftButtonClick();
+            }
+        });
         this.addView(leftButton);
     }
 
@@ -107,6 +128,12 @@ public class OperationBar extends LinearLayout {
         centerButton = new DrawCircleTextButton(mContext, "原图");
         centerButton.setLayoutParams(layoutParams);
         centerButton.setGravity(Gravity.CENTER);
+        centerButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOperationBarOnClickListener.centerButtonClick();
+            }
+        });
         this.addView(centerButton);
     }
 
@@ -115,10 +142,41 @@ public class OperationBar extends LinearLayout {
         rightButton = new DrawTextButton(mContext, "完成");
         rightButton.setLayoutParams(layoutParams);
         rightButton.setGravity(Gravity.CENTER);
+        rightButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOperationBarOnClickListener.rightButtonClick();
+            }
+        });
         this.addView(rightButton);
     }
 
     public void setCount(int count) {
         this.count = count;
+        if(count == 2) {
+            if(centerButton != null) {
+                centerButton.setVisibility(View.GONE);
+            }
+        }
+        if(count == 3) {
+            if(centerButton != null) {
+                centerButton.setVisibility(View.VISIBLE);
+            }
+        }
+        invalidate();
+    }
+
+    public interface OperationBarOnClickListener {
+        void leftButtonClick();
+        void centerButtonClick();
+        void rightButtonClick();
+    }
+
+    public void setOperationBarOnClickListener(OperationBarOnClickListener mOperationBarOnClickListener) {
+        this.mOperationBarOnClickListener = mOperationBarOnClickListener;
+    }
+
+    public DrawCircleTextButton getCenterButton() {
+        return centerButton;
     }
 }

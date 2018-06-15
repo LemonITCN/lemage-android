@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.util.Log;
 import android.widget.CompoundButton;
 
 import cn.lemonit.lemage.util.ScreenUtil;
@@ -46,10 +47,6 @@ public class DrawCircleTextButton extends CompoundButton {
      * 文字和圆圈的总宽度
      */
     private float widthContent;
-    /**
-     * 是否第一次画文字（只画一次）
-     */
-    private boolean firstDrawText;
 
     // 对号的路径相关变量
     private Path mPath;
@@ -92,18 +89,13 @@ public class DrawCircleTextButton extends CompoundButton {
         float bottom = metrics.bottom;
         heightText = (int) (rect.centerY() - top/2 - bottom/2);
 
-        firstDrawText = true;
-
         mPath = new Path();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if(firstDrawText) {
-            firstDrawText = false;
-            drawText(canvas);
-        }
+        drawText(canvas);
         switch (status) {
             case 0:
                 drawCircle(canvas);
@@ -151,6 +143,16 @@ public class DrawCircleTextButton extends CompoundButton {
      */
     private void drawText(Canvas canvas) {
         mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(Color.WHITE);
         canvas.drawText(text, (getWidth() - widthContent) / 2 + radio * 2 + space, heightText + getHeight() / 2 , mPaint);
+    }
+
+    public void changeStatus() {
+        if(status == 0) {
+            status = 1;
+        }else {
+            status = 0;
+        }
+        invalidate();
     }
 }

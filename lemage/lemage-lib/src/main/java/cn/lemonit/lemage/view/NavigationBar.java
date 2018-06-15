@@ -40,7 +40,7 @@ public class NavigationBar extends RelativeLayout {
     private void addLeftView(Context context) {
         albumSelectButton = new AlbumSelectButton(context, Color.WHITE);
         RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(
-                ScreenUtil.dp2px(context, 200), ViewGroup.LayoutParams.MATCH_PARENT
+                ScreenUtil.dp2px(context, 120), ViewGroup.LayoutParams.MATCH_PARENT
         );
         buttonLayoutParams.addRule(RelativeLayout.ALIGN_LEFT, RelativeLayout.TRUE);
         buttonLayoutParams.leftMargin = ScreenUtil.dp2px(context, 14);
@@ -52,15 +52,11 @@ public class NavigationBar extends RelativeLayout {
     private void addRightView(Context context) {
         RelativeLayout.LayoutParams textLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
         textLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-        TextView cancelTextView = new TextView(context);
-        cancelTextView.setTextColor(Color.WHITE);
-        cancelTextView.setTextSize(ScreenUtil.dp2px(context, 10));
-        cancelTextView.setText("取消");
-        cancelTextView.setGravity(Gravity.CENTER_VERTICAL);
-        cancelTextView.setPadding(ScreenUtil.dp2px(context, 14), 0, ScreenUtil.dp2px(context, 14), 0);
-        cancelTextView.setLayoutParams(textLayoutParams);
-        setRightViewClickListener(cancelTextView, context);
-        this.addView(cancelTextView);
+        DrawTextButton cancelButton = new DrawTextButton(context, "取消");
+        cancelButton.setPadding(ScreenUtil.dp2px(context, 14), 0, ScreenUtil.dp2px(context, 14), 0);
+        cancelButton.setLayoutParams(textLayoutParams);
+        setRightViewClickListener(cancelButton, context);
+        this.addView(cancelButton);
     }
 
     private void setLeftViewClickListener(final AlbumSelectButton view, final Context context) {
@@ -84,20 +80,20 @@ public class NavigationBar extends RelativeLayout {
         });
     }
 
-    private void setRightViewClickListener(final TextView view, final Context context) {
+    private void setRightViewClickListener(final DrawTextButton view, final Context context) {
         view.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        view.setTextColor(Color.RED);
+                        view.changeTextColor(Color.RED);
                         break;
                     case MotionEvent.ACTION_UP:
-                        view.setTextColor(Color.WHITE);
+                        view.changeTextColor(Color.WHITE);
                         mRightViewClickListener.rightClickListener();
                         break;
                     case MotionEvent.ACTION_CANCEL:
-                        view.setTextColor(Color.WHITE);
+                        view.changeTextColor(Color.WHITE);
                         break;
                 }
                 return true;

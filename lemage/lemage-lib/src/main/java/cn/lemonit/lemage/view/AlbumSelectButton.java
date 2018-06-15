@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.util.Log;
 import android.widget.CompoundButton;
 
 import cn.lemonit.lemage.util.ScreenUtil;
@@ -51,11 +52,13 @@ public class AlbumSelectButton extends CompoundButton {
         super(context);
         this.color = Color.WHITE;
         this.setBackgroundColor(Color.BLACK);
+        text = "全部图片";
     }
 
     public AlbumSelectButton(Context context, int color) {
         super(context);
         this.color = color;
+        text = "全部图片";
     }
 
     @Override
@@ -79,7 +82,7 @@ public class AlbumSelectButton extends CompoundButton {
         }
         iconPath.close();
         canvas.drawPath(iconPath, getDefaultPaint());
-        canvas.drawText("全部图片", getIconWidth() + ScreenUtil.dp2px(getContext(), 7), getHeight() / 2 + 8, getDefaultPaint());
+        canvas.drawText(text, getIconWidth() + ScreenUtil.dp2px(getContext(), 7), getHeight() / 2 + 8, getDefaultPaint());
     }
 
     public Paint getDefaultPaint() {
@@ -119,5 +122,9 @@ public class AlbumSelectButton extends CompoundButton {
         }
         if(iconPath != null) iconPath.reset();
         invalidate();
+    }
+
+    public void changeText(String str) {
+        text = str;
     }
 }

@@ -33,6 +33,7 @@ import cn.lemonit.lemage.core.LemageScanner;
 import cn.lemonit.lemage.interfaces.PhotoScanCompleteCallback;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
+import cn.lemonit.lemage.view.DrawCircleTextButton;
 import cn.lemonit.lemage.view.NavigationBar;
 import cn.lemonit.lemage.view.OperationBar;
 import cn.lemonit.lemage.view.PhotoView;
@@ -83,6 +84,11 @@ public class LemageActivity extends AppCompatActivity {
     private RecyclerView albumRecyclerView;
 
     private AlbumAdapter mAlbumAdapter;
+
+    /**
+     * 底部条是否显示原图按钮, 默认显示
+     */
+    private int operationBarItemCount = 3;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -171,10 +177,17 @@ public class LemageActivity extends AppCompatActivity {
             rootLayout.addView(getHorizontalListView(), layoutParams);
             horizontalLayout.setVisibility(View.GONE);
 
-            RelativeLayout.LayoutParams layoutParamsOperation = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ScreenUtil.dp2px(this, 50));
+            // 底部条适配说明：
+            // 高=屏幕高度的 1 /10
+            // 每个块的宽 = 屏幕宽度 1 / 5
+            // 底部间距 = 高
+            int operationHeight = ScreenUtil.getScreenHeight(this) / 15;
+//            RelativeLayout.LayoutParams layoutParamsOperation = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ScreenUtil.dp2px(this, 50));
+            RelativeLayout.LayoutParams layoutParamsOperation = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, operationHeight);
             layoutParamsOperation.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             layoutParamsOperation.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-            layoutParamsOperation.bottomMargin = 50;
+//            layoutParamsOperation.bottomMargin = 50;
+            layoutParamsOperation.bottomMargin = operationHeight;
             operationBar = getOperationBar();
             operationBar.setLayoutParams(layoutParamsOperation);
             rootLayout.addView(operationBar);
@@ -203,10 +216,8 @@ public class LemageActivity extends AppCompatActivity {
                     if(horizontalLayout != null) {
                         if(horizontalLayout.isShown()) {
                             horizontalLayout.setVisibility(View.GONE);
-//                            view.changeArrow(true);
                         }else {
                             horizontalLayout.setVisibility(View.VISIBLE);
-//                            view.changeArrow(false);
                         }
                     }
                 }
@@ -214,7 +225,14 @@ public class LemageActivity extends AppCompatActivity {
             navigationBar.setRightViewClickListener(new NavigationBar.RightViewClickListener() {
                 @Override
                 public void rightClickListener() {
-                    Toast.makeText(LemageActivity.this, "右边按钮抬起了", Toast.LENGTH_SHORT).show();
+                    if(operationBar != null) {
+                        if(operationBarItemCount == 3) {
+                            operationBarItemCount = 2;
+                        }else {
+                            operationBarItemCount = 3;
+                        }
+                        operationBar.setCount(operationBarItemCount);
+                    }
                 }
             });
         }
@@ -244,13 +262,8 @@ public class LemageActivity extends AppCompatActivity {
      */
     private OperationBar getOperationBar() {
         if(operationBar == null) {
-            operationBar = new OperationBar(this, 3);
-            operationBar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    Toast.makeText(LemageActivity.this, "底部条", Toast.LENGTH_SHORT).show();
-                }
-            });
+            operationBar = new OperationBar(this, operationBarItemCount);
+            operationBar.setOperationBarOnClickListener(mOperationBarOnClickListener);
         }
         return operationBar;
     }
@@ -325,7 +338,7 @@ public class LemageActivity extends AppCompatActivity {
     private PhotoAdapter.PhotoViewOnClickListener mPhotoViewOnClickListener = new PhotoAdapter.PhotoViewOnClickListener(){
         @Override
         public void onClickListener(List<Photo> list) {
-            Log.e(TAG, "list.size() ==== " + list.size());
+
         }
     };
 
@@ -345,6 +358,7 @@ public class LemageActivity extends AppCompatActivity {
         public void notifShow(Album mAlbum) {
             if(horizontalLayout != null && horizontalLayout.isShown()) {
                 horizontalLayout.setVisibility(View.GONE);
+                navigationBar.getAlbumSelectButton().changeText(mAlbum.getName());
                 navigationBar.getAlbumSelectButton().changeArrow();
             }
             phototAdapterData.setName(mAlbum.getName());
@@ -352,6 +366,30 @@ public class LemageActivity extends AppCompatActivity {
             phototAdapterData.setPhotoList(mAlbum.getPhotoList());
             photoAdapter.notifyDataSetChanged();
 
+        }
+    };
+
+    /**
+     * 底部条点击事件回调
+     */
+    private OperationBar.OperationBarOnClickListener mOperationBarOnClickListener = new OperationBar.OperationBarOnClickListener() {
+        @Override
+        public void leftButtonClick() {
+            Toast.makeText(LemageActivity.this, "预览", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void centerButtonClick() {
+//            Toast.makeText(LemageActivity.this, "原图", Toast.LENGTH_SHORT).show();
+            DrawCircleTextButton mDrawCircleTextButton = operationBar.getCenterButton();
+            if(mDrawCircleTextButton != null) {
+                mDrawCircleTextButton.changeStatus();
+            }
+        }
+
+        @Override
+        public void rightButtonClick() {
+            Toast.makeText(LemageActivity.this, "完成", Toast.LENGTH_SHORT).show();
         }
     };
 }
