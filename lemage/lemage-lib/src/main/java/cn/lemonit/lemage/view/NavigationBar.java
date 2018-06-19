@@ -21,14 +21,22 @@ import cn.lemonit.lemage.util.ScreenUtil;
 public class NavigationBar extends RelativeLayout {
 
     private final String TAG = "NavigationBar";
+    /**
+     * 不同的activit的顶部条里面的控件不同，0 选择器顶部条，1 预览界面顶部条
+     */
+    private int mStyle;
 
     private RightViewClickListener mRightViewClickListener;
     private LeftViewClickListener mLeftViewClickListener;
 
+    private PreviewLeftViewClickListener mPreviewLeftViewClickListener;
+    private PreviewRightViewClickListener mPreviewRightViewClickListener;
+
     private AlbumSelectButton albumSelectButton;
 
-    public NavigationBar(Context context) {
+    public NavigationBar(Context context, int style) {
         super(context);
+        mStyle = style;
         init(context);
     }
 
@@ -38,27 +46,53 @@ public class NavigationBar extends RelativeLayout {
     }
 
     private void addLeftView(Context context) {
-        albumSelectButton = new AlbumSelectButton(context, Color.WHITE);
-        RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(
-                ScreenUtil.dp2px(context, 120), ViewGroup.LayoutParams.MATCH_PARENT
-        );
-        buttonLayoutParams.addRule(RelativeLayout.ALIGN_LEFT, RelativeLayout.TRUE);
-        buttonLayoutParams.leftMargin = ScreenUtil.dp2px(context, 14);
-        albumSelectButton.setLayoutParams(buttonLayoutParams);
-        setLeftViewClickListener(albumSelectButton, context);
-        this.addView(albumSelectButton);
+        if(mStyle == 0) {
+            albumSelectButton = new AlbumSelectButton(context, Color.WHITE);
+            RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(
+                    ScreenUtil.dp2px(context, 120), ViewGroup.LayoutParams.MATCH_PARENT
+            );
+            buttonLayoutParams.addRule(RelativeLayout.ALIGN_LEFT, RelativeLayout.TRUE);
+            buttonLayoutParams.leftMargin = ScreenUtil.dp2px(context, 14);
+            albumSelectButton.setLayoutParams(buttonLayoutParams);
+            setLeftViewClickListener(albumSelectButton, context);
+            this.addView(albumSelectButton);
+        }else {
+            PreviewBarLeftButton mPreviewBarLeftButton = new PreviewBarLeftButton(context);
+            RelativeLayout.LayoutParams previewLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            previewLayoutParams.addRule(RelativeLayout.ALIGN_LEFT, RelativeLayout.TRUE);
+            previewLayoutParams.leftMargin = ScreenUtil.dp2px(context, 14);
+            mPreviewBarLeftButton.setLayoutParams(previewLayoutParams);
+            this.addView(mPreviewBarLeftButton);
+        }
     }
 
     private void addRightView(Context context) {
-        RelativeLayout.LayoutParams textLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        textLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-        DrawTextButton cancelButton = new DrawTextButton(context, "取消");
-        cancelButton.setPadding(ScreenUtil.dp2px(context, 14), 0, ScreenUtil.dp2px(context, 14), 0);
-        cancelButton.setLayoutParams(textLayoutParams);
-        setRightViewClickListener(cancelButton, context);
-        this.addView(cancelButton);
+        if(mStyle == 0) {
+            RelativeLayout.LayoutParams textLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            textLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+            DrawTextButton cancelButton = new DrawTextButton(context, "取消");
+            cancelButton.setPadding(ScreenUtil.dp2px(context, 14), 0, ScreenUtil.dp2px(context, 14), 0);
+            cancelButton.setLayoutParams(textLayoutParams);
+            setRightViewClickListener(cancelButton, context);
+            this.addView(cancelButton);
+        }else {
+            int mRadius = ScreenUtil.dp2px(context, 10);
+            RelativeLayout.LayoutParams paramsCircle = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            paramsCircle.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+            paramsCircle.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+            paramsCircle.topMargin = mRadius / 2;
+            paramsCircle.rightMargin = mRadius / 2;
+            CircleView mCircleView = new CircleView(context, mRadius);
+            mCircleView.setLayoutParams(paramsCircle);
+            this.addView(mCircleView);
+        }
     }
 
+    /**
+     * 选择器顶部条事件
+     * @param view
+     * @param context
+     */
     private void setLeftViewClickListener(final AlbumSelectButton view, final Context context) {
         view.setOnTouchListener(new OnTouchListener() {
             @Override
@@ -101,6 +135,18 @@ public class NavigationBar extends RelativeLayout {
         });
     }
 
+    /**
+     * 预览顶部条事件
+     */
+    private void setPreviewLeftViewClickListener() {
+
+    }
+
+
+
+    /**
+     * 选择器顶部条点击事件
+     */
     public interface RightViewClickListener {
         void rightClickListener();
     }
@@ -119,5 +165,21 @@ public class NavigationBar extends RelativeLayout {
 
     public AlbumSelectButton getAlbumSelectButton() {
         return albumSelectButton;
+    }
+
+    public interface PreviewRightViewClickListener {
+        void rightClickListener();
+    }
+
+    public interface PreviewLeftViewClickListener {
+        void leftClickListener(AlbumSelectButton view);
+    }
+
+    public void setPreviewLeftViewClickListener(PreviewLeftViewClickListener mPreviewLeftViewClickListener) {
+        this.mPreviewLeftViewClickListener = mPreviewLeftViewClickListener;
+    }
+
+    public void setPreviewRightViewClickListener(PreviewRightViewClickListener mPreviewRightViewClickListener) {
+        this.mPreviewRightViewClickListener = mPreviewRightViewClickListener;
     }
 }

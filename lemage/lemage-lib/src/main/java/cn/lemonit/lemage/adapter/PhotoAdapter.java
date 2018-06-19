@@ -75,7 +75,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (position == (getItemCount() - 1)) {
             params.bottomMargin = 200;
         }
-        params.leftMargin = 10;
+        params.leftMargin = 5;
+        params.rightMargin = 5;
         if (position < getColumnCount()) {
             params.topMargin = 120;
         } else {

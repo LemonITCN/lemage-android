@@ -3,6 +3,7 @@
 
     <application>
         <activity android:name=".activity.LemageActivity" />
+        <activity android:name=".activity.PreviewActivity"></activity>
     </application>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 </manifest>

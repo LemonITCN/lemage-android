@@ -1,5 +1,6 @@
 package cn.lemonit.lemage.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -201,7 +202,7 @@ public class LemageActivity extends AppCompatActivity {
      */
     public NavigationBar getNavigationBar() {
         if(navigationBar == null) {
-            navigationBar = new NavigationBar(this);
+            navigationBar = new NavigationBar(this, 0);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     ScreenUtil.dp2px(this, 56)
@@ -375,7 +376,7 @@ public class LemageActivity extends AppCompatActivity {
     private OperationBar.OperationBarOnClickListener mOperationBarOnClickListener = new OperationBar.OperationBarOnClickListener() {
         @Override
         public void leftButtonClick() {
-            Toast.makeText(LemageActivity.this, "预览", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(LemageActivity.this, PreviewActivity.class));
         }
 
         @Override
