@@ -48,10 +48,10 @@ public class PreviewBarLeftButton extends CompoundButton {
     }
 
     private void setPaint() {
-//        mPaint.setStrokeWidth(4);
+        mPaint.setStrokeWidth(1);
         mPaint.setAntiAlias(true);//抗锯齿
-        mPaint.setStyle(Paint.Style.STROKE);  // 空心
-//        mPaint.setStyle(Paint.Style.FILL);
+//        mPaint.setStyle(Paint.Style.STROKE);  // 空心
+        mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
         mPaint.setTextSize(ScreenUtil.dp2px(getContext(), 16));
     }
@@ -59,8 +59,6 @@ public class PreviewBarLeftButton extends CompoundButton {
     private void init() {
         mPaint = new Paint();
 
-        count = 193;
-        currentIndex = 23;
         text = currentIndex + " / " + count;
 
         space = ScreenUtil.dp2px(mContext, 14);
@@ -93,6 +91,7 @@ public class PreviewBarLeftButton extends CompoundButton {
      */
     private void drawBackImg(Canvas canvas) {
 //        setPaint();
+        mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(4);
         mPath.moveTo(getHeight() / 6, getHeight() / 3);
         mPath.lineTo(2, getHeight() / 2);
@@ -115,8 +114,6 @@ public class PreviewBarLeftButton extends CompoundButton {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         final int minimumWidth = getSuggestedMinimumWidth();
         final int minimumHeight = getSuggestedMinimumHeight();
-        Log.e("YView", "---minimumWidth = " + minimumWidth + "");
-        Log.e("YView", "---minimumHeight = " + minimumHeight + "");
         int width = measureWidth(minimumWidth, widthMeasureSpec);
         int height = measureHeight(minimumHeight, heightMeasureSpec);
         setMeasuredDimension(width, height);
@@ -131,14 +128,11 @@ public class PreviewBarLeftButton extends CompoundButton {
         switch (specMode) {
             case MeasureSpec.AT_MOST:
                 defaultWidth = (int) mPaint.measureText(text) + getPaddingLeft() + getPaddingRight() + getHeight();
-                Log.e(TAG, "onMeasure  getHeight() ======== " + getHeight());
                 break;
             case MeasureSpec.EXACTLY:
-                Log.e("YViewWidth", "---speMode = EXACTLY");
                 defaultWidth = specSize;
                 break;
             case MeasureSpec.UNSPECIFIED:
-                Log.e("YViewWidth", "---speMode = UNSPECIFIED");
                 defaultWidth = Math.max(defaultWidth, specSize);
         }
         return defaultWidth;
@@ -149,20 +143,16 @@ public class PreviewBarLeftButton extends CompoundButton {
 
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
-        Log.e("YViewHeight", "---speSize = " + specSize + "");
 
         switch (specMode) {
             case MeasureSpec.AT_MOST:
                 defaultHeight = (int) (-mPaint.ascent() + mPaint.descent()) + getPaddingTop() + getPaddingBottom();
-                Log.e("YViewHeight", "---speMode = AT_MOST");
                 break;
             case MeasureSpec.EXACTLY:
                 defaultHeight = specSize;
-                Log.e("YViewHeight", "---speSize = EXACTLY");
                 break;
             case MeasureSpec.UNSPECIFIED:
                 defaultHeight = Math.max(defaultHeight, specSize);
-                Log.e("YViewHeight", "---speSize = UNSPECIFIED");
 //        1.基准点是baseline
 //        2.ascent：是baseline之上至字符最高处的距离
 //        3.descent：是baseline之下至字符最低处的距离
@@ -173,7 +163,12 @@ public class PreviewBarLeftButton extends CompoundButton {
                 break;
         }
         return defaultHeight;
+    }
 
-
+    public void changeText(int mCount, int corrent) {
+        count = mCount;
+        currentIndex = corrent;
+        text = currentIndex + " / " + count;
+        invalidate();
     }
 }

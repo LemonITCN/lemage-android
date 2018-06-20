@@ -153,16 +153,37 @@ public class OperationBar extends LinearLayout {
 
     public void setCount(int count) {
         this.count = count;
-        if(count == 2) {
-            if(centerButton != null) {
-                centerButton.setVisibility(View.GONE);
-            }
+        switch (count) {
+            // 预览时只有完成一个按钮
+            case 1:
+                if(centerButton != null) {
+                    centerButton.setVisibility(View.GONE);
+                }
+                if(centerButton != null) {
+                    centerButton.setVisibility(View.GONE);
+                }
+                break;
+            case 2:
+                if(centerButton != null) {
+                    centerButton.setVisibility(View.GONE);
+                }
+                break;
+            case 3:
+                if(centerButton != null) {
+                    centerButton.setVisibility(View.VISIBLE);
+                }
+                break;
         }
-        if(count == 3) {
-            if(centerButton != null) {
-                centerButton.setVisibility(View.VISIBLE);
-            }
-        }
+//        if(count == 2) {
+//            if(centerButton != null) {
+//                centerButton.setVisibility(View.GONE);
+//            }
+//        }
+//        if(count == 3) {
+//            if(centerButton != null) {
+//                centerButton.setVisibility(View.VISIBLE);
+//            }
+//        }
         invalidate();
     }
 

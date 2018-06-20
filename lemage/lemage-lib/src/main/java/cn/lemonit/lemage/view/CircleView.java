@@ -149,4 +149,8 @@ public class CircleView extends View {
         number = mNumber;
         invalidate();
     }
+
+    public int getStatus() {
+        return status;
+    }
 }

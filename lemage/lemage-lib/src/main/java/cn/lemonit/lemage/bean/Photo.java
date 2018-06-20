@@ -1,11 +1,13 @@
 package cn.lemonit.lemage.bean;
 
+import java.io.Serializable;
+
 /**
  * 照片信息类
  *
  * @author liuri
  */
-public class Photo extends FileObj {
+public class Photo extends FileObj implements Serializable {
 
     /**
      * 照片生成时间

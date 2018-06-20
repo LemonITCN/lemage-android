@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -90,6 +91,11 @@ public class LemageActivity extends AppCompatActivity {
      * 底部条是否显示原图按钮, 默认显示
      */
     private int operationBarItemCount = 3;
+
+    private List<Photo> selectListPhoto = new ArrayList<Photo>();
+
+    private List<String> listPath = new ArrayList<String>();
+    private List<String> listName = new ArrayList<String>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -336,12 +342,23 @@ public class LemageActivity extends AppCompatActivity {
     /**
      * 表格图片列表item点击事件回调
      */
-    private PhotoAdapter.PhotoViewOnClickListener mPhotoViewOnClickListener = new PhotoAdapter.PhotoViewOnClickListener(){
+    private PhotoAdapter.PhotoViewOnClickListener mPhotoViewOnClickListener = new PhotoAdapter.PhotoViewOnClickListener() {
         @Override
-        public void onClickListener(List<Photo> list) {
+        public void onClickSelectListener(List<Photo> list) {
+            if(selectListPhoto == null) {
+                selectListPhoto = new ArrayList<Photo>();
+            }else {
+                selectListPhoto.clear();
+            }
+            selectListPhoto.addAll(list);
+        }
 
+        @Override
+        public void onClickPreviewListener() {
+            Toast.makeText(LemageActivity.this, "直接进入预览", Toast.LENGTH_SHORT).show();
         }
     };
+
 
     /**
      * 图片文件夹横向列表item回调
@@ -371,12 +388,29 @@ public class LemageActivity extends AppCompatActivity {
     };
 
     /**
-     * 底部条点击事件回调
+     * 底部条点击事件回调(预览)
      */
     private OperationBar.OperationBarOnClickListener mOperationBarOnClickListener = new OperationBar.OperationBarOnClickListener() {
         @Override
         public void leftButtonClick() {
-            startActivity(new Intent(LemageActivity.this, PreviewActivity.class));
+            if(selectListPhoto.size() > 0) {
+                // 传值
+                Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("photos", (Serializable) selectListPhoto);
+                listPath.clear();
+                listName.clear();
+                for(int i = 0; i < selectListPhoto.size(); i ++) {
+                    listPath.add(selectListPhoto.get(i).getPath());
+                    listName.add(selectListPhoto.get(i).getName());
+                }
+                bundle.putStringArrayList("paths", (ArrayList<String>) listPath);
+                bundle.putStringArrayList("names", (ArrayList<String>) listName);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }else {
+                Toast.makeText(LemageActivity.this, "您还没有选中照片，不能预览", Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override

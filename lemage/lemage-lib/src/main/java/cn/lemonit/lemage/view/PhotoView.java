@@ -3,9 +3,11 @@ package cn.lemonit.lemage.view;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import cn.lemonit.lemage.util.ScreenUtil;
 
@@ -76,4 +78,5 @@ public class PhotoView extends RelativeLayout {
     public void setStatus(int status) {
         this.status = status;
     }
+
 }

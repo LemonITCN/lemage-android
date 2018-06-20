@@ -32,7 +32,18 @@ public class NavigationBar extends RelativeLayout {
     private PreviewLeftViewClickListener mPreviewLeftViewClickListener;
     private PreviewRightViewClickListener mPreviewRightViewClickListener;
 
+    /**
+     * 选择器的左侧按钮
+     */
     private AlbumSelectButton albumSelectButton;
+    /**
+     * 预览时的左侧按钮
+     */
+    private PreviewBarLeftButton mPreviewBarLeftButton;
+    /**
+     * 预览时的右侧按钮
+     */
+    private CircleView mCircleView;
 
     public NavigationBar(Context context, int style) {
         super(context);
@@ -57,11 +68,17 @@ public class NavigationBar extends RelativeLayout {
             setLeftViewClickListener(albumSelectButton, context);
             this.addView(albumSelectButton);
         }else {
-            PreviewBarLeftButton mPreviewBarLeftButton = new PreviewBarLeftButton(context);
+            mPreviewBarLeftButton = new PreviewBarLeftButton(context);
             RelativeLayout.LayoutParams previewLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
             previewLayoutParams.addRule(RelativeLayout.ALIGN_LEFT, RelativeLayout.TRUE);
             previewLayoutParams.leftMargin = ScreenUtil.dp2px(context, 14);
             mPreviewBarLeftButton.setLayoutParams(previewLayoutParams);
+            mPreviewBarLeftButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mPreviewLeftViewClickListener.leftClickListener(mPreviewBarLeftButton);
+                }
+            });
             this.addView(mPreviewBarLeftButton);
         }
     }
@@ -76,14 +93,22 @@ public class NavigationBar extends RelativeLayout {
             setRightViewClickListener(cancelButton, context);
             this.addView(cancelButton);
         }else {
-            int mRadius = ScreenUtil.dp2px(context, 10);
+            int mRadius = ScreenUtil.dp2px(context, 16);
             RelativeLayout.LayoutParams paramsCircle = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             paramsCircle.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
             paramsCircle.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
             paramsCircle.topMargin = mRadius / 2;
-            paramsCircle.rightMargin = mRadius / 2;
-            CircleView mCircleView = new CircleView(context, mRadius);
+            paramsCircle.rightMargin = ScreenUtil.dp2px(context, 14);
+            mCircleView = new CircleView(context, mRadius);
+            // 初始状态
+            mCircleView.changeStatus(1, 1);
             mCircleView.setLayoutParams(paramsCircle);
+            mCircleView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mPreviewRightViewClickListener.rightClickListener(mCircleView);
+                }
+            });
             this.addView(mCircleView);
         }
     }
@@ -135,14 +160,6 @@ public class NavigationBar extends RelativeLayout {
         });
     }
 
-    /**
-     * 预览顶部条事件
-     */
-    private void setPreviewLeftViewClickListener() {
-
-    }
-
-
 
     /**
      * 选择器顶部条点击事件
@@ -168,11 +185,11 @@ public class NavigationBar extends RelativeLayout {
     }
 
     public interface PreviewRightViewClickListener {
-        void rightClickListener();
+        void rightClickListener(CircleView view);
     }
 
     public interface PreviewLeftViewClickListener {
-        void leftClickListener(AlbumSelectButton view);
+        void leftClickListener(PreviewBarLeftButton view);
     }
 
     public void setPreviewLeftViewClickListener(PreviewLeftViewClickListener mPreviewLeftViewClickListener) {
@@ -181,5 +198,23 @@ public class NavigationBar extends RelativeLayout {
 
     public void setPreviewRightViewClickListener(PreviewRightViewClickListener mPreviewRightViewClickListener) {
         this.mPreviewRightViewClickListener = mPreviewRightViewClickListener;
+    }
+
+    public PreviewBarLeftButton getPreviewBarLeftButton() {
+        if(mStyle == 1) {
+            return mPreviewBarLeftButton;
+        }
+        return null;
+    }
+
+    public CircleView getCircleView() {
+        if(mStyle == 1) {
+            return mCircleView;
+        }
+        return null;
+    }
+
+    public void changeText(int mCount, int corrent) {
+        mPreviewBarLeftButton.changeText(mCount, corrent);
     }
 }

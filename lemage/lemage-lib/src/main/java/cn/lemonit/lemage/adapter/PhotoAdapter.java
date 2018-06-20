@@ -3,8 +3,10 @@ package cn.lemonit.lemage.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -94,26 +96,50 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             checkView(((PhotoViewHolder) holder).photoView, index);
         }
         // 事件
-        ((PhotoViewHolder) holder).photoView.setOnClickListener(new View.OnClickListener() {
+        ((PhotoViewHolder) holder).photoView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                int status = ((PhotoViewHolder) holder).photoView.getStatus();
-                switch (status) {
-                    // 未选中变选中
-                    case 0:
-                        currentAlbum.getPhotoList().get(position).setStatus(1);
-                        checkPhotoList.add(currentAlbum.getPhotoList().get(position));
-                        break;
-                    // 选中变未选中
-                    case 1:
-                        currentAlbum.getPhotoList().get(position).setStatus(0);
-                        checkPhotoList.remove(currentAlbum.getPhotoList().get(position));
-                        break;
+            public boolean onTouch(View view, MotionEvent event) {
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    // 触摸点
+                    float touchX = event.getX();
+                    float touchY = event.getY();
+                    // 第二象限边界
+                    float borderX = view.getWidth() / 2;
+                    float borderY = view.getHeight() / 2;
+
+                    // 触摸点在第二象限, , 否则直接进入预览
+                    if(touchX > borderX && touchY < borderY) {
+                        switchSelectStatus(position, (PhotoView) view);
+                    }else {
+                        mPhotoViewOnClickListener.onClickPreviewListener();
+                    }
+                    return false;
                 }
-                notifyDataSetChanged();
-                mPhotoViewOnClickListener.onClickListener(checkPhotoList);
+                return true;
             }
         });
+    }
+
+    /**
+     * 切换选中状态
+     */
+    private void switchSelectStatus(int position, PhotoView view) {
+        int status = view.getStatus();
+        switch (status) {
+            // 未选中变选中
+            case 0:
+                currentAlbum.getPhotoList().get(position).setStatus(1);
+                checkPhotoList.add(currentAlbum.getPhotoList().get(position));
+                break;
+            // 选中变未选中
+            case 1:
+                currentAlbum.getPhotoList().get(position).setStatus(0);
+                checkPhotoList.remove(currentAlbum.getPhotoList().get(position));
+                break;
+        }
+        notifyDataSetChanged();
+        mPhotoViewOnClickListener.onClickSelectListener(checkPhotoList);
     }
 
     @Override
@@ -150,7 +176,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public interface PhotoViewOnClickListener {
-        void onClickListener(List<Photo> list);
+        void onClickSelectListener(List<Photo> list);
+        void onClickPreviewListener();
     }
 
     public void setPhotoViewOnClickListener(PhotoViewOnClickListener mPhotoViewOnClickListener) {

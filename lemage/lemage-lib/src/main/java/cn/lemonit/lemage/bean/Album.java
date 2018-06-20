@@ -1,5 +1,6 @@
 package cn.lemonit.lemage.bean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
