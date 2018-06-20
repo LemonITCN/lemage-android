@@ -180,7 +180,6 @@ public class PreviewActivity extends AppCompatActivity {
             }else {
                 mNavigationBar.setVisibility(View.VISIBLE);
             }
-
             if(mPreviewOperationBar.isShown()) {
                 mPreviewOperationBar.setVisibility(View.GONE);
             }else {
