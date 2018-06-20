@@ -1,5 +1,8 @@
 package cn.lemonit.lemage.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /**
@@ -48,4 +51,5 @@ public class Photo extends FileObj implements Serializable {
     public void setStatus(int status) {
         this.status = status;
     }
+
 }

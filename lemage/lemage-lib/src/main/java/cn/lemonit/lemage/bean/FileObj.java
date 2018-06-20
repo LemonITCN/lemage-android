@@ -26,7 +26,10 @@ public class FileObj {
     }
 
     public String getPath() {
-        return path.trim();
+        if(path != null) {
+            return path.trim();
+        }
+        return "";
     }
 
     public void setPath(String path) {

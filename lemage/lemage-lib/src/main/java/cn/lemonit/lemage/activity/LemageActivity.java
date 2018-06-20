@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -92,7 +93,7 @@ public class LemageActivity extends AppCompatActivity {
      */
     private int operationBarItemCount = 3;
 
-    private List<Photo> selectListPhoto = new ArrayList<Photo>();
+    private ArrayList<Photo> selectListPhoto = new ArrayList<Photo>();
 
     private List<String> listPath = new ArrayList<String>();
     private List<String> listName = new ArrayList<String>();
@@ -350,12 +351,32 @@ public class LemageActivity extends AppCompatActivity {
             }else {
                 selectListPhoto.clear();
             }
+            // 筛选选中的
+//            for(Photo photo : list) {
+//                if(photo.getStatus() == 1) {
+//                    selectListPhoto.add(photo);
+//                }
+//            }
             selectListPhoto.addAll(list);
         }
 
         @Override
-        public void onClickPreviewListener() {
-            Toast.makeText(LemageActivity.this, "直接进入预览", Toast.LENGTH_SHORT).show();
+        public void onClickPreviewListener(List<Photo> list) {
+            Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
+            Bundle bundle = new Bundle();
+            List<Photo> list_count = photoAdapter.getAlbum().getPhotoList();
+            bundle.putSerializable("photos", (Serializable) list_count);
+            listPath.clear();
+            listName.clear();
+            for(int i = 0; i < list_count.size(); i ++) {
+                listPath.add(list_count.get(i).getPath());
+                listName.add(list_count.get(i).getName());
+            }
+            bundle.putStringArrayList("paths", (ArrayList<String>) listPath);
+            bundle.putStringArrayList("names", (ArrayList<String>) listName);
+            intent.putExtras(bundle);
+            startActivity(intent);
+
         }
     };
 
@@ -397,6 +418,7 @@ public class LemageActivity extends AppCompatActivity {
                 // 传值
                 Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
                 Bundle bundle = new Bundle();
+//                bundle.putParcelableArrayList("photos", (ArrayList<? extends Parcelable>) selectListPhoto);
                 bundle.putSerializable("photos", (Serializable) selectListPhoto);
                 listPath.clear();
                 listName.clear();

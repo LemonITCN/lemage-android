@@ -32,6 +32,9 @@ import cn.lemonit.lemage.R;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.view.ZoomImageView;
 
+/**
+ * 预览viewpager适配器
+ */
 public class ImgPagerAdapter extends PagerAdapter {
 
     private final String TAG = "ImgPagerAdapter";

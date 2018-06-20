@@ -101,7 +101,7 @@ public class NavigationBar extends RelativeLayout {
             paramsCircle.rightMargin = ScreenUtil.dp2px(context, 14);
             mCircleView = new CircleView(context, mRadius);
             // 初始状态
-            mCircleView.changeStatus(1, 1);
+//            mCircleView.changeStatus(1, 1);
             mCircleView.setLayoutParams(paramsCircle);
             mCircleView.setOnClickListener(new OnClickListener() {
                 @Override
@@ -216,5 +216,9 @@ public class NavigationBar extends RelativeLayout {
 
     public void changeText(int mCount, int corrent) {
         mPreviewBarLeftButton.changeText(mCount, corrent);
+    }
+
+    public void changeTextCircle(int current) {
+        mCircleView.changeStatus(current, 1);
     }
 }

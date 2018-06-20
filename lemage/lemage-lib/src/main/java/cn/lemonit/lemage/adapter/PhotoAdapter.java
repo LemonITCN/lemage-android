@@ -44,6 +44,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     private int columnCount = 0;
 
+    /**
+     * 已经选中的图片集合
+     */
     private List<Photo> checkPhotoList = new ArrayList<Photo>();
 
     private PhotoViewOnClickListener mPhotoViewOnClickListener;
@@ -112,7 +115,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     if(touchX > borderX && touchY < borderY) {
                         switchSelectStatus(position, (PhotoView) view);
                     }else {
-                        mPhotoViewOnClickListener.onClickPreviewListener();
+                        mPhotoViewOnClickListener.onClickPreviewListener(currentAlbum.getPhotoList());
                     }
                     return false;
                 }
@@ -140,6 +143,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
         notifyDataSetChanged();
         mPhotoViewOnClickListener.onClickSelectListener(checkPhotoList);
+//        mPhotoViewOnClickListener.onClickSelectListener(currentAlbum.getPhotoList());
     }
 
     @Override
@@ -177,7 +181,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public interface PhotoViewOnClickListener {
         void onClickSelectListener(List<Photo> list);
-        void onClickPreviewListener();
+        void onClickPreviewListener(List<Photo> list);
     }
 
     public void setPhotoViewOnClickListener(PhotoViewOnClickListener mPhotoViewOnClickListener) {
@@ -196,5 +200,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     private void checkView(PhotoView mPhotoView, int number) {
         mPhotoView.changeStatus(1, number);
+    }
+
+    public Album getAlbum() {
+        return currentAlbum;
     }
 }

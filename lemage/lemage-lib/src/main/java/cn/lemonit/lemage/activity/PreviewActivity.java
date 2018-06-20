@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import cn.lemonit.lemage.adapter.ImgPagerAdapter;
@@ -43,7 +44,7 @@ public class PreviewActivity extends AppCompatActivity {
     /**
      * 数据源
      */
-    private ArrayList<Photo> listPhoto;
+    private ArrayList<Photo> listPhoto = new ArrayList<Photo>();
     private List<String> listPath = new ArrayList<String>();
     private List<String> listName = new ArrayList<String>();
 
@@ -75,6 +76,14 @@ public class PreviewActivity extends AppCompatActivity {
         listPhoto.addAll((ArrayList<Photo>) getIntent().getExtras().getSerializable("photos"));
         listPath.addAll(getIntent().getExtras().getStringArrayList("paths"));
         listName.addAll(getIntent().getExtras().getStringArrayList("names"));
+//        int count = 0;
+//        for(Photo photo : listPhoto) {
+//            Log.e(TAG, "status ==== " + photo.getStatus());
+//            if(photo.getStatus() == 1) {
+//                count ++;
+//            }
+//        }
+//        Log.e(TAG, "选中数 ==== " + count);
     }
 
     private void initView() {
@@ -147,6 +156,8 @@ public class PreviewActivity extends AppCompatActivity {
                     }
                 }
             });
+            // 预览界面顶部条右侧按钮的初始状态（有时是选中状态，有时是未选中状态）,之后的翻页状态会自动刷新
+            mNavigationBar.changeTextCircle(listPhoto.get(0).getStatus());
         }
     }
 
@@ -209,7 +220,8 @@ public class PreviewActivity extends AppCompatActivity {
             // 右侧按钮更新
             CircleView mCircleView = mNavigationBar.getCircleView();
             if(mCircleView == null) return;
-            mCircleView.changeStatus(1, currentIndex);
+//            mCircleView.changeStatus(1, currentIndex);
+            mCircleView.changeStatus(listPhoto.get(position).getStatus(), currentIndex);
         }
 
         /**
@@ -218,9 +230,7 @@ public class PreviewActivity extends AppCompatActivity {
          */
         @Override
         public void onPageScrollStateChanged(int state) {
-//            Log.e(TAG, "翻页监听 onPageScrollStateChanged   state ==== " + state);
             int currentIndex = state % listPath.size();
-//            Log.e(TAG, "翻页监听 onPageScrollStateChanged   currentIndex ==== " + currentIndex);
         }
     };
 }
