@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import cn.lemonit.lemage.bean.ImageSize;
+import cn.lemonit.lemage.bean.LemageUsageText;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
 
 /**
@@ -22,12 +23,27 @@ import cn.lemonit.lemage.interfaces.LemageResultCallback;
 public class Lemage implements Serializable {
 
     /**
+     * 本地化字符存储信息对象
+     */
+    private static LemageUsageText usageText;
+
+    public static LemageUsageText getUsageText() {
+        if (usageText == null) {
+            usageText = LemageUsageText.enText();
+        }
+        return usageText;
+    }
+
+    public static void setUsageText(LemageUsageText usageText) {
+        Lemage.usageText = usageText;
+    }
+
+    /**
      * 启动Lemage
      */
     public static void startUp() {
         BitmapDrawable drawable;
     }
-
 
     /**
      * 根据Bitmap对象来生成LemageURL字符串
