@@ -41,8 +41,8 @@ public class ImgPagerAdapter extends PagerAdapter {
 
     private Context mContext;
     private ArrayList<Photo> listPhoto;
-    private ArrayList<String> listPath;
-    private ArrayList<String> listName;
+//    private ArrayList<String> listPath;
+//    private ArrayList<String> listName;
 
     private ImgOnClickListener mImgOnClickListener;
 
@@ -57,11 +57,18 @@ public class ImgPagerAdapter extends PagerAdapter {
 //    // 缓存view
 //    private List<View> mViewCache;//缓存view
 
-    public ImgPagerAdapter(Context mContext, ArrayList<Photo> listPhoto, ArrayList<String> listPath, ArrayList<String> listName) {
+//    public ImgPagerAdapter(Context mContext, ArrayList<Photo> listPhoto, ArrayList<String> listPath, ArrayList<String> listName) {
+//        this.mContext = mContext;
+//        this.listPhoto = listPhoto;
+//        this.listPath = listPath;
+//        this.listName = listName;
+//    }
+
+    public ImgPagerAdapter(Context mContext, ArrayList<Photo> listPhoto) {
         this.mContext = mContext;
         this.listPhoto = listPhoto;
-        this.listPath = listPath;
-        this.listName = listName;
+//        this.listPath = listPath;
+//        this.listName = listName;
     }
 
     @Override
@@ -96,7 +103,8 @@ public class ImgPagerAdapter extends PagerAdapter {
         });
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         imageView.setLayoutParams(params);
-        Glide.with(mContext).load(listPath.get(position)).into(imageView);
+//        Glide.with(mContext).load(listPath.get(position)).into(imageView);
+        Glide.with(mContext).load(listPhoto.get(position).getPath()).into(imageView);
 
         view.addView(imageView);
         container.addView(view);

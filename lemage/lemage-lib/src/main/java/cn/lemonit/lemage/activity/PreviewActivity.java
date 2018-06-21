@@ -16,7 +16,7 @@ import java.util.List;
 
 import cn.lemonit.lemage.adapter.ImgPagerAdapter;
 import cn.lemonit.lemage.bean.Photo;
-import cn.lemonit.lemage.observer.EventTool;
+import cn.lemonit.lemage.interfaces.LemageResultCallback;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
 import cn.lemonit.lemage.view.CircleView;
@@ -26,6 +26,12 @@ import cn.lemonit.lemage.view.PreviewBarLeftButton;
 import cn.lemonit.lemage.view.PreviewOperationBar;
 
 public class PreviewActivity extends AppCompatActivity {
+
+    private static LemageResultCallback callback;
+
+    public static void setCallback(LemageResultCallback mCallback){
+        callback = mCallback;
+    }
 
     private final String TAG = "PreviewActivity";
 
@@ -47,8 +53,8 @@ public class PreviewActivity extends AppCompatActivity {
      * 数据源
      */
     private ArrayList<Photo> listPhoto = new ArrayList<Photo>();
-    private List<String> listPath = new ArrayList<String>();
-    private List<String> listName = new ArrayList<String>();
+//    private List<String> listPath = new ArrayList<String>();
+//    private List<String> listName = new ArrayList<String>();
 
     private ImgPagerAdapter mImgPagerAdapter;
 
@@ -90,8 +96,8 @@ public class PreviewActivity extends AppCompatActivity {
         }
 //        listPhoto.addAll((ArrayList<Photo>) getIntent().getExtras().getSerializable("photos"));
         listPhoto.addAll(LemageActivity.selectListPhoto);
-        listPath.addAll(getIntent().getExtras().getStringArrayList("paths"));
-        listName.addAll(getIntent().getExtras().getStringArrayList("names"));
+//        listPath.addAll(getIntent().getExtras().getStringArrayList("paths"));
+//        listName.addAll(getIntent().getExtras().getStringArrayList("names"));
     }
 
     private void initView() {
@@ -138,7 +144,8 @@ public class PreviewActivity extends AppCompatActivity {
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
             mViewPager.setLayoutParams(layoutParams);
 
-            mImgPagerAdapter = new ImgPagerAdapter(this, listPhoto, (ArrayList<String>) listPath, (ArrayList<String>) listName);
+//            mImgPagerAdapter = new ImgPagerAdapter(this, listPhoto, (ArrayList<String>) listPath, (ArrayList<String>) listName);
+            mImgPagerAdapter = new ImgPagerAdapter(this, listPhoto);
             mImgPagerAdapter.setImgOnClickListener(imgOnClickListener);
             mViewPager.setAdapter(mImgPagerAdapter);
         }
@@ -148,7 +155,8 @@ public class PreviewActivity extends AppCompatActivity {
     private void getNavigationBar() {
         if(mNavigationBar == null) {
             mNavigationBar = new NavigationBar(this, 1);
-            mNavigationBar.changeText(listPath.size(), 1);
+//            mNavigationBar.changeText(listPath.size(), 1);
+            mNavigationBar.changeText(listPhoto.size(), 1);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtil.dp2px(this, 56));
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
             mNavigationBar.setLayoutParams(layoutParams);
@@ -157,7 +165,13 @@ public class PreviewActivity extends AppCompatActivity {
                 @Override
                 public void leftClickListener(PreviewBarLeftButton view) {
 //                    mBackLemageActivityListener.toBack();
-                    EventTool.getInstance().post(listPhoto);
+                    List<String> list = new ArrayList<String>();
+                    for(Photo photo : listPhoto) {
+                        if(photo.getStatus() == 1) {
+                            list.add(photo.getPath());
+                        }
+                    }
+                    callback.willClose(list, true);
                     PreviewActivity.this.finish();
                 }
             });
@@ -238,7 +252,8 @@ public class PreviewActivity extends AppCompatActivity {
             // 左侧按钮更新
             PreviewBarLeftButton previewBarLeftButton = mNavigationBar.getPreviewBarLeftButton();
             if(previewBarLeftButton == null) return;
-            previewBarLeftButton.changeText(listPath.size(), position + 1);
+//            previewBarLeftButton.changeText(listPath.size(), position + 1);
+            previewBarLeftButton.changeText(listPhoto.size(), position + 1);
             currentIndex = position + 1; // 当前的item的position
             // 右侧按钮更新
             CircleView mCircleView = mNavigationBar.getCircleView();
@@ -262,7 +277,7 @@ public class PreviewActivity extends AppCompatActivity {
          */
         @Override
         public void onPageScrollStateChanged(int state) {
-            int currentIndex = state % listPath.size();
+//            int currentIndex = state % listPath.size();
         }
     };
 

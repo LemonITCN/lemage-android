@@ -2,25 +2,18 @@ package cn.lemonit.lemage.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,17 +26,13 @@ import cn.lemonit.lemage.adapter.PhotoAdapter;
 import cn.lemonit.lemage.bean.Album;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.core.LemageScanner;
+import cn.lemonit.lemage.interfaces.LemageResultCallback;
 import cn.lemonit.lemage.interfaces.PhotoScanCompleteCallback;
-import cn.lemonit.lemage.observer.EventTool;
-import cn.lemonit.lemage.observer.Observer;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
 import cn.lemonit.lemage.view.DrawCircleTextButton;
 import cn.lemonit.lemage.view.NavigationBar;
 import cn.lemonit.lemage.view.OperationBar;
-import cn.lemonit.lemage.view.PhotoView;
-
-import static android.view.View.generateViewId;
 
 /**
  * Lemage主界面
@@ -51,7 +40,13 @@ import static android.view.View.generateViewId;
  *
  * @author liuri
  */
-public class LemageActivity extends AppCompatActivity implements Observer {
+public class LemageActivity extends AppCompatActivity {
+
+    private static LemageResultCallback callback;
+
+    public static void setCallback(LemageResultCallback mCallback){
+        callback = mCallback;
+    }
 
     private final String TAG = "LemageActivity";
 
@@ -107,13 +102,11 @@ public class LemageActivity extends AppCompatActivity implements Observer {
         setContentView(getRootLayout());
         getRootLayout().setBackgroundColor(Color.parseColor("#fafafa"));
         initPhoto();
-        EventTool.getInstance().register(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventTool.getInstance().unRegister(this);
     }
 
     /**
@@ -371,10 +364,14 @@ public class LemageActivity extends AppCompatActivity implements Observer {
 
         @Override
         public void onClickPreviewListener(List<Photo> list, int position) {
+
+            PreviewActivity.setCallback(callbackToPreview);
             Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
             Bundle bundle = new Bundle();
             List<Photo> list_count = photoAdapter.getAlbum().getPhotoList();
-            bundle.putSerializable("photos", (Serializable) list_count);
+//            bundle.putSerializable("photos", (Serializable) list_count);
+            selectListPhoto.clear();
+            selectListPhoto.addAll(photoAdapter.getAlbum().getPhotoList());
             listPath.clear();
             listName.clear();
             for(int i = 0; i < list_count.size(); i ++) {
@@ -429,6 +426,7 @@ public class LemageActivity extends AppCompatActivity implements Observer {
         public void leftButtonClick() {
             if(selectListPhoto.size() > 0) {
                 // 传值
+                PreviewActivity.setCallback(callbackToPreview);
                 Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
                 Bundle bundle = new Bundle();
 //                bundle.putSerializable("photos", (Serializable) selectListPhoto);
@@ -462,14 +460,28 @@ public class LemageActivity extends AppCompatActivity implements Observer {
         }
     };
 
-    @Override
-    public void updata(Object object) {
-        ArrayList<Photo> list = (ArrayList<Photo>) object;
-        phototAdapterData.setPhotoList(list);
-        photoAdapter.notifyDataSetChanged();
-//        for(int i = 0; i < list.size(); i ++) {
-//            if(list.get(i).)
-//        }
-    }
 
+    /**
+     * 预览界面回调接口, 回来的参数是已经选中的图片路径集合
+     */
+    private LemageResultCallback callbackToPreview = new LemageResultCallback() {
+        @Override
+        public void willClose(List<String> imageUrlList, boolean isOriginal) {
+            Log.e("LemageActivity", "imageUrlList.size ===== " +imageUrlList.size());
+
+            for(int i = 0; i < phototAdapterData.getPhotoList().size(); i ++) {
+                for(int m = 0; m < imageUrlList.size(); m ++) {
+                    if(phototAdapterData.getPhotoList().get(i).getPath().equals(imageUrlList.get(m))) {
+                        phototAdapterData.getPhotoList().get(i).setStatus(1);
+                    }
+                }
+            }
+            photoAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void closed(List<String> imageUrlList, boolean isOriginal) {
+
+        }
+    };
 }
