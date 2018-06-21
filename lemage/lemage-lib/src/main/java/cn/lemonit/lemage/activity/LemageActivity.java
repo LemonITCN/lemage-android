@@ -34,6 +34,8 @@ import cn.lemonit.lemage.bean.Album;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.core.LemageScanner;
 import cn.lemonit.lemage.interfaces.PhotoScanCompleteCallback;
+import cn.lemonit.lemage.observer.EventTool;
+import cn.lemonit.lemage.observer.Observer;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
 import cn.lemonit.lemage.view.DrawCircleTextButton;
@@ -49,7 +51,7 @@ import static android.view.View.generateViewId;
  *
  * @author liuri
  */
-public class LemageActivity extends AppCompatActivity {
+public class LemageActivity extends AppCompatActivity implements Observer {
 
     private final String TAG = "LemageActivity";
 
@@ -93,7 +95,7 @@ public class LemageActivity extends AppCompatActivity {
      */
     private int operationBarItemCount = 3;
 
-    private ArrayList<Photo> selectListPhoto = new ArrayList<Photo>();
+    public static ArrayList<Photo> selectListPhoto = new ArrayList<Photo>();
 
     private List<String> listPath = new ArrayList<String>();
     private List<String> listName = new ArrayList<String>();
@@ -105,6 +107,13 @@ public class LemageActivity extends AppCompatActivity {
         setContentView(getRootLayout());
         getRootLayout().setBackgroundColor(Color.parseColor("#fafafa"));
         initPhoto();
+        EventTool.getInstance().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventTool.getInstance().unRegister(this);
     }
 
     /**
@@ -361,7 +370,7 @@ public class LemageActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onClickPreviewListener(List<Photo> list) {
+        public void onClickPreviewListener(List<Photo> list, int position) {
             Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
             Bundle bundle = new Bundle();
             List<Photo> list_count = photoAdapter.getAlbum().getPhotoList();
@@ -374,6 +383,10 @@ public class LemageActivity extends AppCompatActivity {
             }
             bundle.putStringArrayList("paths", (ArrayList<String>) listPath);
             bundle.putStringArrayList("names", (ArrayList<String>) listName);
+//            intent.putExtra("from", "item");
+//            intent.putExtra("index", position);
+            bundle.putString("from", "item");
+            bundle.putInt("position", position);
             intent.putExtras(bundle);
             startActivity(intent);
 
@@ -418,8 +431,7 @@ public class LemageActivity extends AppCompatActivity {
                 // 传值
                 Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
                 Bundle bundle = new Bundle();
-//                bundle.putParcelableArrayList("photos", (ArrayList<? extends Parcelable>) selectListPhoto);
-                bundle.putSerializable("photos", (Serializable) selectListPhoto);
+//                bundle.putSerializable("photos", (Serializable) selectListPhoto);
                 listPath.clear();
                 listName.clear();
                 for(int i = 0; i < selectListPhoto.size(); i ++) {
@@ -449,4 +461,15 @@ public class LemageActivity extends AppCompatActivity {
             Toast.makeText(LemageActivity.this, "完成", Toast.LENGTH_SHORT).show();
         }
     };
+
+    @Override
+    public void updata(Object object) {
+        ArrayList<Photo> list = (ArrayList<Photo>) object;
+        phototAdapterData.setPhotoList(list);
+        photoAdapter.notifyDataSetChanged();
+//        for(int i = 0; i < list.size(); i ++) {
+//            if(list.get(i).)
+//        }
+    }
+
 }

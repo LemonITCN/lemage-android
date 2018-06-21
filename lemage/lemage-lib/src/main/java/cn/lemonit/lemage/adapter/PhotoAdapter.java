@@ -115,7 +115,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     if(touchX > borderX && touchY < borderY) {
                         switchSelectStatus(position, (PhotoView) view);
                     }else {
-                        mPhotoViewOnClickListener.onClickPreviewListener(currentAlbum.getPhotoList());
+                        Log.e(TAG, "position ========= " + position);
+                        mPhotoViewOnClickListener.onClickPreviewListener(currentAlbum.getPhotoList(), position);
                     }
                     return false;
                 }
@@ -181,7 +182,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public interface PhotoViewOnClickListener {
         void onClickSelectListener(List<Photo> list);
-        void onClickPreviewListener(List<Photo> list);
+        void onClickPreviewListener(List<Photo> list, int position);
     }
 
     public void setPhotoViewOnClickListener(PhotoViewOnClickListener mPhotoViewOnClickListener) {

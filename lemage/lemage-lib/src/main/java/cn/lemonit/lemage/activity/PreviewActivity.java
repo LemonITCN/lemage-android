@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import cn.lemonit.lemage.adapter.ImgPagerAdapter;
 import cn.lemonit.lemage.bean.Photo;
+import cn.lemonit.lemage.observer.EventTool;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
 import cn.lemonit.lemage.view.CircleView;
@@ -51,6 +53,14 @@ public class PreviewActivity extends AppCompatActivity {
     private ImgPagerAdapter mImgPagerAdapter;
 
     private int currentIndex = 1;
+    /**
+     * 从预览按钮跳转过来还是item
+     */
+    private String from;
+    /**
+     * 如果是从item跳转过来，点击的position
+     */
+    private int fromPosition;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,22 +78,20 @@ public class PreviewActivity extends AppCompatActivity {
     }
 
     private void getData() {
+        from = getIntent().getExtras().getString("from");
+        // 得到item的position
+        if(!TextUtils.isEmpty(from)) {
+            fromPosition = getIntent().getExtras().getInt("position");
+        }
         if(listPhoto == null) {
             listPhoto = new ArrayList<Photo>();
         }else {
             listPhoto.clear();
         }
-        listPhoto.addAll((ArrayList<Photo>) getIntent().getExtras().getSerializable("photos"));
+//        listPhoto.addAll((ArrayList<Photo>) getIntent().getExtras().getSerializable("photos"));
+        listPhoto.addAll(LemageActivity.selectListPhoto);
         listPath.addAll(getIntent().getExtras().getStringArrayList("paths"));
         listName.addAll(getIntent().getExtras().getStringArrayList("names"));
-//        int count = 0;
-//        for(Photo photo : listPhoto) {
-//            Log.e(TAG, "status ==== " + photo.getStatus());
-//            if(photo.getStatus() == 1) {
-//                count ++;
-//            }
-//        }
-//        Log.e(TAG, "选中数 ==== " + count);
     }
 
     private void initView() {
@@ -110,6 +118,11 @@ public class PreviewActivity extends AppCompatActivity {
         layoutParamsOperation.bottomMargin = operationHeight;
         mPreviewOperationBar.setLayoutParams(layoutParamsOperation);
         rootLayout.addView(mPreviewOperationBar);
+
+        // 如果是从item跳转过来
+        if(!TextUtils.isEmpty(from) && from.equals("item")) {
+            mViewPager.setCurrentItem(fromPosition);
+        }
     }
 
     private void getRootLayout() {
@@ -143,16 +156,28 @@ public class PreviewActivity extends AppCompatActivity {
             mNavigationBar.setPreviewLeftViewClickListener(new NavigationBar.PreviewLeftViewClickListener() {
                 @Override
                 public void leftClickListener(PreviewBarLeftButton view) {
+//                    mBackLemageActivityListener.toBack();
+                    EventTool.getInstance().post(listPhoto);
                     PreviewActivity.this.finish();
                 }
             });
             mNavigationBar.setPreviewRightViewClickListener(new NavigationBar.PreviewRightViewClickListener() {
                 @Override
                 public void rightClickListener(CircleView view) {
+                    int selectCount = 0;  // 这个position之前的item有多少个是选中的
+                    for(int i = 0; i < listPhoto.size(); i ++) {
+                        if(listPhoto.get(i).getStatus() == 1) {
+                            selectCount ++;
+                        }
+                    }
                     if(view.getStatus() == 0) {
-                        view.changeStatus(1, currentIndex);
+                        view.changeStatus(1, selectCount + 1);
+//                        view.changeStatus(1, currentIndex);
+                        listPhoto.get(currentIndex - 1).setStatus(1);  // 改变选中状态
                     }else {
-                        view.changeStatus(0, currentIndex);
+                        view.changeStatus(0, selectCount + 1);
+//                        view.changeStatus(0, currentIndex);
+                        listPhoto.get(currentIndex - 1).setStatus(0);
                     }
                 }
             });
@@ -210,17 +235,25 @@ public class PreviewActivity extends AppCompatActivity {
          */
         @Override
         public void onPageSelected(int position) {
-//            Log.e(TAG, "翻页监听 onPageSelected   position + 1 ==== " + position + 1 + "   listPath.size() === " + listPath.size());
             // 左侧按钮更新
             PreviewBarLeftButton previewBarLeftButton = mNavigationBar.getPreviewBarLeftButton();
             if(previewBarLeftButton == null) return;
             previewBarLeftButton.changeText(listPath.size(), position + 1);
-            currentIndex = position + 1;
+            currentIndex = position + 1; // 当前的item的position
             // 右侧按钮更新
             CircleView mCircleView = mNavigationBar.getCircleView();
             if(mCircleView == null) return;
 //            mCircleView.changeStatus(1, currentIndex);
-            mCircleView.changeStatus(listPhoto.get(position).getStatus(), currentIndex);
+            int selectCount = 0;  // 这个position之前的item有多少个是选中的
+
+            Log.e(TAG, "selectCount      currentIndex========== " + currentIndex);
+            for(int i = 0; i < position; i ++) {
+                if(listPhoto.get(i).getStatus() == 1) {
+                    selectCount ++;
+                }
+            }
+//            mCircleView.changeStatus(listPhoto.get(position).getStatus(), currentIndex);
+            mCircleView.changeStatus(listPhoto.get(position).getStatus(), selectCount + 1);
         }
 
         /**
@@ -232,4 +265,5 @@ public class PreviewActivity extends AppCompatActivity {
             int currentIndex = state % listPath.size();
         }
     };
+
 }
