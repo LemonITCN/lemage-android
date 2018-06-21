@@ -23,6 +23,11 @@ public class Photo extends FileObj implements Serializable {
      */
     private int status;
 
+    /**
+     * 如果被选中的序号
+     */
+    private int number;
+
     public Photo() {
     }
 
@@ -52,4 +57,11 @@ public class Photo extends FileObj implements Serializable {
         this.status = status;
     }
 
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
 }

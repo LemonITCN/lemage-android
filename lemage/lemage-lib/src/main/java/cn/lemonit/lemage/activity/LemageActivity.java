@@ -353,12 +353,6 @@ public class LemageActivity extends AppCompatActivity {
             }else {
                 selectListPhoto.clear();
             }
-            // 筛选选中的
-//            for(Photo photo : list) {
-//                if(photo.getStatus() == 1) {
-//                    selectListPhoto.add(photo);
-//                }
-//            }
             selectListPhoto.addAll(list);
         }
 

@@ -178,19 +178,17 @@ public class PreviewActivity extends AppCompatActivity {
             mNavigationBar.setPreviewRightViewClickListener(new NavigationBar.PreviewRightViewClickListener() {
                 @Override
                 public void rightClickListener(CircleView view) {
-                    int selectCount = 0;  // 这个position之前的item有多少个是选中的
+                    int number = 0;  // 有多少个是选中的
                     for(int i = 0; i < listPhoto.size(); i ++) {
                         if(listPhoto.get(i).getStatus() == 1) {
-                            selectCount ++;
+                            number ++;
                         }
                     }
                     if(view.getStatus() == 0) {
-                        view.changeStatus(1, selectCount + 1);
-//                        view.changeStatus(1, currentIndex);
+//                        view.changeStatus(1, selectCount + 1);
                         listPhoto.get(currentIndex - 1).setStatus(1);  // 改变选中状态
                     }else {
-                        view.changeStatus(0, selectCount + 1);
-//                        view.changeStatus(0, currentIndex);
+//                        view.changeStatus(0, selectCount + 1);
                         listPhoto.get(currentIndex - 1).setStatus(0);
                     }
                 }
@@ -257,18 +255,17 @@ public class PreviewActivity extends AppCompatActivity {
             currentIndex = position + 1; // 当前的item的position
             // 右侧按钮更新
             CircleView mCircleView = mNavigationBar.getCircleView();
-            if(mCircleView == null) return;
-//            mCircleView.changeStatus(1, currentIndex);
-            int selectCount = 0;  // 这个position之前的item有多少个是选中的
-
-            Log.e(TAG, "selectCount      currentIndex========== " + currentIndex);
-            for(int i = 0; i < position; i ++) {
-                if(listPhoto.get(i).getStatus() == 1) {
-                    selectCount ++;
-                }
-            }
-//            mCircleView.changeStatus(listPhoto.get(position).getStatus(), currentIndex);
-            mCircleView.changeStatus(listPhoto.get(position).getStatus(), selectCount + 1);
+//            if(mCircleView == null) return;
+//            int selectCount = 0;  // 这个position之前的item有多少个是选中的
+//
+//            Log.e(TAG, "selectCount      currentIndex========== " + currentIndex);
+//            for(int i = 0; i < position; i ++) {
+//                if(listPhoto.get(i).getStatus() == 1) {
+//                    selectCount ++;
+//                }
+//            }
+//            mCircleView.changeStatus(listPhoto.get(position).getStatus(), selectCount + 1);
+            mCircleView.changeStatus(listPhoto.get(position).getStatus(), listPhoto.get(position).getNumber());
         }
 
         /**
