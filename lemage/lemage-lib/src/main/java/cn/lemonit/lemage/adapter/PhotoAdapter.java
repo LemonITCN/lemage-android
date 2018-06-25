@@ -223,6 +223,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return currentAlbum;
     }
 
+    /**
+     * 当预览界面更改选中图片时，同步数据
+     * @param list
+     */
     public void changeList(List<Photo> list) {
         number = list.size();
         checkPhotoList.clear();

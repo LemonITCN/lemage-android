@@ -195,7 +195,9 @@ public class PreviewActivity extends AppCompatActivity {
                 public void rightClickListener(CircleView view) {
                     if(!TextUtils.isEmpty(from)) {
                         if(from.equals("all")) {
+                            // 得到当前的photo
                             Photo photo = listPhotoAll.get(currentIndex - 1);
+                            Log.e(TAG, "photo.getPath() =============== " + photo.getPath());
                             // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
                             if(view.getStatus() == 0) {
                                 listPhotoSelect.add(photo);
@@ -226,12 +228,12 @@ public class PreviewActivity extends AppCompatActivity {
             // 预览界面顶部条右侧按钮的初始状态（有时是选中状态，有时是未选中状态）,之后的翻页状态会自动刷新
             if(!TextUtils.isEmpty(from)) {
                 if(from.equals("all")) {
+                    // 点哪个item进来就从哪个item开始预览
                     mNavigationBar.changeTextCircle(listPhotoAll.get(fromPosition).getStatus(), listPhotoAll.get(fromPosition).getNumber());
                 }else {
                     mNavigationBar.changeTextCircle(listPhotoSelect.get(0).getStatus(), 1);
                 }
             }
-
         }
     }
 

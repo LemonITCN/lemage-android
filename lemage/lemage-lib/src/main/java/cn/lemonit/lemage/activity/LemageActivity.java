@@ -482,6 +482,7 @@ public class LemageActivity extends AppCompatActivity {
                     }
                 }
             }
+            // 预览界面更改了选中图片，要同步数据，告知选择器和选择器中的adapter
             listPhotoSelect.clear();
             listPhotoSelect.addAll(list);
             photoAdapter.changeList(list);
