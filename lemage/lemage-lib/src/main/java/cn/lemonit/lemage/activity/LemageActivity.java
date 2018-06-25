@@ -24,6 +24,7 @@ import cn.lemonit.lemage.R;
 import cn.lemonit.lemage.adapter.AlbumAdapter;
 import cn.lemonit.lemage.adapter.PhotoAdapter;
 import cn.lemonit.lemage.bean.Album;
+import cn.lemonit.lemage.bean.LemageUsageText;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.core.LemageScanner;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
@@ -49,6 +50,18 @@ public class LemageActivity extends AppCompatActivity {
     }
 
     private final String TAG = "LemageActivity";
+    /**
+     * 允许选中最多的图片数量
+     */
+    private int maxChooseCount;
+    /**
+     * 是否需要原图按钮
+     */
+    private boolean needShowOriginalButton;
+    /**
+     * 主题颜色
+     */
+    private int themeColor;
 
     /**
      * 根视图布局
@@ -114,11 +127,19 @@ public class LemageActivity extends AppCompatActivity {
         setContentView(getRootLayout());
         getRootLayout().setBackgroundColor(Color.parseColor("#fafafa"));
         initPhoto();
+        getData();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private void getData() {
+        Intent intent = getIntent();
+        maxChooseCount = intent.getIntExtra("maxChooseCount", 0);
+        needShowOriginalButton = intent.getBooleanExtra("needShowOriginalButton", false);
+        themeColor = intent.getIntExtra("themeColor", 0);
     }
 
     /**
@@ -172,7 +193,7 @@ public class LemageActivity extends AppCompatActivity {
                 mAlbumList.add(album);
             }
             // 倒序(手机不同，获取的原始顺序不同)
-            if(!mAlbumList.get(0).getName().equals("全部照片")) {
+            if(!mAlbumList.get(0).getName().equals(LemageUsageText.cnText().getAllImages())) {
                 Collections.reverse(mAlbumList);
             }
             mAlbumAdapter = new AlbumAdapter(this, mAlbumList);
@@ -386,16 +407,6 @@ public class LemageActivity extends AppCompatActivity {
             listPhotoAll.addAll(photoAdapter.getAlbum().getPhotoList());
             listPhotoChange.clear();
             listPhotoChange.addAll(listPhotoAll);
-//            listPath.clear();
-//            listName.clear();
-//            for(int i = 0; i < listAll.size(); i ++) {
-//                listPath.add(listAll.get(i).getPath());
-//                listName.add(listAll.get(i).getName());
-//            }
-//            bundle.putStringArrayList("paths", (ArrayList<String>) listPath);
-//            bundle.putStringArrayList("names", (ArrayList<String>) listName);
-//            intent.putExtra("from", "item");
-//            intent.putExtra("index", position);
             bundle.putString("from", "item");
             bundle.putInt("position", position);
             intent.putExtras(bundle);
@@ -445,15 +456,6 @@ public class LemageActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 listPhotoChange.clear();
                 listPhotoChange.addAll(listPhotoSelect);
-//                bundle.putSerializable("photos", (Serializable) selectListPhoto);
-//                listPath.clear();
-//                listName.clear();
-//                for(int i = 0; i < selectListPhoto.size(); i ++) {
-//                    listPath.add(selectListPhoto.get(i).getPath());
-//                    listName.add(selectListPhoto.get(i).getName());
-//                }
-//                bundle.putStringArrayList("paths", (ArrayList<String>) listPath);
-//                bundle.putStringArrayList("names", (ArrayList<String>) listName);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }else {

@@ -2,6 +2,9 @@ package cn.lemonit.lemage.lemageutil;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -16,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.UUID;
+
+import cn.lemonit.lemage.bean.ImageSize;
 
 /**
  * 沙箱文件管理类
@@ -45,6 +50,11 @@ public class SendBoxFileManager {
 
     // 最终保存在文件夹中的文件的前缀名
     private final String sendBoxFilePrefixName = "lemage://sandbox/";
+
+    // 长缓存文件夹路径
+    private final String longTermURL = "/storage/emulated/0/Android/data/cn.lemonit.lemage_example/longTermPicture";
+    // 短缓存文件夹路径
+    private final String shortTermURL = "/storage/emulated/0/Android/data/cn.lemonit.lemage_example/shortTermPicture";
 
     private static SendBoxFileManager instance;
 
@@ -94,6 +104,101 @@ public class SendBoxFileManager {
         File file = url2File(url);
         data = file2Byte(file);
         return data;
+    }
+
+    /**
+     * 根据URL和size获取Bitmap
+     * @param url
+     * @param size
+     * @return
+     */
+    public Bitmap loadImage(String url, ImageSize size) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+        byte[] data = loadImageData(url);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+        // 原图的宽高
+        int bitmapWidth = options.outWidth;
+        int bitmapHeight = options.outHeight;
+        if(size == null) {
+//            options.inJustDecodeBounds = false;
+            return bitmap;
+        }
+        // 目标的宽高
+        int targetWidth = size.getWidth();
+        int targetHeight = size.getHeight();
+        // 创建操作图片用的matrix对象
+        Matrix matrix = new Matrix();
+        // 计算宽高缩放率
+        float scaleWidth = ((float) targetWidth) / bitmapWidth;
+        float scaleHeight = ((float) targetHeight) / bitmapHeight;
+        // 缩放图片动作
+        matrix.postScale(scaleWidth, scaleHeight);
+        Bitmap bitmapNew = Bitmap.createBitmap(bitmap, 0, 0, (int) bitmapWidth, (int) bitmapHeight, matrix, true);
+        return bitmapNew;
+    }
+
+    /**
+     * 根据URL获取Bitmap
+     * @param url
+     * @return
+     */
+    public Bitmap loadImage(String url) {
+        byte[] data = loadImageData(url);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+        return bitmap;
+    }
+
+    /**
+     * 清空所有的长缓存图片
+     */
+    public void expiredAllLongTermUrl() {
+        File file = new File(longTermURL);
+        if(file == null) return;
+        if(!file.isDirectory()) return;
+        File[] files = file.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File f = files[i];
+            f.delete();
+        }
+    }
+
+    /**
+     * 清空所有的短缓存图片
+     */
+    public void expiredAllShortTermUrl() {
+        File file = new File(shortTermURL);
+        if(file == null) return;
+        if(!file.isDirectory()) return;
+        File[] files = file.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File f = files[i];
+            f.delete();
+        }
+    }
+
+    public void expiredUrl(String url) {
+        if(TextUtils.isEmpty(url)) return;
+        String suffixUrl = url.substring(url.lastIndexOf("/")+1);
+        File file = null;
+        String fileSuffixName = url.contains("long") ? "/longTermPicture" : "/shortTermPicture";  // 文件夹的后缀
+        String fileName = baseFileUrl + SystemInfo.getApplicationPackageName(mContext) + fileSuffixName;
+        Log.e(TAG, "fileName =========== " + fileName);
+        file = new File(fileName);  // 目标文件夹
+        if(!file.exists()) return;
+        File[] files = file.listFiles();
+        if(files.length == 0) return;
+        for(File mFile : files) {
+            String fileSuffixName_ = mFile.getName().substring(mFile.getName().lastIndexOf("/") + 1);
+            if (mFile.isDirectory()) {
+                break;
+            }
+            //  取UUID，即SuffixName进行比较，相同则是同一个文件，返回
+            if(fileSuffixName_.equals(suffixUrl)) {
+                mFile.delete();
+                return;
+            }
+        }
     }
 
     /**

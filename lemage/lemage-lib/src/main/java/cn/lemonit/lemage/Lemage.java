@@ -105,8 +105,8 @@ public class Lemage implements Serializable {
      * @param size 图片指定大小
      * @return 根据LemageURL逆向转换回来的图片Bitmap对象，如果URL无效会返回null
      */
-    public static Bitmap loadImage(String url, ImageSize size) {
-        return null;
+    public static Bitmap loadImage(Context context, String url, ImageSize size) {
+        return SendBoxFileManager.getInstance(context).loadImage(url, size);
     }
 
     /**
@@ -117,24 +117,24 @@ public class Lemage implements Serializable {
      * @param url LemageURL字符串
      * @return 根据LemageURL逆向转换回来的图片Bitmap对象，如果URL无效会返回null
      */
-    public static Bitmap loadImage(String url) {
-        return null;
+    public static Bitmap loadImage(Context context, String url) {
+        return SendBoxFileManager.getInstance(context).loadImage(url);
     }
 
     /**
      * 让所有长期的LemageURL失效
      * 原理：删除所有本地长期LemageURL对应的沙盒图片文件
      */
-    public static void expiredAllLongTermUrl() {
-
+    public static void expiredAllLongTermUrl(Context context) {
+        SendBoxFileManager.getInstance(context).expiredAllLongTermUrl();
     }
 
     /**
      * 让所有短期的LemageURL失效
      * 原理：删除所有本地短期LemageURL对应的沙盒图片文件
      */
-    public static void expiredAllShortTermUrl() {
-
+    public static void expiredAllShortTermUrl(Context context) {
+        SendBoxFileManager.getInstance(context).expiredAllShortTermUrl();
     }
 
     /**
@@ -143,8 +143,8 @@ public class Lemage implements Serializable {
      *
      * @param url 要使其过期的LemageURL
      */
-    public static void expiredUrl(String url) {
-
+    public static void expiredUrl(Context context, String url) {
+        SendBoxFileManager.getInstance(context).expiredUrl(url);
     }
 
     /**
@@ -160,7 +160,11 @@ public class Lemage implements Serializable {
                                     boolean needShowOriginalButton,
                                     int themeColor,
                                     LemageResultCallback callback) {
-        mContext.startActivity(new Intent(mContext, LemageActivity.class));
+        Intent intent = new Intent(mContext, LemageActivity.class);
+        intent.putExtra("maxChooseCount", maxChooseCount);
+        intent.putExtra("needShowOriginalButton", needShowOriginalButton);
+        intent.putExtra("themeColor", themeColor);
+        mContext.startActivity(intent);
     }
 
     /**

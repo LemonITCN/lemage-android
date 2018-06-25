@@ -20,6 +20,7 @@ import java.net.URL;
 
 import cn.lemonit.lemage.Lemage;
 import cn.lemonit.lemage.activity.LemageActivity;
+import cn.lemonit.lemage.bean.ImageSize;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -57,23 +58,35 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.selectPhoto:
-                action();
-//                File file = new File("/storage/emulated/0/Android/data/cn.lemonit.lemage_example/longTermPicture");
-//                if (!file.exists()) {
-//                    file.mkdirs();
-//                }
+//                action();
+                Lemage.startChooser(MainActivity.this, 5, false, R.color.colorPrimaryDark, null);
                 break;
         }
     }
 
     private void action() {
-        Bitmap bitmapN = BitmapFactory.decodeStream(Lemage.loadImageInputStream(MainActivity.this, path));   // 以流的形式获取Bitmap
-//        byte[] data = Lemage.loadImageData(MainActivity.this, path);
-//        Bitmap bitmapN = BitmapFactory.decodeByteArray(data, 0, data.length);   // 以byte[]的形式获取bitmap
-        if(bitmapN != null) {
-            image.setImageBitmap(bitmapN);
-        }else {
-            Log.e("MainActivity", "bitmapN ==== null");
-        }
+//        Bitmap bitmap = BitmapFactory.decodeStream(Lemage.loadImageInputStream(MainActivity.this, path));   // 以流的形式获取Bitmap
+////        byte[] data = Lemage.loadImageData(MainActivity.this, path);
+////        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);   // 以byte[]的形式获取bitmap
+//        Bitmap bitmapZoom = Lemage.loadImage(MainActivity.this, path, new ImageSize(200, 100));
+//        if(bitmapZoom != null) {
+//            Log.e("MainActivity", "压缩图大小 ======= " + bitmapZoom.getRowBytes() * bitmapZoom.getHeight());
+//            image.setImageBitmap(bitmapZoom);
+//        }
+//        if(bitmap != null) {
+//            Log.e("MainActivity", "原图大小 ======= " + bitmap.getRowBytes() * bitmap.getHeight());
+//        }else {
+//            Log.e("MainActivity", "bitmapN ==== null");
+//        }
+
+//        Bitmap bitmap = Lemage.loadImage(MainActivity.this, path);
+//        if(bitmap != null) {
+//            image.setImageBitmap(bitmap);
+//        }
+//
+//        Lemage.expiredAllShortTermUrl(MainActivity.this);
+
+//        String path = "lemage://sandbox/long/7f9d3dd1-c88e-4baa-b280-43edaea0dad1";
+//        Lemage.expiredUrl(MainActivity.this, path);
     }
 }
