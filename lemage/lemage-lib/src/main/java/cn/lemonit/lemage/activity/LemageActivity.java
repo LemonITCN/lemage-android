@@ -104,21 +104,14 @@ public class LemageActivity extends AppCompatActivity {
     private int operationBarItemCount = 3;
 
     /**
-     * 到预览界面的数据会变化，分别添加listPhotoAll， listPhotoSelect
-     */
-    public static ArrayList<Photo> listPhotoChange = new ArrayList<Photo>();
-
-//    private List<String> listPath = new ArrayList<String>();
-//    private List<String> listName = new ArrayList<String>();
-    /**
      * 总图片量
      */
-    private List<Photo> listPhotoAll = new ArrayList<Photo>();
+    public static List<Photo> listPhotoAll = new ArrayList<Photo>();
 
     /**
      * 已经选中的图片量
      */
-    private List<Photo> listPhotoSelect = new ArrayList<Photo>();
+    public static List<Photo> listPhotoSelect = new ArrayList<Photo>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -401,15 +394,11 @@ public class LemageActivity extends AppCompatActivity {
         public void onClickPreviewListener(List<Photo> list, int position) {
 
             PreviewActivity.setCallback(callbackToPreview);
-            Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
-            Bundle bundle = new Bundle();
             listPhotoAll.clear();
             listPhotoAll.addAll(photoAdapter.getAlbum().getPhotoList());
-            listPhotoChange.clear();
-            listPhotoChange.addAll(listPhotoAll);
-            bundle.putString("from", "item");
-            bundle.putInt("position", position);
-            intent.putExtras(bundle);
+            Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
+            intent.putExtra("from", "all");
+            intent.putExtra("position", position);
             startActivity(intent);
 
         }
@@ -450,13 +439,12 @@ public class LemageActivity extends AppCompatActivity {
         @Override
         public void leftButtonClick() {
             if(listPhotoSelect.size() > 0) {
+                listPhotoAll.clear();
+                listPhotoAll.addAll(photoAdapter.getAlbum().getPhotoList());
                 // 传值
                 PreviewActivity.setCallback(callbackToPreview);
                 Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
-                Bundle bundle = new Bundle();
-                listPhotoChange.clear();
-                listPhotoChange.addAll(listPhotoSelect);
-                intent.putExtras(bundle);
+                intent.putExtra("from", "select");
                 startActivity(intent);
             }else {
                 Toast.makeText(LemageActivity.this, "您还没有选中照片，不能预览", Toast.LENGTH_SHORT).show();
@@ -484,15 +472,19 @@ public class LemageActivity extends AppCompatActivity {
      */
     private LemageResultCallback callbackToPreview = new LemageResultCallback() {
         @Override
-        public void willClose(List<String> imageUrlList, boolean isOriginal) {
+        public void willClose(List<String> imageUrlList, boolean isOriginal, List<Photo> list) {
 
             for(int i = 0; i < phototAdapterData.getPhotoList().size(); i ++) {
                 for(int m = 0; m < imageUrlList.size(); m ++) {
                     if(phototAdapterData.getPhotoList().get(i).getPath().equals(imageUrlList.get(m))) {
                         phototAdapterData.getPhotoList().get(i).setStatus(1);
+                        phototAdapterData.getPhotoList().get(i).setNumber(m + 1);
                     }
                 }
             }
+            listPhotoSelect.clear();
+            listPhotoSelect.addAll(list);
+            photoAdapter.changeList(list);
             photoAdapter.notifyDataSetChanged();
         }
 

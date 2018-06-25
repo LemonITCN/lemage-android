@@ -218,7 +218,7 @@ public class NavigationBar extends RelativeLayout {
         mPreviewBarLeftButton.changeText(mCount, corrent);
     }
 
-    public void changeTextCircle(int current) {
-        mCircleView.changeStatus(current, 1);
+    public void changeTextCircle(int current, int number) {
+        mCircleView.changeStatus(current, number);
     }
 }

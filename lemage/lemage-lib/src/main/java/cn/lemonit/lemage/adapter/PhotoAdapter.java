@@ -222,4 +222,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public Album getAlbum() {
         return currentAlbum;
     }
+
+    public void changeList(List<Photo> list) {
+        number = list.size();
+        checkPhotoList.clear();
+        checkPhotoList.addAll(list);
+    }
 }
