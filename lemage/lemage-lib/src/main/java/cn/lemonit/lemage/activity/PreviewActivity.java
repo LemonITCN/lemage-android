@@ -25,6 +25,9 @@ import cn.lemonit.lemage.view.OperationBar;
 import cn.lemonit.lemage.view.PreviewBarLeftButton;
 import cn.lemonit.lemage.view.PreviewOperationBar;
 
+/**
+ * @author: zhaoguangyang
+ */
 public class PreviewActivity extends AppCompatActivity {
 
     private static LemageResultCallback callback;
@@ -95,7 +98,7 @@ public class PreviewActivity extends AppCompatActivity {
             listPhoto.clear();
         }
 //        listPhoto.addAll((ArrayList<Photo>) getIntent().getExtras().getSerializable("photos"));
-        listPhoto.addAll(LemageActivity.selectListPhoto);
+        listPhoto.addAll(LemageActivity.listPhotoChange);
 //        listPath.addAll(getIntent().getExtras().getStringArrayList("paths"));
 //        listName.addAll(getIntent().getExtras().getStringArrayList("names"));
     }
@@ -184,13 +187,23 @@ public class PreviewActivity extends AppCompatActivity {
                             number ++;
                         }
                     }
+                    // 未选中变选中
                     if(view.getStatus() == 0) {
 //                        view.changeStatus(1, selectCount + 1);
                         listPhoto.get(currentIndex - 1).setStatus(1);  // 改变选中状态
+                        listPhoto.get(currentIndex - 1).setNumber(number + 1);
                     }else {
 //                        view.changeStatus(0, selectCount + 1);
+                        for(int i = 0; i < listPhoto.size(); i ++) {
+                            if(listPhoto.get(i).getStatus() == 1 && listPhoto.get(i).getNumber() > listPhoto.get(currentIndex - 1).getNumber()) {
+                                listPhoto.get(i).setNumber(listPhoto.get(i).getNumber() - 1);
+                            }
+                        }
                         listPhoto.get(currentIndex - 1).setStatus(0);
+                        listPhoto.get(currentIndex - 1).setNumber(0);
                     }
+
+
                 }
             });
             // 预览界面顶部条右侧按钮的初始状态（有时是选中状态，有时是未选中状态）,之后的翻页状态会自动刷新

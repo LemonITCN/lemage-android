@@ -1,19 +1,28 @@
 package cn.lemonit.lemage;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
+import cn.lemonit.lemage.activity.LemageActivity;
 import cn.lemonit.lemage.bean.ImageSize;
 import cn.lemonit.lemage.bean.LemageUsageText;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
+import cn.lemonit.lemage.lemageutil.SendBoxFileManager;
+import cn.lemonit.lemage.lemageutil.SystemInfo;
 
 /**
  * Lemage入口类
@@ -21,6 +30,8 @@ import cn.lemonit.lemage.interfaces.LemageResultCallback;
  * @author LemonIT.CN - liuri
  */
 public class Lemage implements Serializable {
+
+    private static final String TAG = "Lemage";
 
     /**
      * 本地化字符存储信息对象
@@ -49,16 +60,17 @@ public class Lemage implements Serializable {
      * 根据Bitmap对象来生成LemageURL字符串
      * 原理：将Bitmap转成二进制数据存储到沙盒中的文件，然后生成指向沙盒中二进制文件的Lemage格式的URL
      * <p>
-     * lemage://album/local/xxxxxxxxxxxxxxxxxxxxx
+     * lemage://album/local/xxxxxxxxxxxxxxxxxxxxx   相册地址
      * lemage://sandbox/long[short]/xxxxxxxxxxxxxxxx
      *
      * @param bitmap   要生成LemageURL的Bitmap对象
      * @param longTerm 是否永久有效，如果传true，那么该URL直到调用Lemage.expiredAllLongTermUrl方法后才失效，如果传false，在下次APP启动调用Lemage.startUp方法时URL就会失效，也可以通过Lemage.expiredAllShortTermUrl来强制使其失效
      * @return 生成的LemageURL
      */
-    public static String generateLemageUrl(Bitmap bitmap, boolean longTerm) {
-        return null;
+    public static String generateLemageUrl(Context context, Bitmap bitmap, boolean longTerm) {
+        return SendBoxFileManager.getInstance(context).generateLemageUrl(bitmap, longTerm);
     }
+
 
     /**
      * 根据LemageURL加载对应的图片的输入流，如果用户传入的LemageURL有误或已过期，会返回null
@@ -68,8 +80,8 @@ public class Lemage implements Serializable {
      * @param url LemageURL字符串
      * @return 根据LemageURL逆向转换回来的图片FileInputStream对象，如果URL无效会返回null
      */
-    public static FileInputStream loadImageInputStream(String url) {
-        return null;
+    public static InputStream loadImageInputStream(Context context, String url) {
+        return SendBoxFileManager.getInstance(context).loadImageInputStream(url);
     }
 
     /**
@@ -80,8 +92,8 @@ public class Lemage implements Serializable {
      * @param url LemageURL字符串
      * @return 根据LemageURL逆向转换回来的图片byte[]，如果URL无效会返回null
      */
-    public static byte[] loadImageData(String url) {
-        return null;
+    public static byte[] loadImageData(Context context, String url) {
+        return SendBoxFileManager.getInstance(context).loadImageData(url);
     }
 
     /**
@@ -143,11 +155,12 @@ public class Lemage implements Serializable {
      * @param themeColor             主题颜色，这个颜色会作为完成按钮、选择顺序标识、相册选择标识的背景色
      * @param callback               结果回调函数，若用户在选择器中点击了取消按钮，那么回调函数中的imageUrlList为null
      */
-    public static void startChooser(Integer maxChooseCount,
+    public static void startChooser(Context mContext,
+                                    Integer maxChooseCount,
                                     boolean needShowOriginalButton,
                                     int themeColor,
                                     LemageResultCallback callback) {
-
+        mContext.startActivity(new Intent(mContext, LemageActivity.class));
     }
 
     /**

@@ -95,20 +95,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         // 加载图片
         Glide.with(context).load(currentAlbum.getPhotoList().get(position % currentAlbum.getPhotoList().size()).getPath()).centerCrop().into(((PhotoViewHolder) holder).getPhotoView().getImageView());
 
-//        // 同步选中的图片
-//        checkPhotoList.clear();
-//        for(Photo photo : currentAlbum.getPhotoList()) {
-//            if(photo.getStatus() == 1) {
-//                checkPhotoList.add(photo);
-//            }
-//        }
         // 根据状态显示样式
         if(currentAlbum.getPhotoList().get(position).getStatus() == 0) {
             notCheckView(((PhotoViewHolder) holder).photoView);
         }else {
-            int index = checkPhotoList.indexOf(currentAlbum.getPhotoList().get(position)) + 1;
-            checkView(((PhotoViewHolder) holder).photoView, index);
-            Log.e(TAG, "position ==== " + position + "    index ==== " + index);
+//            int index = checkPhotoList.indexOf(currentAlbum.getPhotoList().get(position)) + 1;
+            checkView(((PhotoViewHolder) holder).photoView, currentAlbum.getPhotoList().get(position).getNumber());
         }
         // 事件
         ((PhotoViewHolder) holder).photoView.setOnTouchListener(new View.OnTouchListener() {
@@ -127,7 +119,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     if(touchX > borderX && touchY < borderY) {
                         switchSelectStatus(position, (PhotoView) view);
                     }else {
-                        Log.e(TAG, "position ========= " + position);
                         mPhotoViewOnClickListener.onClickPreviewListener(currentAlbum.getPhotoList(), position);
                     }
                     return false;
@@ -143,19 +134,28 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private void switchSelectStatus(int position, PhotoView view) {
         int status = view.getStatus();
         switch (status) {
-            // 未选中变选中
+            // 未选中变选中(对之前已经选中的没有任何影响)
             case 0:
                 number ++;
                 currentAlbum.getPhotoList().get(position).setNumber(number);
                 currentAlbum.getPhotoList().get(position).setStatus(1);
                 checkPhotoList.add(currentAlbum.getPhotoList().get(position));
                 break;
-            // 选中变未选中
+            // 选中变未选中（在这之前的没有影响，之后的序列号都减一）
             case 1:
+                // 先刷新序列号
+                Photo currentPhoto = currentAlbum.getPhotoList().get(position);  // 当前被改变的photo
+                for(int i = 0; i < currentAlbum.getPhotoList().size(); i ++) {
+                    int numberOld = currentAlbum.getPhotoList().get(i).getNumber();
+                    if(currentAlbum.getPhotoList().get(i).getStatus() == 1 && numberOld > currentPhoto.getNumber()) {
+                        currentAlbum.getPhotoList().get(i).setNumber(numberOld - 1);
+                    }
+                }
                 number --;
-                currentAlbum.getPhotoList().get(position).setNumber(0);
-                currentAlbum.getPhotoList().get(position).setStatus(0);
-                checkPhotoList.remove(currentAlbum.getPhotoList().get(position));
+                // 更改选中状态
+                checkPhotoList.remove(currentPhoto);
+                currentPhoto.setNumber(0);
+                currentPhoto.setStatus(0);
                 break;
         }
         notifyDataSetChanged();

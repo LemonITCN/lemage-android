@@ -90,10 +90,22 @@ public class LemageActivity extends AppCompatActivity {
      */
     private int operationBarItemCount = 3;
 
-    public static ArrayList<Photo> selectListPhoto = new ArrayList<Photo>();
+    /**
+     * 到预览界面的数据会变化，分别添加listPhotoAll， listPhotoSelect
+     */
+    public static ArrayList<Photo> listPhotoChange = new ArrayList<Photo>();
 
-    private List<String> listPath = new ArrayList<String>();
-    private List<String> listName = new ArrayList<String>();
+//    private List<String> listPath = new ArrayList<String>();
+//    private List<String> listName = new ArrayList<String>();
+    /**
+     * 总图片量
+     */
+    private List<Photo> listPhotoAll = new ArrayList<Photo>();
+
+    /**
+     * 已经选中的图片量
+     */
+    private List<Photo> listPhotoSelect = new ArrayList<Photo>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,6 +138,9 @@ public class LemageActivity extends AppCompatActivity {
 //                                Log.e(TAG, "相册名称 === " + album.getName());
 //                                Log.e(TAG, "相册路径 === " + album.getPath());
 //                                Log.e(TAG, "相片数量 === " + album.getPhotoList().size());
+//                                for(Photo photo : album.getPhotoList()) {
+//                                    Log.e(TAG, "路径 ====== " + photo.getPath());
+//                                }
                             }
                         }
                         changeAlbum((Album) albumList.toArray()[0]);
@@ -348,32 +363,37 @@ public class LemageActivity extends AppCompatActivity {
     private PhotoAdapter.PhotoViewOnClickListener mPhotoViewOnClickListener = new PhotoAdapter.PhotoViewOnClickListener() {
         @Override
         public void onClickSelectListener(List<Photo> list) {
-            if(selectListPhoto == null) {
-                selectListPhoto = new ArrayList<Photo>();
+            if(listPhotoSelect == null) {
+                listPhotoSelect = new ArrayList<Photo>();
             }else {
-                selectListPhoto.clear();
+                listPhotoSelect.clear();
             }
-            selectListPhoto.addAll(list);
+            listPhotoSelect.addAll(list);
         }
 
+        /**
+         * 点击了item直接进入预览
+         * @param list
+         * @param position
+         */
         @Override
         public void onClickPreviewListener(List<Photo> list, int position) {
 
             PreviewActivity.setCallback(callbackToPreview);
             Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
             Bundle bundle = new Bundle();
-            List<Photo> list_count = photoAdapter.getAlbum().getPhotoList();
-//            bundle.putSerializable("photos", (Serializable) list_count);
-            selectListPhoto.clear();
-            selectListPhoto.addAll(photoAdapter.getAlbum().getPhotoList());
-            listPath.clear();
-            listName.clear();
-            for(int i = 0; i < list_count.size(); i ++) {
-                listPath.add(list_count.get(i).getPath());
-                listName.add(list_count.get(i).getName());
-            }
-            bundle.putStringArrayList("paths", (ArrayList<String>) listPath);
-            bundle.putStringArrayList("names", (ArrayList<String>) listName);
+            listPhotoAll.clear();
+            listPhotoAll.addAll(photoAdapter.getAlbum().getPhotoList());
+            listPhotoChange.clear();
+            listPhotoChange.addAll(listPhotoAll);
+//            listPath.clear();
+//            listName.clear();
+//            for(int i = 0; i < listAll.size(); i ++) {
+//                listPath.add(listAll.get(i).getPath());
+//                listName.add(listAll.get(i).getName());
+//            }
+//            bundle.putStringArrayList("paths", (ArrayList<String>) listPath);
+//            bundle.putStringArrayList("names", (ArrayList<String>) listName);
 //            intent.putExtra("from", "item");
 //            intent.putExtra("index", position);
             bundle.putString("from", "item");
@@ -418,20 +438,22 @@ public class LemageActivity extends AppCompatActivity {
     private OperationBar.OperationBarOnClickListener mOperationBarOnClickListener = new OperationBar.OperationBarOnClickListener() {
         @Override
         public void leftButtonClick() {
-            if(selectListPhoto.size() > 0) {
+            if(listPhotoSelect.size() > 0) {
                 // 传值
                 PreviewActivity.setCallback(callbackToPreview);
                 Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
                 Bundle bundle = new Bundle();
+                listPhotoChange.clear();
+                listPhotoChange.addAll(listPhotoSelect);
 //                bundle.putSerializable("photos", (Serializable) selectListPhoto);
-                listPath.clear();
-                listName.clear();
-                for(int i = 0; i < selectListPhoto.size(); i ++) {
-                    listPath.add(selectListPhoto.get(i).getPath());
-                    listName.add(selectListPhoto.get(i).getName());
-                }
-                bundle.putStringArrayList("paths", (ArrayList<String>) listPath);
-                bundle.putStringArrayList("names", (ArrayList<String>) listName);
+//                listPath.clear();
+//                listName.clear();
+//                for(int i = 0; i < selectListPhoto.size(); i ++) {
+//                    listPath.add(selectListPhoto.get(i).getPath());
+//                    listName.add(selectListPhoto.get(i).getName());
+//                }
+//                bundle.putStringArrayList("paths", (ArrayList<String>) listPath);
+//                bundle.putStringArrayList("names", (ArrayList<String>) listName);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }else {
@@ -461,7 +483,6 @@ public class LemageActivity extends AppCompatActivity {
     private LemageResultCallback callbackToPreview = new LemageResultCallback() {
         @Override
         public void willClose(List<String> imageUrlList, boolean isOriginal) {
-            Log.e("LemageActivity", "imageUrlList.size ===== " +imageUrlList.size());
 
             for(int i = 0; i < phototAdapterData.getPhotoList().size(); i ++) {
                 for(int m = 0; m < imageUrlList.size(); m ++) {

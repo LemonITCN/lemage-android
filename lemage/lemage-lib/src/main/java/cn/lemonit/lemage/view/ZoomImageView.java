@@ -19,6 +19,10 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 缩放的Imageview
+ * @author zhaoguangyang
+ */
 public class ZoomImageView extends ImageView implements ViewTreeObserver.OnGlobalLayoutListener
         , View.OnTouchListener, ScaleGestureDetector.OnScaleGestureListener {
 
