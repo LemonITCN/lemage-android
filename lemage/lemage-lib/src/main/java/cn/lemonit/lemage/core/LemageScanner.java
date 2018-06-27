@@ -11,14 +11,85 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cn.lemonit.lemage.bean.Album;
 import cn.lemonit.lemage.bean.Photo;
+import cn.lemonit.lemage.bean.Video;
 import cn.lemonit.lemage.interfaces.PhotoScanCompleteCallback;
+import cn.lemonit.lemage.interfaces.VideoScanCompleteCallback;
 
 public class LemageScanner {
+
+    /**
+     * 扫描本地视频
+     */
+    public static void scanAllVideo(FragmentActivity fragmentActivity, VideoScanCompleteCallback completeCallback) {
+        fragmentActivity.getSupportLoaderManager().restartLoader(0, null, createVideoReaderLoaderCallback(fragmentActivity.getApplicationContext(), completeCallback));
+    }
+
+    private static LoaderManager.LoaderCallbacks createVideoReaderLoaderCallback(final Context context, final VideoScanCompleteCallback completeCallback) {
+        return new LoaderManager.LoaderCallbacks<Cursor>() {
+
+            private final String[] VIDEO_PROJECTION = {
+                    MediaStore.Video.Media._ID,
+                    MediaStore.Video.Media.TITLE,
+                    MediaStore.Video.Media.ALBUM,
+                    MediaStore.Video.Media.ARTIST,
+                    MediaStore.Video.Media.DISPLAY_NAME,
+                    MediaStore.Video.Media.MIME_TYPE,
+                    MediaStore.Video.Media.DATA,
+                    MediaStore.Video.Media.DURATION,
+                    MediaStore.Video.Media.SIZE
+            };
+
+            @Override
+            public Loader onCreateLoader(int id, Bundle args) {
+                return new CursorLoader(context, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
+            }
+
+            @Override
+            public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+                List<Video> listVideo = new ArrayList<Video>();
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        int id = cursor.getInt(cursor.getColumnIndexOrThrow(VIDEO_PROJECTION[0]));
+                        String title = cursor.getString(cursor.getColumnIndexOrThrow(VIDEO_PROJECTION[1]));
+                        String album = cursor.getString(cursor.getColumnIndexOrThrow(VIDEO_PROJECTION[2]));
+                        String artist = cursor.getString(cursor.getColumnIndexOrThrow(VIDEO_PROJECTION[3]));
+                        String displayName = cursor.getString(cursor.getColumnIndexOrThrow(VIDEO_PROJECTION[4]));
+                        String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(VIDEO_PROJECTION[5]));
+                        String path = cursor.getString(cursor.getColumnIndexOrThrow(VIDEO_PROJECTION[6]));
+                        long duration = cursor.getInt(cursor.getColumnIndexOrThrow(VIDEO_PROJECTION[7]));
+                        long size = cursor.getLong(cursor.getColumnIndexOrThrow(VIDEO_PROJECTION[8]));
+
+                        Video mVideo = new Video();
+                        mVideo.setId(id);
+                        mVideo.setTitle(title);
+                        mVideo.setAlbum(album);
+                        mVideo.setArtist(artist);
+                        mVideo.setDisplayName(displayName);
+                        mVideo.setMimeType(mimeType);
+                        mVideo.setPath(path);
+                        mVideo.setDuration(duration);
+                        mVideo.setSize(size);
+
+                        listVideo.add(mVideo);
+                    }
+                }
+                cursor.close();
+                completeCallback.scanComplete(listVideo);
+            }
+
+            @Override
+            public void onLoaderReset(Loader loader) {
+
+            }
+        };
+    }
 
     /**
      * 扫描本地的全部照片
@@ -44,13 +115,9 @@ public class LemageScanner {
 
             @Override
             public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-//                if (albumName == null) {
-//                    // 相册名为空，读取所有照片
                 return new CursorLoader(context, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION, null, null, IMAGE_PROJECTION[2] + " DESC");
-//                } else {
-//                    return new CursorLoader(context, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION, IMAGE_PROJECTION[0] + " like '%" + args.getString("path") + "%'", null, IMAGE_PROJECTION[2] + " DESC");
-//                }
             }
+
 
             @Override
             public void onLoadFinished(Loader<Cursor> loader, Cursor data) {

@@ -26,9 +26,11 @@ import cn.lemonit.lemage.adapter.PhotoAdapter;
 import cn.lemonit.lemage.bean.Album;
 import cn.lemonit.lemage.bean.LemageUsageText;
 import cn.lemonit.lemage.bean.Photo;
+import cn.lemonit.lemage.bean.Video;
 import cn.lemonit.lemage.core.LemageScanner;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
 import cn.lemonit.lemage.interfaces.PhotoScanCompleteCallback;
+import cn.lemonit.lemage.interfaces.VideoScanCompleteCallback;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
 import cn.lemonit.lemage.view.DrawCircleTextButton;
@@ -120,6 +122,7 @@ public class LemageActivity extends AppCompatActivity {
         setContentView(getRootLayout());
         getRootLayout().setBackgroundColor(Color.parseColor("#fafafa"));
         initPhoto();
+//        initVideo();
         getData();
     }
 
@@ -161,6 +164,30 @@ public class LemageActivity extends AppCompatActivity {
                         getHorizontal(albumList);
                     }
                 });
+    }
+
+    /**
+     * 获取所有视频
+     */
+    private void initVideo() {
+        LemageScanner.scanAllVideo(this, new VideoScanCompleteCallback() {
+            @Override
+            public void scanComplete(List<Video> list) {
+                if(list != null && list.size() > 0) {
+                    for(Video video : list) {
+                        Log.e(TAG, "video.id ==== " + video.getId());
+                        Log.e(TAG, "video.title ==== " + video.getTitle());
+                        Log.e(TAG, "video.album ==== " + video.getAlbum());
+                        Log.e(TAG, "video.artist ==== " + video.getArtist());
+                        Log.e(TAG, "video.displayName ==== " + video.getDisplayName());
+                        Log.e(TAG, "video.mimeType ==== " + video.getMimeType());
+                        Log.e(TAG, "video.path ==== " + video.getPath());
+                        Log.e(TAG, "video.duration ==== " + video.getDuration());
+                        Log.e(TAG, "video.size ==== " + video.getSize());
+                    }
+                }
+            }
+        });
     }
 
     /**
