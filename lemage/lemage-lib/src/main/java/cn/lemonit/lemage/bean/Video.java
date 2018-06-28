@@ -1,10 +1,12 @@
 package cn.lemonit.lemage.bean;
 
+import java.io.Serializable;
+
 /**
  * 视频类
  * @author: zhaoguangyang
  */
-public class Video {
+public class Video extends FileObj implements Serializable {
 
     private int id;
     private String title;
@@ -15,6 +17,13 @@ public class Video {
     private String path;
     private long duration;
     private long size;
+    private long time;
+
+    /**
+     *  是否选中状态
+     *  0 未选中 1 选中
+     */
+    private int status;
 
     public void setId(int id) {
         this.id = id;
@@ -86,5 +95,21 @@ public class Video {
 
     public long getSize() {
         return size;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

@@ -3,16 +3,13 @@ package cn.lemonit.lemage.interfaces;
 import java.util.Collection;
 import java.util.List;
 
-import cn.lemonit.lemage.bean.Album;
 import cn.lemonit.lemage.bean.AlbumNew;
+import cn.lemonit.lemage.bean.FileObj;
 
-public interface PhotoScanCompleteCallback {
-
-    /**
-     * 照片扫描完毕的回调函数
-     *
-     * @param albumList 相册列表
-     */
+/**
+ * 扫描回调
+ * @author: zhaoguangyang
+ */
+public interface ScanCompleteCallback {
     void scanComplete(Collection<AlbumNew> albumList);
-
 }

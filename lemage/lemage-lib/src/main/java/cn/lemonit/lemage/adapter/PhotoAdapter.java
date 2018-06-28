@@ -1,6 +1,8 @@
 package cn.lemonit.lemage.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.lemonit.lemage.bean.Album;
+import cn.lemonit.lemage.bean.AlbumNew;
+import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.PhotoView;
@@ -30,7 +34,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     /**
      * 当前正在显示的相册
      */
-    private Album currentAlbum;
+//    private Album currentAlbum;
+    private AlbumNew currentAlbum;
     /**
      * 上下文对象
      */
@@ -47,7 +52,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     /**
      * 已经选中的图片集合
      */
-    private List<Photo> checkPhotoList = new ArrayList<Photo>();
+    private List<FileObj> checkPhotoList = new ArrayList<FileObj>();
 
     private PhotoViewOnClickListener mPhotoViewOnClickListener;
     /**
@@ -55,7 +60,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     private int number;
 
-    public PhotoAdapter(Context context, Album currentAlbum) {
+    public PhotoAdapter(Context context, AlbumNew currentAlbum) {
         this.context = context;
         this.currentAlbum = currentAlbum;
     }
@@ -93,14 +98,22 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
         holder.itemView.setLayoutParams(params);
         // 加载图片
-        Glide.with(context).load(currentAlbum.getPhotoList().get(position % currentAlbum.getPhotoList().size()).getPath()).centerCrop().into(((PhotoViewHolder) holder).getPhotoView().getImageView());
+        if(currentAlbum.getFileList().get(position) instanceof Photo) {
+            Glide.with(context).load(currentAlbum.getFileList().get(position % currentAlbum.getFileList().size()).getPath()).centerCrop().into(((PhotoViewHolder) holder).getPhotoView().getImageView());
+        }else {
+            MediaMetadataRetriever media = new MediaMetadataRetriever();
+            String videoPath = currentAlbum.getFileList().get(position).getPath();
+            media.setDataSource(videoPath);
+            Bitmap bitmap = media.getFrameAtTime();
+            ((PhotoViewHolder) holder).getPhotoView().getImageView().setImageBitmap(bitmap);
+        }
 
         // 根据状态显示样式
-        if(currentAlbum.getPhotoList().get(position).getStatus() == 0) {
+        if(currentAlbum.getFileList().get(position).getStatus() == 0) {
             notCheckView(((PhotoViewHolder) holder).photoView);
         }else {
 //            int index = checkPhotoList.indexOf(currentAlbum.getPhotoList().get(position)) + 1;
-            checkView(((PhotoViewHolder) holder).photoView, currentAlbum.getPhotoList().get(position).getNumber());
+            checkView(((PhotoViewHolder) holder).photoView, currentAlbum.getFileList().get(position).getNumber());
         }
         // 事件
         ((PhotoViewHolder) holder).photoView.setOnTouchListener(new View.OnTouchListener() {
@@ -119,7 +132,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     if(touchX > borderX && touchY < borderY) {
                         switchSelectStatus(position, (PhotoView) view);
                     }else {
-                        mPhotoViewOnClickListener.onClickPreviewListener(currentAlbum.getPhotoList(), position);
+                        mPhotoViewOnClickListener.onClickPreviewListener(currentAlbum.getFileList(), position);
                     }
                     return false;
                 }
@@ -137,30 +150,29 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             // 未选中变选中(对之前已经选中的没有任何影响)
             case 0:
                 number ++;
-                currentAlbum.getPhotoList().get(position).setNumber(number);
-                currentAlbum.getPhotoList().get(position).setStatus(1);
-                checkPhotoList.add(currentAlbum.getPhotoList().get(position));
+                currentAlbum.getFileList().get(position).setNumber(number);
+                currentAlbum.getFileList().get(position).setStatus(1);
+                checkPhotoList.add(currentAlbum.getFileList().get(position));
                 break;
             // 选中变未选中（在这之前的没有影响，之后的序列号都减一）
             case 1:
                 // 先刷新序列号
-                Photo currentPhoto = currentAlbum.getPhotoList().get(position);  // 当前被改变的photo
-                for(int i = 0; i < currentAlbum.getPhotoList().size(); i ++) {
-                    int numberOld = currentAlbum.getPhotoList().get(i).getNumber();
-                    if(currentAlbum.getPhotoList().get(i).getStatus() == 1 && numberOld > currentPhoto.getNumber()) {
-                        currentAlbum.getPhotoList().get(i).setNumber(numberOld - 1);
+                FileObj currentFile = currentAlbum.getFileList().get(position);  // 当前被改变的photo
+                for(int i = 0; i < currentAlbum.getFileList().size(); i ++) {
+                    int numberOld = currentAlbum.getFileList().get(i).getNumber();
+                    if(currentAlbum.getFileList().get(i).getStatus() == 1 && numberOld > currentFile.getNumber()) {
+                        currentAlbum.getFileList().get(i).setNumber(numberOld - 1);
                     }
                 }
                 number --;
                 // 更改选中状态
-                checkPhotoList.remove(currentPhoto);
-                currentPhoto.setNumber(0);
-                currentPhoto.setStatus(0);
+                checkPhotoList.remove(currentFile);
+                currentFile.setNumber(0);
+                currentFile.setStatus(0);
                 break;
         }
         notifyDataSetChanged();
         mPhotoViewOnClickListener.onClickSelectListener(checkPhotoList);
-//        mPhotoViewOnClickListener.onClickSelectListener(currentAlbum.getPhotoList());
     }
 
     @Override
@@ -168,7 +180,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (currentAlbum == null) {
             return 0;
         }
-        return currentAlbum.getPhotoList().size();
+        return currentAlbum.getFileList().size();
     }
 
     public int getColumnCount() {
@@ -197,8 +209,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public interface PhotoViewOnClickListener {
-        void onClickSelectListener(List<Photo> list);
-        void onClickPreviewListener(List<Photo> list, int position);
+        void onClickSelectListener(List<FileObj> list);
+        void onClickPreviewListener(List<FileObj> list, int position);
     }
 
     public void setPhotoViewOnClickListener(PhotoViewOnClickListener mPhotoViewOnClickListener) {
@@ -219,7 +231,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         mPhotoView.changeStatus(1, number);
     }
 
-    public Album getAlbum() {
+    public AlbumNew getAlbumNew() {
         return currentAlbum;
     }
 
@@ -227,7 +239,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      * 当预览界面更改选中图片时，同步数据
      * @param list
      */
-    public void changeList(List<Photo> list) {
+    public void changeList(List<FileObj> list) {
         number = list.size();
         checkPhotoList.clear();
         checkPhotoList.addAll(list);

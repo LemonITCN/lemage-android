@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.lemonit.lemage.bean.Album;
+import cn.lemonit.lemage.bean.AlbumNew;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.PhotoView;
@@ -31,7 +32,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     private Context mContext;
 
-    private ArrayList<Album> mAlbumList;
+    private ArrayList<AlbumNew> mAlbumList;
 
     private int imgWidth = 0;
     private int columnCount = 0;
@@ -43,7 +44,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     private AlbumItemOnClickListener mAlbumItemOnClickListener;
 
-    public AlbumAdapter(Context context, ArrayList<Album> albumList) {
+    public AlbumAdapter(Context context, ArrayList<AlbumNew> albumList) {
         mContext = context;
         mAlbumList = albumList;
         init();
@@ -119,8 +120,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        if(mAlbumList.get(position).getPhotoList().size() > 0) {
-            Glide.with(mContext).load(mAlbumList.get(position).getPhotoList().get(0).getPath()).into(holder.mPhototView.getImageView());
+        if(mAlbumList.get(position).getFileList().size() > 0) {
+            Glide.with(mContext).load(mAlbumList.get(position).getFileList().get(0).getPath()).into(holder.mPhototView.getImageView());
         }
         holder.mTextView.setText(mAlbumList.get(position).getName());
 
@@ -145,7 +146,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
                                 mListPhotoView.get(i).setStatus(0);
                             }
                         }
-                        mAlbumItemOnClickListener.notifShow(mAlbumList.get(position));
+//                        mAlbumItemOnClickListener.notifShow(mAlbumList.get(position));
                         break;
                     case 1:
                         mAlbumItemOnClickListener.constantShow();

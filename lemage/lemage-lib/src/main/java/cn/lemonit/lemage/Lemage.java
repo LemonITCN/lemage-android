@@ -60,7 +60,7 @@ public class Lemage implements Serializable {
      * 根据Bitmap对象来生成LemageURL字符串
      * 原理：将Bitmap转成二进制数据存储到沙盒中的文件，然后生成指向沙盒中二进制文件的Lemage格式的URL
      * <p>
-     * lemage://album/local/xxxxxxxxxxxxxxxxxxxxx   相册地址
+     * lemage://album/localImage/Video/xxxxxxxxxxxxxxxxxxxxx   相册地址
      * lemage://sandbox/long[short]/xxxxxxxxxxxxxxxx
      *
      * @param bitmap   要生成LemageURL的Bitmap对象
@@ -153,17 +153,20 @@ public class Lemage implements Serializable {
      * @param maxChooseCount         允许最多选择的图片张数，支持范围：1-99
      * @param needShowOriginalButton 是否提供【原图】选项按钮，如果不提供，那么选择结果中的【用户是否选择了原图选项】会始终返回true
      * @param themeColor             主题颜色，这个颜色会作为完成按钮、选择顺序标识、相册选择标识的背景色
+     * @param style                   用户可选择样式
      * @param callback               结果回调函数，若用户在选择器中点击了取消按钮，那么回调函数中的imageUrlList为null
      */
     public static void startChooser(Context mContext,
                                     Integer maxChooseCount,
                                     boolean needShowOriginalButton,
                                     int themeColor,
+                                    int style,
                                     LemageResultCallback callback) {
         Intent intent = new Intent(mContext, LemageActivity.class);
         intent.putExtra("maxChooseCount", maxChooseCount);
         intent.putExtra("needShowOriginalButton", needShowOriginalButton);
         intent.putExtra("themeColor", themeColor);
+        intent.putExtra("style", style);
         mContext.startActivity(intent);
     }
 

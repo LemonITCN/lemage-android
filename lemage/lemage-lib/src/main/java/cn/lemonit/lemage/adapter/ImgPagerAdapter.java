@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cn.lemonit.lemage.R;
+import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.view.ZoomImageView;
 
@@ -40,35 +41,13 @@ public class ImgPagerAdapter extends PagerAdapter {
     private final String TAG = "ImgPagerAdapter";
 
     private Context mContext;
-    private ArrayList<Photo> listPhoto;
-//    private ArrayList<String> listPath;
-//    private ArrayList<String> listName;
+    private ArrayList<FileObj> listPhoto;
 
     private ImgOnClickListener mImgOnClickListener;
 
-//    private LinkedList<View> viewLinkedList = new LinkedList<>();  ;
-//
-////    private List<Bitmap> listBitmap;
-//    /**
-//     * 图片缓存技术的核心类，用于缓存所有下载好的图片，在程序内存达到设定值时会将最少最近使用的图片移除掉。
-//     */
-//    private LruCache<String, Bitmap> mMemoryCache;
-//
-//    // 缓存view
-//    private List<View> mViewCache;//缓存view
-
-//    public ImgPagerAdapter(Context mContext, ArrayList<Photo> listPhoto, ArrayList<String> listPath, ArrayList<String> listName) {
-//        this.mContext = mContext;
-//        this.listPhoto = listPhoto;
-//        this.listPath = listPath;
-//        this.listName = listName;
-//    }
-
-    public ImgPagerAdapter(Context mContext, ArrayList<Photo> listPhoto) {
+    public ImgPagerAdapter(Context mContext, ArrayList<FileObj> listPhoto) {
         this.mContext = mContext;
         this.listPhoto = listPhoto;
-//        this.listPath = listPath;
-//        this.listName = listName;
     }
 
     @Override

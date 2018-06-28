@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 import cn.lemonit.lemage.adapter.ImgPagerAdapter;
+import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
 import cn.lemonit.lemage.util.ScreenUtil;
@@ -56,11 +57,11 @@ public class PreviewActivity extends AppCompatActivity {
     /**
      * 可选择图片
      */
-    private ArrayList<Photo> listPhotoAll = new ArrayList<Photo>();
+    private ArrayList<FileObj> listPhotoAll = new ArrayList<FileObj>();
 
-    private ArrayList<Photo> listPhotoSelect = new ArrayList<Photo>();
+    private ArrayList<FileObj> listPhotoSelect = new ArrayList<FileObj>();
 
-    private ArrayList<Photo> listPhotoAdapterData = new ArrayList<Photo>();
+    private ArrayList<FileObj> listPhotoAdapterData = new ArrayList<FileObj>();
 
     private ImgPagerAdapter mImgPagerAdapter;
 
@@ -180,9 +181,9 @@ public class PreviewActivity extends AppCompatActivity {
                 public void leftClickListener(PreviewBarLeftButton view) {
                     List<String> list = new ArrayList<String>();
 
-                    for(Photo photo : listPhotoSelect) {
-                        if(photo.getStatus() == 1) {
-                            list.add(photo.getPath());
+                    for(FileObj fileObj : listPhotoSelect) {
+                        if(fileObj.getStatus() == 1) {
+                            list.add(fileObj.getPath());
                         }
                     }
                     callback.willClose(list, true, listPhotoSelect);
@@ -196,7 +197,7 @@ public class PreviewActivity extends AppCompatActivity {
                     if(!TextUtils.isEmpty(from)) {
                         if(from.equals("all")) {
                             // 得到当前的photo
-                            Photo photo = listPhotoAll.get(currentIndex - 1);
+                            FileObj photo = listPhotoAll.get(currentIndex - 1);
                             Log.e(TAG, "photo.getPath() =============== " + photo.getPath());
                             // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
                             if(view.getStatus() == 0) {
@@ -209,16 +210,16 @@ public class PreviewActivity extends AppCompatActivity {
                                 photo.setStatus(0);
                             }
                         }else {
-                            Photo photo = listPhotoAdapterData.get(currentIndex - 1);
+                            FileObj file = listPhotoAdapterData.get(currentIndex - 1);
                             // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
                             if(view.getStatus() == 0) {
-                                listPhotoSelect.add(photo);
+                                listPhotoSelect.add(file);
                                 view.changeStatus(1, listPhotoSelect.size());
-                                photo.setStatus(1);
+                                file.setStatus(1);
                             }else {
-                                listPhotoSelect.remove(photo);
+                                listPhotoSelect.remove(file);
                                 view.changeStatus(0, 0);
-                                photo.setStatus(0);
+                                file.setStatus(0);
                             }
                         }
 
@@ -302,15 +303,15 @@ public class PreviewActivity extends AppCompatActivity {
             if(!TextUtils.isEmpty(from)) {
                 if(from.equals("all")) {
                     // 选中状态
-                    Photo photo = listPhotoAll.get(position);
-                    if(photo.getStatus() == 1) {
-                        mCircleView.changeStatus(1, listPhotoSelect.indexOf(photo) + 1);
+                    FileObj fileObj = listPhotoAll.get(position);
+                    if(fileObj.getStatus() == 1) {
+                        mCircleView.changeStatus(1, listPhotoSelect.indexOf(fileObj) + 1);
                     }else {
                         mCircleView.changeStatus(0, 0);
                     }
                 }else {
-                    Photo photo = listPhotoAdapterData.get(position);
-                    mCircleView.changeStatus(photo.getStatus(), listPhotoSelect.indexOf(photo) + 1);
+                    FileObj fileObj = listPhotoAdapterData.get(position);
+                    mCircleView.changeStatus(fileObj.getStatus(), listPhotoSelect.indexOf(fileObj) + 1);
                 }
             }
         }

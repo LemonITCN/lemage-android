@@ -9,6 +9,17 @@ package cn.lemonit.lemage.bean;
 public class FileObj {
 
     /**
+     * 如果被选中的序号
+     */
+    private int number;
+
+    /**
+     *  是否选中状态
+     *  0 未选中 1 选中
+     */
+    private int status;
+
+    /**
      * 文件对象的名称
      */
     protected String name;
@@ -50,4 +61,19 @@ public class FileObj {
         }
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public int getNumber() {
+        return number;
+    }
 }

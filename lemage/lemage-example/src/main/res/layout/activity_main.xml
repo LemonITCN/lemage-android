@@ -12,6 +12,20 @@
         android:layout_height="wrap_content"
         android:text="选择照片" />
 
+    <Button
+        android:id="@+id/selectVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="选择视频"
+        app:layout_constraintLeft_toRightOf="@id/selectPhoto"/>
+
+    <Button
+        android:id="@+id/selectAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="都选择"
+        app:layout_constraintLeft_toRightOf="@id/selectVideo"/>
+
     <RelativeLayout
         android:id="@+id/layout"
         android:layout_width="0dp"
