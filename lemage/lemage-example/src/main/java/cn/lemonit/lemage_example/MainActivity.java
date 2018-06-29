@@ -44,7 +44,7 @@ import cn.lemonit.lemage.view.VideoStartImageView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private final String TAG = "MainActivity";
+    private final String TAG = "MainActivity_H";
 
     private Button selectPhoto;
 
