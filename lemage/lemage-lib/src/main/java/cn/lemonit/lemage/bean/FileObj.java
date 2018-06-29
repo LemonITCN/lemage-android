@@ -1,12 +1,19 @@
 package cn.lemonit.lemage.bean;
 
+import android.support.annotation.NonNull;
+
 /**
  * 文件对象
  * 文件对象的特征是都存在路径属性和名称属性，对比是否为同一个对象的标准是路径是否相同
  *
  * @author liuri
  */
-public class FileObj {
+public class FileObj implements Comparable<FileObj> {
+
+    /**
+     * 生成时间
+     */
+    private long time;
 
     /**
      * 如果被选中的序号
@@ -75,5 +82,21 @@ public class FileObj {
 
     public int getNumber() {
         return number;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    @Override
+    public int compareTo(@NonNull FileObj fileObj) {
+        if(this.time > fileObj.time) {
+            return 1;
+        }
+        return -1;
     }
 }

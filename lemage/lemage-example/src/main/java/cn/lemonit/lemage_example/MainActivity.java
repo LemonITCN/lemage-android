@@ -97,47 +97,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //                actionVideo();
 //                addView();
-//                Lemage.startChooser(this, 5, false, 0, LemageScanner.STYLE_ONLY_PICTURE, null);
-                LemageScannerNew.getInstance(this, 0).scanFile(new ScanCompleteCallback() {
-                    @Override
-                    public void scanComplete(Collection<AlbumNew> albumList) {
-                        if(albumList.size() > 0) {
-                            for(AlbumNew album : albumList) {
-                                Log.e(TAG, "文件名称 === " + album.getName());
-                                Log.e(TAG, "文件路径 === " + album.getPath());
-                                Log.e(TAG, "文件数量 === " + album.getFileList().size());
-                                for(FileObj fileObj : album.getFileList()) {
-                                    Log.e(TAG, "子文件路径 ====== " + fileObj.getPath());
-                                }
-                            }
-                        }else {
-                            Log.e(TAG, "albumList.size() =========== 0");
-                        }
-                    }
-                });
+                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ONLY_PHOTO, null);
                 break;
             case R.id.selectVideo:
-//                Lemage.startChooser(this, 5, false, 0, LemageScanner.STYLE_ONLY_VIDEO, null);
-                LemageScannerNew.getInstance(this, 1).scanFile(new ScanCompleteCallback() {
-                    @Override
-                    public void scanComplete(Collection<AlbumNew> albumList) {
-                        if(albumList.size() > 0) {
-                            for(AlbumNew album : albumList) {
-                                Log.e(TAG, "文件名称 === " + album.getName());
-                                Log.e(TAG, "文件路径 === " + album.getPath());
-                                Log.e(TAG, "文件数量 === " + album.getFileList().size());
-                                for(FileObj fileObj : album.getFileList()) {
-                                    Log.e(TAG, "子文件路径 ====== " + fileObj.getPath());
-                                }
-                            }
-                        }else {
-                            Log.e(TAG, "albumList.size() =========== 0");
-                        }
-                    }
-                });
+                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ONLY_VIDEO, null);
                 break;
             case R.id.selectAll:
-                Lemage.startChooser(this, 5, false, 0, LemageScanner.STYLE_ALL, null);
+                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ALL, null);
                 break;
         }
     }
@@ -217,15 +183,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         layout = findViewById(R.id.layout);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-        VideoStartImageView videoStartImageView = new VideoStartImageView(this);
-        videoStartImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 播放视频
-                startVideo();
-            }
-        });
-        layout.addView(videoStartImageView, layoutParams);
+//        VideoStartImageView videoStartImageView = new VideoStartImageView(this, 50, 40);
+//        videoStartImageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // 播放视频
+//                startVideo();
+//            }
+//        });
+//        layout.addView(videoStartImageView, layoutParams);
     }
 
 

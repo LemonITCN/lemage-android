@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
 import android.support.annotation.NonNull;
 import android.support.v4.util.LruCache;
 import android.support.v4.view.PagerAdapter;
@@ -31,6 +32,8 @@ import java.util.List;
 import cn.lemonit.lemage.R;
 import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.Photo;
+import cn.lemonit.lemage.bean.Video;
+import cn.lemonit.lemage.view.LmageVideoView;
 import cn.lemonit.lemage.view.ZoomImageView;
 
 /**
@@ -41,18 +44,18 @@ public class ImgPagerAdapter extends PagerAdapter {
     private final String TAG = "ImgPagerAdapter";
 
     private Context mContext;
-    private ArrayList<FileObj> listPhoto;
+    private ArrayList<FileObj> listFile;
 
     private ImgOnClickListener mImgOnClickListener;
 
-    public ImgPagerAdapter(Context mContext, ArrayList<FileObj> listPhoto) {
+    public ImgPagerAdapter(Context mContext, ArrayList<FileObj> listFile) {
         this.mContext = mContext;
-        this.listPhoto = listPhoto;
+        this.listFile = listFile;
     }
 
     @Override
     public int getCount() {
-        return listPhoto.size();
+        return listFile.size();
     }
 
     @Override
@@ -73,19 +76,13 @@ public class ImgPagerAdapter extends PagerAdapter {
         RelativeLayout view = new RelativeLayout(mContext);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         view.setLayoutParams(layoutParams);
-        ZoomImageView imageView = new ZoomImageView(mContext);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mImgOnClickListener.imgOnClick();
-            }
-        });
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        imageView.setLayoutParams(params);
-//        Glide.with(mContext).load(listPath.get(position)).into(imageView);
-        Glide.with(mContext).load(listPhoto.get(position).getPath()).into(imageView);
-
-        view.addView(imageView);
+        FileObj fileObj = listFile.get(position);
+        // 分别显示图片或者视频的对应的样式
+        if(fileObj instanceof Photo) {
+            showPhotoStyleView(view, position);
+        }else if(fileObj instanceof Video) {
+            showVideoStyleView(view, position);
+        }
         container.addView(view);
         return view;
     }
@@ -100,5 +97,40 @@ public class ImgPagerAdapter extends PagerAdapter {
 
     public void setImgOnClickListener(ImgOnClickListener mImgOnClickListener) {
         this.mImgOnClickListener = mImgOnClickListener;
+    }
+
+
+    /**
+     * 当item是图片时需要显示的样式
+     * @param view
+     */
+    private void showPhotoStyleView(RelativeLayout view, int position) {
+        ZoomImageView imageView = new ZoomImageView(mContext);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mImgOnClickListener.imgOnClick();
+            }
+        });
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        imageView.setLayoutParams(params);
+        Glide.with(mContext).load(listFile.get(position).getPath()).into(imageView);
+        view.addView(imageView);
+    }
+
+    /**
+     * 当item是视频时要显示的样式
+     * @param view
+     */
+    private void showVideoStyleView(RelativeLayout view, int position) {
+        LmageVideoView mLmageVideoView = new LmageVideoView(mContext);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        mLmageVideoView.setLayoutParams(layoutParams);
+        view.addView(mLmageVideoView);
+
+        MediaMetadataRetriever media = new MediaMetadataRetriever();
+        media.setDataSource(listFile.get(position).getPath());
+        Bitmap bitmap = media.getFrameAtTime();
+        mLmageVideoView.getmImageView().setImageBitmap(bitmap);
     }
 }

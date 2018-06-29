@@ -25,7 +25,7 @@ public class LemageUsageText {
             CN_TEXT.setBack("返回");
             CN_TEXT.setPreview("预览");
             CN_TEXT.setOriginalImage("原图");
-            CN_TEXT.setAllImages("全部图片");
+            CN_TEXT.setAllImages("全部照片");
         }
         return CN_TEXT;
     }

@@ -37,7 +37,7 @@ public class LemageScanner {
      */
     private int style;
     // 只选择图片
-    public static final int STYLE_ONLY_PICTURE = 0;
+    public static final int STYLE_ONLY_PHOTO = 0;
     // 只选视频
     public static final int STYLE_ONLY_VIDEO = 1;
     // 都可选

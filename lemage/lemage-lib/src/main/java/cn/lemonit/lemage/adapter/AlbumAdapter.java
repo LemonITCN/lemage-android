@@ -146,7 +146,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
                                 mListPhotoView.get(i).setStatus(0);
                             }
                         }
-//                        mAlbumItemOnClickListener.notifShow(mAlbumList.get(position));
+                        mAlbumItemOnClickListener.notifShow(mAlbumList.get(position));
                         break;
                     case 1:
                         mAlbumItemOnClickListener.constantShow();
@@ -191,7 +191,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
      */
     public interface AlbumItemOnClickListener {
         void constantShow();
-        void notifShow(Album mAlbum);
+        void notifShow(AlbumNew mAlbum);
     }
 
     public void setAlbumItemOnClickListener(AlbumItemOnClickListener mAlbumItemOnClickListener) {

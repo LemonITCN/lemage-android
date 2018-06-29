@@ -151,7 +151,7 @@ public class LemageActivity extends AppCompatActivity {
      * 根据需要扫描图片还是视频并显示
      */
     private void showPictureOrVideo() {
-        LemageScannerNew.getInstance(this, style).scanFile(new ScanCompleteCallback() {
+        new LemageScannerNew(this, style).scanFile(new ScanCompleteCallback() {
             @Override
             public void scanComplete(Collection<AlbumNew> albumList) {
                 if(albumList.size() > 0) {
@@ -166,8 +166,12 @@ public class LemageActivity extends AppCompatActivity {
                 }else {
                     Log.e(TAG, "albumList.size() =========== 0");
                 }
+                List<AlbumNew> list = sortList(albumList);
+                changeAlbum(list.get(0));
+                getHorizontal(list);
             }
         });
+
     }
 
     /**
@@ -227,6 +231,27 @@ public class LemageActivity extends AppCompatActivity {
         getImageListView().setAdapter(photoAdapter);
     }
 
+    /**
+     * 给数据源排序，全部文件放在第一位
+     */
+    private ArrayList<AlbumNew> sortList(Collection<AlbumNew> albumList) {
+        ArrayList<AlbumNew> mAlbumList = new ArrayList<AlbumNew>();
+        AlbumNew albumNewAll = null;
+        Iterator it = albumList.iterator();
+        while (it.hasNext()) {
+            AlbumNew album = (AlbumNew) it.next();
+            if(album.getName().equals("全部照片")) {
+                albumNewAll = album;
+            }
+            mAlbumList.add(album);
+        }
+        // 把全部照片放在第一位
+        if(!mAlbumList.get(0).getName().equals("全部照片")) {
+            mAlbumList.remove(albumNewAll);
+            mAlbumList.add(0, albumNewAll);
+        }
+        return mAlbumList;
+    }
 
     /**
      * 显示横向栏
@@ -235,14 +260,19 @@ public class LemageActivity extends AppCompatActivity {
     private void getHorizontal(Collection<AlbumNew> albumList) {
         if(mAlbumAdapter == null) {
             ArrayList<AlbumNew> mAlbumList = new ArrayList<AlbumNew>();
+            AlbumNew albumNewAll = null;
             Iterator it = albumList.iterator();
             while (it.hasNext()) {
                 AlbumNew album = (AlbumNew) it.next();
+                if(album.getName().equals("全部照片")) {
+                    albumNewAll = album;
+                }
                 mAlbumList.add(album);
             }
-            // 倒序(手机不同，获取的原始顺序不同)
-            if(!mAlbumList.get(0).getName().equals(LemageUsageText.cnText().getAllImages())) {
-                Collections.reverse(mAlbumList);
+            // 把全部照片放在第一位
+            if(!mAlbumList.get(0).getName().equals("全部照片")) {
+                mAlbumList.remove(albumNewAll);
+                mAlbumList.add(0, albumNewAll);
             }
             mAlbumAdapter = new AlbumAdapter(this, mAlbumList);
             mAlbumAdapter.setAlbumItemOnClickListener(mAlbumItemOnClickListener);
@@ -474,18 +504,18 @@ public class LemageActivity extends AppCompatActivity {
         }
 
         @Override
-        public void notifShow(Album mAlbum) {
-//            if(horizontalLayout != null && horizontalLayout.isShown()) {
-//                horizontalLayout.setVisibility(View.GONE);
-//                navigationBar.getAlbumSelectButton().changeText(mAlbum.getName());
-//                navigationBar.getAlbumSelectButton().changeArrow();
-//            }
-//            phototAdapterData.setName(mAlbum.getName());
-//            phototAdapterData.setPath(mAlbum.getPath());
-//            phototAdapterData.setPhotoList(mAlbum.getPhotoList());
-//            photoAdapter.notifyDataSetChanged();
-
+        public void notifShow(AlbumNew mAlbum) {
+            if(horizontalLayout != null && horizontalLayout.isShown()) {
+                horizontalLayout.setVisibility(View.GONE);
+                navigationBar.getAlbumSelectButton().changeText(mAlbum.getName());
+                navigationBar.getAlbumSelectButton().changeArrow();
+            }
+            phototAdapterData.setName(mAlbum.getName());
+            phototAdapterData.setPath(mAlbum.getPath());
+            phototAdapterData.setFileList(mAlbum.getFileList());
+            photoAdapter.notifyDataSetChanged();
         }
+
     };
 
     /**

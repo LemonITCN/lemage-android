@@ -12,6 +12,9 @@ import android.support.v4.content.Loader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +90,7 @@ public class LemageScannerNew {
      * 扫描图片条件
      */
     private int minPhotoSize;   // 设置扫描范围内的最小图片尺寸，单位：byte
-    private boolean enableAllPhoto;  // 是否开启全部图片相册
+    private boolean enableAllPhoto = true;  // 是否开启全部图片相册
     /**
      * 扫描视频条件
      */
@@ -99,20 +102,18 @@ public class LemageScannerNew {
      * 扫描结果的数据源
      */
     private Map<String, AlbumNew> albumMap = new HashMap<>();
+    /**
+     * 扫描次数，如果是第二次扫描，把视频和图片按时间顺序混排
+     */
+    private boolean scanNumber;
 
     private FragmentActivity mContext;
 
     private static LemageScannerNew instance;
 
-    private LemageScannerNew(FragmentActivity context, int style) {
+    public LemageScannerNew(FragmentActivity context, int style) {
         mContext = context;
         mStyle = style;
-    }
-
-    public static synchronized LemageScannerNew getInstance(FragmentActivity context, int style) {
-        if(instance == null) {
-            instance = new LemageScannerNew(context, style);
-        }
         if(mStyle < 0 || mStyle > 3) mStyle = STYLE_ONLY_PHOTO;  // 传值超出范围默认只扫描图片
         // 如果扫描的是图片或者视频，那么只进行一次扫描
         if(mStyle == STYLE_ONLY_PHOTO || mStyle == STYLE_ONLY_VIDEO) {
@@ -122,12 +123,23 @@ public class LemageScannerNew {
         else if(mStyle == STYLE_ALL || mStyle == STYLE_ANYONE) {
             scanTarget = STYLE_ONLY_PHOTO;
         }
-        return instance;
     }
 
-    public void destroyLoader() {
-        mContext.getSupportLoaderManager().destroyLoader(0);
-    }
+//    public static synchronized LemageScannerNew getInstance(FragmentActivity context, int style) {
+//        if(instance == null) {
+//            instance = new LemageScannerNew(context, style);
+//        }
+//        if(mStyle < 0 || mStyle > 3) mStyle = STYLE_ONLY_PHOTO;  // 传值超出范围默认只扫描图片
+//        // 如果扫描的是图片或者视频，那么只进行一次扫描
+//        if(mStyle == STYLE_ONLY_PHOTO || mStyle == STYLE_ONLY_VIDEO) {
+//            scanTarget = mStyle;
+//        }
+//        // 如果图片和视频都扫描，那么先扫描图片，再扫描视频
+//        else if(mStyle == STYLE_ALL || mStyle == STYLE_ANYONE) {
+//            scanTarget = STYLE_ONLY_PHOTO;
+//        }
+//        return instance;
+//    }
 
     /**
      * 扫描文件（图片或者视频）
@@ -206,7 +218,6 @@ public class LemageScannerNew {
      * @param mScanCompleteCallback
      */
     private void loadFinished(Cursor cursor, ScanCompleteCallback mScanCompleteCallback) {
-        albumMap.clear();
         if (cursor != null) {
             int count = cursor.getCount();
             if (count > 0) {
@@ -222,7 +233,7 @@ public class LemageScannerNew {
      */
     private void getFileObj(Cursor cursor, ScanCompleteCallback mScanCompleteCallback) {
         // 扫描图片并得到数据源
-        if(scanTarget == 0) {
+        if(scanTarget == STYLE_ONLY_PHOTO) {
             cursor.moveToFirst();
             do {
                 String path = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_PROJECTION[0]));
@@ -258,7 +269,7 @@ public class LemageScannerNew {
             }
         }
         // 扫描视频并得到数据源
-        else if(scanTarget == 1) {
+        else if(scanTarget == STYLE_ONLY_VIDEO) {
             cursor.moveToFirst();
             do {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow(VIDEO_PROJECTION[0]));
@@ -303,8 +314,11 @@ public class LemageScannerNew {
                 // 开启全部照片相册
                 AlbumNew allPhotoAlbum = new AlbumNew("全部照片", "/");
                 for (AlbumNew albumItem : albumMap.values()) {
-                    for (FileObj photo : albumItem.getFileList()) {
-                        allPhotoAlbum.getFileList().add(photo);
+                    // 此时，不能添加全部照片里面的file, 否则会重复
+                    if(!albumItem.getName().equals("全部照片")) {
+                        for (FileObj fileObj : albumItem.getFileList()) {
+                            allPhotoAlbum.getFileList().add(fileObj);
+                        }
                     }
                 }
                 albumMap.put(allPhotoAlbum.getName(), allPhotoAlbum);
@@ -312,13 +326,30 @@ public class LemageScannerNew {
         }
         // 如果只扫描一次，就直接返回结果
         if(mStyle == STYLE_ONLY_PHOTO || mStyle == STYLE_ONLY_VIDEO) {
+            if(scanNumber) {
+                // 把图片和视频混合按时间排序
+                timeSortFile(albumMap.values());
+            }
             mScanCompleteCallback.scanComplete(albumMap.values());
         }
         // 如果扫描2次就再扫描一次返回结果(第一次扫描的是图片，所以第二次扫描的是视频)
         else if(mStyle == STYLE_ALL || mStyle == STYLE_ANYONE) {
             mStyle = STYLE_ONLY_VIDEO;
             scanTarget = STYLE_ONLY_VIDEO;
+            scanNumber = true;
             scanFile(mScanCompleteCallback);
+        }
+    }
+
+    /**
+     * 把图片和视频混合按时间排序
+     * @param albumList
+     */
+    private void timeSortFile(Collection<AlbumNew> albumList) {
+        if(albumList.size() > 0) {
+            for(AlbumNew album : albumList) {
+                Collections.sort(album.getFileList());
+            }
         }
     }
 
