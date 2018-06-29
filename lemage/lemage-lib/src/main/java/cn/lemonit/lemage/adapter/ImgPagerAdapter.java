@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.util.LruCache;
 import android.support.v4.view.PagerAdapter;
@@ -17,7 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.RelativeLayout;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 
@@ -34,6 +37,7 @@ import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.bean.Video;
 import cn.lemonit.lemage.view.LmageVideoView;
+import cn.lemonit.lemage.view.VideoStartImageView;
 import cn.lemonit.lemage.view.ZoomImageView;
 
 /**
@@ -123,14 +127,41 @@ public class ImgPagerAdapter extends PagerAdapter {
      * @param view
      */
     private void showVideoStyleView(RelativeLayout view, int position) {
+        final Video mVideo = (Video) listFile.get(position);
+
         LmageVideoView mLmageVideoView = new LmageVideoView(mContext);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         mLmageVideoView.setLayoutParams(layoutParams);
         view.addView(mLmageVideoView);
 
+        // 显示静态图片
         MediaMetadataRetriever media = new MediaMetadataRetriever();
-        media.setDataSource(listFile.get(position).getPath());
+        final String path = mVideo.getPath();
+        media.setDataSource(path);
         Bitmap bitmap = media.getFrameAtTime();
-        mLmageVideoView.getmImageView().setImageBitmap(bitmap);
+        final ImageView mImageView = mLmageVideoView.getImageView();
+        mImageView.setImageBitmap(bitmap);
+        // 播放视频控件
+        final VideoView mVideoView = new VideoView(mContext);
+        // 静态图片中的开始按钮的点击事件
+        final VideoStartImageView mVideoStartImageView = mLmageVideoView.getBigVideoStartImageView();
+        mVideoStartImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mVideoStartImageView.setVisibility(View.GONE);
+                mImageView.setVisibility(View.GONE);
+                MediaController mediaController = new MediaController(mContext);
+//                mVideoView.setVideoPath(path);
+//                mVideoView.setMediaController(mediaController);
+//                mVideoView.requestFocus();
+//                mVideoView.start();
+
+                Uri uri = Uri.parse(path);
+                mVideoView.setVideoURI(uri);
+                mVideoView.setMediaController(mediaController);
+//                mVideoView.setAnchorView(mVideoView);
+                mVideoView.start();
+            }
+        });
     }
 }

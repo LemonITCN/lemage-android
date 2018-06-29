@@ -17,6 +17,9 @@ public class ControlView extends RelativeLayout {
 
     private Context mContext;
     private Paint mPaint;
+    private VideoStartImageView mVideoStartImageView;
+    private ProgressBar mProgressBar;
+    private String timeText = "";
 
     public ControlView(Context context) {
         super(context);
@@ -27,8 +30,6 @@ public class ControlView extends RelativeLayout {
         addStartVideoView();
         // 添加进度条
         addProgressBar();
-        // 添加时间显示
-        addTimeView();
         initPaint();
     }
 
@@ -42,6 +43,7 @@ public class ControlView extends RelativeLayout {
         layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
         mVideoStartImageView.setLayoutParams(layoutParams);
         this.addView(mVideoStartImageView);
+        this.mVideoStartImageView = mVideoStartImageView;
     }
 
     /**
@@ -55,13 +57,7 @@ public class ControlView extends RelativeLayout {
         layoutParams.setMargins(20 + 20 + ScreenUtil.dp2px(mContext, 20) * 2, 0, 20, ScreenUtil.dp2px(mContext, 5));
         mProgressBar.setLayoutParams(layoutParams);
         this.addView(mProgressBar);
-    }
-
-    /**
-     * 添加时间显示
-     */
-    private void addTimeView() {
-
+        this.mProgressBar = mProgressBar;
     }
 
     private void initPaint() {
@@ -69,18 +65,35 @@ public class ControlView extends RelativeLayout {
         mPaint.setStrokeWidth(2);
         mPaint.setAntiAlias(true);//抗锯齿
         mPaint.setColor(Color.WHITE);
+        mPaint.setTextAlign(Paint.Align.LEFT);
+        mPaint.setTextSize(20);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        // 画总时长
+        // 画时长
         drawAllTime(canvas);
     }
 
     private void drawAllTime(Canvas canvas) {
-        mPaint.setTextAlign(Paint.Align.LEFT);
-        mPaint.setTextSize(20);
-        canvas.drawText("01:21 / 02:20", 20 + 20 + ScreenUtil.dp2px(mContext, 20) * 2, ScreenUtil.dp2px(mContext, 20), mPaint);
+        canvas.drawText(timeText, 20 + 20 + ScreenUtil.dp2px(mContext, 20) * 2, ScreenUtil.dp2px(mContext, 20), mPaint);
+    }
+
+    /**
+     * 留给外部接口用来刷新时长
+     * @param timeText
+     */
+    public void setTimeText(String timeText) {
+        this.timeText = timeText;
+        invalidate();
+    }
+
+    public ProgressBar getProgressBar() {
+        return mProgressBar;
+    }
+
+    public VideoStartImageView getVideoStartImageView() {
+        return mVideoStartImageView;
     }
 }
