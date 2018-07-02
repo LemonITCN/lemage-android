@@ -13,16 +13,16 @@ import cn.lemonit.lemage.util.ScreenUtil;
 /**
  * 完整的视频播放器
  */
-public class LmageVideoView extends RelativeLayout {
+public class LemageVideoView extends RelativeLayout {
 
     private Context mContext;
 
     private ImageView mImageView;
-    private VideoView mVideoView;
+    private ScreenVideoView mVideoView;
     private VideoStartImageView mVideoStartImageView;
     private ControlView mControlView;
 
-    public LmageVideoView(Context context) {
+    public LemageVideoView(Context context) {
         super(context);
         mContext = context;
         initView();
@@ -43,8 +43,11 @@ public class LmageVideoView extends RelativeLayout {
      * 添加视频控件
      */
     private void addVideoView() {
-        VideoView mVideoView = new VideoView(mContext);
+        ScreenVideoView mVideoView = new ScreenVideoView(mContext, false);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+//        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+//        layoutParams.setMargins(0, 0, 0, ScreenUtil.dp2px(mContext, 56));
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
         mVideoView.setLayoutParams(layoutParams);
         this.addView(mVideoView);
         this.mVideoView = mVideoView;
@@ -91,7 +94,7 @@ public class LmageVideoView extends RelativeLayout {
     }
 
     // 返回播放视频的控件
-    public VideoView getVideoView() {
+    public ScreenVideoView getVideoView() {
         return mVideoView;
     }
 

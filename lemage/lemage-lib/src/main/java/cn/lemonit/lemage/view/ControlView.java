@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -15,17 +16,21 @@ import cn.lemonit.lemage.util.ScreenUtil;
  */
 public class ControlView extends RelativeLayout {
 
+    final private String TAG = "ControlView";
+
     private Context mContext;
     private Paint mPaint;
     private VideoStartImageView mVideoStartImageView;
     private ProgressBar mProgressBar;
     private String timeText = "";
+    // 是否显示状态
+    private boolean isShow = true;
 
     public ControlView(Context context) {
         super(context);
         mContext = context;
         this.setBackgroundColor(Color.BLUE);  // 设置黑色背景
-        this.setAlpha(0.5f);
+//        this.setAlpha(0.5f);
         // 添加左侧视频开始的按钮
         addStartVideoView();
         // 添加进度条
@@ -51,7 +56,7 @@ public class ControlView extends RelativeLayout {
      */
     private void addProgressBar() {
         ProgressBar mProgressBar = new ProgressBar(mContext, null,android.R.attr.progressBarStyleHorizontal);
-        mProgressBar.setProgress(50);
+//        mProgressBar.setProgress(50);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         layoutParams.setMargins(20 + 20 + ScreenUtil.dp2px(mContext, 20) * 2, 0, 20, ScreenUtil.dp2px(mContext, 5));
@@ -96,4 +101,13 @@ public class ControlView extends RelativeLayout {
     public VideoStartImageView getVideoStartImageView() {
         return mVideoStartImageView;
     }
+
+    public boolean isShow() {
+        return isShow;
+    }
+
+    public void setShow(boolean show) {
+        isShow = show;
+    }
+
 }

@@ -60,8 +60,10 @@ public class Lemage implements Serializable {
      * 根据Bitmap对象来生成LemageURL字符串
      * 原理：将Bitmap转成二进制数据存储到沙盒中的文件，然后生成指向沙盒中二进制文件的Lemage格式的URL
      * <p>
-     * lemage://album/localImage/Video/xxxxxxxxxxxxxxxxxxxxx   相册地址
-     * lemage://sandbox/long[short]/xxxxxxxxxxxxxxxx
+     * lemage://album/localImage/xxxxxxxxxxxxxxxxxxxxx   本地相册地址
+     * lemage://album/localVideo/xxxxxxxxxxxxxxxxxxxxx    本地视频地址
+     * lemage://sandbox/long[short]/xxxxxxxxxxxxxxxx    沙盒文件地址
+     * lemage://tmp/image/xxxxxxxxxx    网络文件地址
      *
      * @param bitmap   要生成LemageURL的Bitmap对象
      * @param longTerm 是否永久有效，如果传true，那么该URL直到调用Lemage.expiredAllLongTermUrl方法后才失效，如果传false，在下次APP启动调用Lemage.startUp方法时URL就会失效，也可以通过Lemage.expiredAllShortTermUrl来强制使其失效

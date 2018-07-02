@@ -39,6 +39,9 @@ public class VideoStartImageView extends View {
     private float pointB_X, pointB_Y;
     private float pointC_X, pointC_Y;
 
+    // 是否暂停
+    private boolean isPause;
+
     public VideoStartImageView(Context context, int radius, int sideLength, int circleColor, int triangleColor, boolean circleStroke, boolean triangleStroke) {
         super(context);
         mContext = context;
@@ -49,6 +52,7 @@ public class VideoStartImageView extends View {
         this.circleStroke = circleStroke;
         this.triangleStroke = triangleStroke;
         init();
+//        setWillNotDraw(false);
     }
 
     private void init() {
@@ -63,8 +67,13 @@ public class VideoStartImageView extends View {
         super.onDraw(canvas);
         // 画白色实心圆圈
         drawCircle(canvas);
-        // 画黑色实心三角形
-        drawTriangle(canvas);
+        if(isPause) {
+            // 画暂停按钮（竖着的等号）
+            drawVerticalBar(canvas);
+        }else {
+            // 画黑色实心三角形
+            drawTriangle(canvas);
+        }
     }
 
     /**
@@ -109,6 +118,25 @@ public class VideoStartImageView extends View {
         canvas.drawPath(mPath, mPaint);
     }
 
+    /**
+     * 画暂停按钮(三角形右边的顶点变成左边的边长就是两个竖杠)
+     * @param canvas
+     */
+    private void drawVerticalBar(Canvas canvas) {
+        mPaint.reset();
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(4);
+        mPaint.setAntiAlias(true);
+        mPaint.setColor(Color.BLACK);
+        mPath.reset();
+        mPath.moveTo(pointA_X, pointA_Y);
+        mPath.lineTo(pointB_X, pointB_Y);
+        mPath.moveTo(mRadius * 2 - pointA_X + 8, pointA_Y);
+        mPath.lineTo(mRadius * 2 - pointA_X + 8, pointB_Y);
+//        mPath.close();
+        canvas.drawPath(mPath, mPaint);
+    }
+
 
     /**
      * 求顶点时，要考虑线宽，所以要修正偏移量
@@ -138,5 +166,13 @@ public class VideoStartImageView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         setMeasuredDimension(mRadius * 2 + 8, mRadius * 2 + 8);
 //        setMeasuredDimension(mRadius * 2, mRadius * 2);
+    }
+
+    /**
+     * 设置暂停
+     */
+    public void setPause(boolean pause) {
+        isPause = pause;
+        invalidate();
     }
 }
