@@ -134,15 +134,14 @@ public class ImgPagerAdapter extends PagerAdapter {
         mLemageVideoView.setLayoutParams(layoutParams);
         view.addView(mLemageVideoView);
 
-        // 视频时长
-        final long duration = mVideo.getDuration();
-        final int time = (int) Math.floor((duration / 1000));   // 秒
-//        final long duration = 13726;
-//        Log.e(TAG, "position ============= " + position);
-//        Log.e(TAG, "duration ================= " + duration);
-//        Log.e(TAG, "title ============= " + mVideo.getTitle());
         // 显示静态图片
         MediaMetadataRetriever media = new MediaMetadataRetriever();
+        // 视频时长
+//        final long duration = mVideo.getDuration();
+        media.setDataSource(mVideo.getPath());
+        String durationStr = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        final long duration = Long.parseLong(durationStr);
+        final int time = (int) Math.floor((duration / 1000));   // 秒
         // 视频路径
         final String path = mVideo.getPath();
         media.setDataSource(path);

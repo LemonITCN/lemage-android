@@ -18,6 +18,7 @@ import java.util.List;
 import cn.lemonit.lemage.adapter.ImgPagerAdapter;
 import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.Photo;
+import cn.lemonit.lemage.bean.Video;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
@@ -98,11 +99,63 @@ public class PreviewActivity extends AppCompatActivity {
             fromPosition = intent.getIntExtra("position", 0);
         }
         listPhotoAll.clear();
-        listPhotoAll.addAll(LemageActivity.listPhotoAll);
+//        listPhotoAll.addAll(LemageActivity.listPhotoAll);
         listPhotoSelect.clear();
-        listPhotoSelect.addAll(LemageActivity.listPhotoSelect);
+//        listPhotoSelect.addAll(LemageActivity.listPhotoSelect);
         listPhotoAdapterData.clear();
-        listPhotoAdapterData.addAll(LemageActivity.listPhotoSelect);
+//        listPhotoAdapterData.addAll(LemageActivity.listPhotoSelect);
+        ArrayList<String> listAll = intent.getStringArrayListExtra("listAll");
+        ArrayList<String> listSelect = intent.getStringArrayListExtra("listSelect");
+        for(String url : listAll) {
+            if(url.contains(".mp4") || url.contains(".3gp")) {
+                Video video = new Video();
+                video.setPath(url);
+                if(listSelect.contains(url)) {
+                    video.setStatus(1);
+                }else {
+                    video.setStatus(0);
+                }
+                listPhotoAll.add(video);
+            }else {
+                Photo photo = new Photo();
+                photo.setPath(url);
+                if(listSelect.contains(url)) {
+                    photo.setStatus(1);
+                }else {
+                    photo.setStatus(0);
+                }
+                listPhotoAll.add(photo);
+            }
+//            FileObj fileObj = new FileObj();
+//            fileObj.setPath(url);
+//            if(listSelect.contains(url)) {
+//                fileObj.setStatus(1);
+//            }else {
+//                fileObj.setStatus(0);
+//            }
+//            listPhotoAll.add(fileObj);
+        }
+        for(String url : listSelect) {
+            if(url.contains(".mp4") || url.contains(".3gp")) {
+                Video video = new Video();
+                video.setPath(url);
+                video.setStatus(1);
+                listPhotoSelect.add(video);
+                listPhotoAdapterData.add(video);
+            }else {
+                Photo photo = new Photo();
+                photo.setPath(url);
+                photo.setStatus(1);
+                listPhotoSelect.add(photo);
+                listPhotoAdapterData.add(photo);
+            }
+//            FileObj fileObj = new FileObj();
+//            fileObj.setStatus(1);
+//            fileObj.setPath(url);
+//            listPhotoSelect.add(fileObj);
+//            listPhotoAdapterData.add(fileObj);
+        }
+
     }
 
     private void initView() {
@@ -148,15 +201,22 @@ public class PreviewActivity extends AppCompatActivity {
             mViewPager.addOnPageChangeListener(mOnPageChangeListener);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
             mViewPager.setLayoutParams(layoutParams);
-            if(!TextUtils.isEmpty(from)) {
-                if(from.equals("all")) {
-                    mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAll);
-                }else {
-                    mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAdapterData);
-                }
-                mImgPagerAdapter.setImgOnClickListener(imgOnClickListener);
-                mViewPager.setAdapter(mImgPagerAdapter);
+            if(!TextUtils.isEmpty(from) && from.equals("all")) {
+                mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAll);
+            }else {
+                mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAdapterData);
             }
+            mImgPagerAdapter.setImgOnClickListener(imgOnClickListener);
+            mViewPager.setAdapter(mImgPagerAdapter);
+//            if(!TextUtils.isEmpty(from)) {
+//                if(from.equals("all")) {
+//                    mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAll);
+//                }else {
+//                    mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAdapterData);
+//                }
+//                mImgPagerAdapter.setImgOnClickListener(imgOnClickListener);
+//                mViewPager.setAdapter(mImgPagerAdapter);
+//            }
         }
     }
 
@@ -164,13 +224,18 @@ public class PreviewActivity extends AppCompatActivity {
     private void getNavigationBar() {
         if(mNavigationBar == null) {
             mNavigationBar = new NavigationBar(this, 1);
-            if(!TextUtils.isEmpty(from)) {
-                if(from.equals("all")) {
-                    mNavigationBar.changeText(listPhotoAll.size(), 1);
-                }else {
-                    mNavigationBar.changeText(listPhotoSelect.size(), 1);
-                }
+            if(!TextUtils.isEmpty(from) && from.equals("all")) {
+                mNavigationBar.changeText(listPhotoAll.size(), 1);
+            }else {
+                mNavigationBar.changeText(listPhotoSelect.size(), 1);
             }
+//            if(!TextUtils.isEmpty(from)) {
+//                if(from.equals("all")) {
+//                    mNavigationBar.changeText(listPhotoAll.size(), 1);
+//                }else {
+//                    mNavigationBar.changeText(listPhotoSelect.size(), 1);
+//                }
+//            }
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtil.dp2px(this, 56));
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
             mNavigationBar.setLayoutParams(layoutParams);
@@ -186,6 +251,7 @@ public class PreviewActivity extends AppCompatActivity {
                             list.add(fileObj.getPath());
                         }
                     }
+                    Log.e(TAG, "选中的 ==================== " + list.size());
                     callback.willClose(list, true, listPhotoSelect);
                     PreviewActivity.this.finish();
                 }
@@ -194,47 +260,82 @@ public class PreviewActivity extends AppCompatActivity {
             mNavigationBar.setPreviewRightViewClickListener(new NavigationBar.PreviewRightViewClickListener() {
                 @Override
                 public void rightClickListener(CircleView view) {
-                    if(!TextUtils.isEmpty(from)) {
-                        if(from.equals("all")) {
-                            // 得到当前的photo
-                            FileObj photo = listPhotoAll.get(currentIndex - 1);
-                            Log.e(TAG, "photo.getPath() =============== " + photo.getPath());
-                            // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
-                            if(view.getStatus() == 0) {
-                                listPhotoSelect.add(photo);
-                                view.changeStatus(1, listPhotoSelect.size());
-                                photo.setStatus(1);
-                            }else {
-                                listPhotoSelect.remove(photo);
-                                view.changeStatus(0, 0);
-                                photo.setStatus(0);
-                            }
+                    if(!TextUtils.isEmpty(from) && from.equals("all")){
+                        // 得到当前的photo
+                        FileObj photo = listPhotoAll.get(currentIndex - 1);
+                        Log.e(TAG, "photo.getPath() =============== " + photo.getPath());
+                        // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
+                        if(view.getStatus() == 0) {
+                            listPhotoSelect.add(photo);
+                            view.changeStatus(1, listPhotoSelect.size());
+                            photo.setStatus(1);
                         }else {
-                            FileObj file = listPhotoAdapterData.get(currentIndex - 1);
-                            // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
-                            if(view.getStatus() == 0) {
-                                listPhotoSelect.add(file);
-                                view.changeStatus(1, listPhotoSelect.size());
-                                file.setStatus(1);
-                            }else {
-                                listPhotoSelect.remove(file);
-                                view.changeStatus(0, 0);
-                                file.setStatus(0);
-                            }
+                            listPhotoSelect.remove(photo);
+                            view.changeStatus(0, 0);
+                            photo.setStatus(0);
                         }
-
+                    }else {
+                        FileObj file = listPhotoAdapterData.get(currentIndex - 1);
+                        // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
+                        if(view.getStatus() == 0) {
+                            listPhotoSelect.add(file);
+                            view.changeStatus(1, listPhotoSelect.size());
+                            file.setStatus(1);
+                        }else {
+                            listPhotoSelect.remove(file);
+                            view.changeStatus(0, 0);
+                            file.setStatus(0);
+                        }
                     }
+
+//                    if(!TextUtils.isEmpty(from)) {
+//                        if(from.equals("all")) {
+//                            // 得到当前的photo
+//                            FileObj photo = listPhotoAll.get(currentIndex - 1);
+//                            Log.e(TAG, "photo.getPath() =============== " + photo.getPath());
+//                            // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
+//                            if(view.getStatus() == 0) {
+//                                listPhotoSelect.add(photo);
+//                                view.changeStatus(1, listPhotoSelect.size());
+//                                photo.setStatus(1);
+//                            }else {
+//                                listPhotoSelect.remove(photo);
+//                                view.changeStatus(0, 0);
+//                                photo.setStatus(0);
+//                            }
+//                        }else {
+//                            FileObj file = listPhotoAdapterData.get(currentIndex - 1);
+//                            // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
+//                            if(view.getStatus() == 0) {
+//                                listPhotoSelect.add(file);
+//                                view.changeStatus(1, listPhotoSelect.size());
+//                                file.setStatus(1);
+//                            }else {
+//                                listPhotoSelect.remove(file);
+//                                view.changeStatus(0, 0);
+//                                file.setStatus(0);
+//                            }
+//                        }
+//                    }
                 }
             });
             // 预览界面顶部条右侧按钮的初始状态（有时是选中状态，有时是未选中状态）,之后的翻页状态会自动刷新
-            if(!TextUtils.isEmpty(from)) {
-                if(from.equals("all")) {
-                    // 点哪个item进来就从哪个item开始预览
-                    mNavigationBar.changeTextCircle(listPhotoAll.get(fromPosition).getStatus(), listPhotoAll.get(fromPosition).getNumber());
-                }else {
-                    mNavigationBar.changeTextCircle(listPhotoSelect.get(0).getStatus(), 1);
-                }
+            if(!TextUtils.isEmpty(from) && from.equals("all")) {
+                // 点哪个item进来就从哪个item开始预览
+                mNavigationBar.changeTextCircle(listPhotoAll.get(fromPosition).getStatus(), listPhotoAll.get(fromPosition).getNumber());
+            }else {
+                mNavigationBar.changeTextCircle(listPhotoSelect.get(0).getStatus(), 1);
             }
+
+
+//            if(!TextUtils.isEmpty(from)) {
+//                if(from.equals("all")) {
+//                    // 点哪个item进来就从哪个item开始预览
+//                    mNavigationBar.changeTextCircle(listPhotoAll.get(fromPosition).getStatus(), listPhotoAll.get(fromPosition).getNumber());
+//                }else {
+//                    mNavigationBar.changeTextCircle(listPhotoSelect.get(0).getStatus(), 1);
+//                }
+//            }
         }
     }
 
@@ -291,29 +392,52 @@ public class PreviewActivity extends AppCompatActivity {
             PreviewBarLeftButton previewBarLeftButton = mNavigationBar.getPreviewBarLeftButton();
             if(previewBarLeftButton == null) return;
             currentIndex = position + 1; // 当前的item的position
-            if(!TextUtils.isEmpty(from)) {
-                if(from.equals("all")) {
-                    previewBarLeftButton.changeText(listPhotoAll.size(), currentIndex);
-                }else {
-                    previewBarLeftButton.changeText(listPhotoAdapterData.size(), currentIndex);
-                }
+
+            if(!TextUtils.isEmpty(from) && from.equals("all")) {
+                previewBarLeftButton.changeText(listPhotoAll.size(), currentIndex);
+            }else {
+                previewBarLeftButton.changeText(listPhotoAdapterData.size(), currentIndex);
             }
+
+//            if(!TextUtils.isEmpty(from)) {
+//                if(from.equals("all")) {
+//                    previewBarLeftButton.changeText(listPhotoAll.size(), currentIndex);
+//                }else {
+//                    previewBarLeftButton.changeText(listPhotoAdapterData.size(), currentIndex);
+//                }
+//            }
+
+
             // 右侧按钮更新
             CircleView mCircleView = mNavigationBar.getCircleView();
-            if(!TextUtils.isEmpty(from)) {
-                if(from.equals("all")) {
-                    // 选中状态
-                    FileObj fileObj = listPhotoAll.get(position);
-                    if(fileObj.getStatus() == 1) {
-                        mCircleView.changeStatus(1, listPhotoSelect.indexOf(fileObj) + 1);
-                    }else {
-                        mCircleView.changeStatus(0, 0);
-                    }
+
+            if(!TextUtils.isEmpty(from) && from.equals("all")) {
+                // 选中状态
+                FileObj fileObj = listPhotoAll.get(position);
+                if(fileObj.getStatus() == 1) {
+                    mCircleView.changeStatus(1, listPhotoSelect.indexOf(fileObj) + 1);
                 }else {
-                    FileObj fileObj = listPhotoAdapterData.get(position);
-                    mCircleView.changeStatus(fileObj.getStatus(), listPhotoSelect.indexOf(fileObj) + 1);
+                    mCircleView.changeStatus(0, 0);
                 }
+            }else {
+                FileObj fileObj = listPhotoAdapterData.get(position);
+                mCircleView.changeStatus(fileObj.getStatus(), listPhotoSelect.indexOf(fileObj) + 1);
             }
+
+//            if(!TextUtils.isEmpty(from)) {
+//                if(from.equals("all")) {
+//                    // 选中状态
+//                    FileObj fileObj = listPhotoAll.get(position);
+//                    if(fileObj.getStatus() == 1) {
+//                        mCircleView.changeStatus(1, listPhotoSelect.indexOf(fileObj) + 1);
+//                    }else {
+//                        mCircleView.changeStatus(0, 0);
+//                    }
+//                }else {
+//                    FileObj fileObj = listPhotoAdapterData.get(position);
+//                    mCircleView.changeStatus(fileObj.getStatus(), listPhotoSelect.indexOf(fileObj) + 1);
+//                }
+//            }
         }
 
         /**

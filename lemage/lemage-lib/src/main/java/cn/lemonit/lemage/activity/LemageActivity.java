@@ -116,12 +116,12 @@ public class LemageActivity extends AppCompatActivity {
     /**
      * 总图片量
      */
-    public static List<FileObj> listPhotoAll = new ArrayList<FileObj>();
+    public List<FileObj> listPhotoAll = new ArrayList<FileObj>();
 
     /**
      * 已经选中的图片量
      */
-    public static List<FileObj> listPhotoSelect = new ArrayList<FileObj>();
+    public List<FileObj> listPhotoSelect = new ArrayList<FileObj>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -172,54 +172,6 @@ public class LemageActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    /**
-     * 初始化配置
-     */
-    private void initPhoto() {
-        // 扫描所有大于5K的图片
-        LemageScanner.scanAllPhoto(
-                1024 * 5,
-                true,
-                this, new PhotoScanCompleteCallback() {
-                    @Override
-                    public void scanComplete(Collection<AlbumNew> albumList) {
-//                        Log.e(TAG, "albumList.size === " + albumList.size());
-                        if(albumList.size() > 0) {
-                            for(AlbumNew album : albumList) {
-//                                Log.e(TAG, "相册名称 === " + album.getName());
-//                                Log.e(TAG, "相册路径 === " + album.getPath());
-//                                Log.e(TAG, "相片数量 === " + album.getPhotoList().size());
-//                                for(Photo photo : album.getPhotoList()) {
-//                                    Log.e(TAG, "路径 ====== " + photo.getPath());
-//                                }
-                            }
-                        }
-                        changeAlbum((AlbumNew) albumList.toArray()[0]);
-                        getHorizontal(albumList);
-                    }
-                });
-    }
-
-    /**
-     * 获取所有视频
-     */
-    private void initVideo() {
-        LemageScanner.scanAllVideo(0, true, this, new VideoScanCompleteCallback() {
-            @Override
-            public void scanComplete(Collection<AlbumNew> albumList) {
-                if(albumList.size() > 0) {
-                    for(AlbumNew album : albumList) {
-                        Log.e(TAG, "视频名称 === " + album.getName());
-                        Log.e(TAG, "视频路径 === " + album.getPath());
-                        Log.e(TAG, "视频数量 === " + album.getFileList().size());
-                    }
-                }
-                changeAlbum((AlbumNew) albumList.toArray()[0]);
-//                getHorizontal(albumList);
-            }
-        });
     }
 
     /**
@@ -482,9 +434,20 @@ public class LemageActivity extends AppCompatActivity {
             PreviewActivity.setCallback(callbackToPreview);
             listPhotoAll.clear();
             listPhotoAll.addAll(photoAdapter.getAlbumNew().getFileList());
+            //  给预览界面传值，只传递URL
+            ArrayList<String> listUrlAll = new ArrayList<String>();  // 全部文件路径
+            ArrayList<String> listUrlSelect = new ArrayList<String>(); // 已经选择的文件路径
+            for(FileObj fileObj : listPhotoAll) {
+                listUrlAll.add(fileObj.getPath());
+                if(fileObj.getStatus() == 1) {
+                    listUrlSelect.add(fileObj.getPath());
+                }
+            }
             Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
             intent.putExtra("from", "all");
             intent.putExtra("position", position);
+            intent.putStringArrayListExtra("listAll", listUrlAll);
+            intent.putStringArrayListExtra("listSelect", listUrlSelect);
             startActivity(intent);
 
         }
@@ -528,9 +491,16 @@ public class LemageActivity extends AppCompatActivity {
                 listPhotoAll.clear();
                 listPhotoAll.addAll(photoAdapter.getAlbumNew().getFileList());
                 // 传值
+                ArrayList<String> listUrlAll = new ArrayList<String>();   // 全部文件路径
+                ArrayList<String> listUrlSelect = new ArrayList<String>();  // 已经选择文件路径
+                for(FileObj fileObj : listPhotoSelect) {
+                    listUrlAll.add(fileObj.getPath());
+                    listUrlSelect.add(fileObj.getPath());
+                }
                 PreviewActivity.setCallback(callbackToPreview);
                 Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
-                intent.putExtra("from", "select");
+                intent.putStringArrayListExtra("listAll", listUrlAll);
+                intent.putStringArrayListExtra("listSelect", listUrlSelect);
                 startActivity(intent);
             }else {
                 Toast.makeText(LemageActivity.this, "您还没有选中照片，不能预览", Toast.LENGTH_SHORT).show();
@@ -561,6 +531,8 @@ public class LemageActivity extends AppCompatActivity {
         public void willClose(List<String> imageUrlList, boolean isOriginal, List<FileObj> list) {
 
             for(int i = 0; i < phototAdapterData.getFileList().size(); i ++) {
+                phototAdapterData.getFileList().get(i).setStatus(0);
+                phototAdapterData.getFileList().get(i).setNumber(0);
                 for(int m = 0; m < imageUrlList.size(); m ++) {
                     if(phototAdapterData.getFileList().get(i).getPath().equals(imageUrlList.get(m))) {
                         phototAdapterData.getFileList().get(i).setStatus(1);
