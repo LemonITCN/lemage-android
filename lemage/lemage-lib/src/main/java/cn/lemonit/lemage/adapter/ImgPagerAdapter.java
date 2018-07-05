@@ -26,8 +26,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.lemonit.lemage.bean.FileObj;
+import cn.lemonit.lemage.bean.NetBeen;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.bean.Video;
+import cn.lemonit.lemage.util.PathUtil;
 import cn.lemonit.lemage.view.ControlView;
 import cn.lemonit.lemage.view.LemageVideoView;
 import cn.lemonit.lemage.view.ScreenVideoView;
@@ -45,11 +47,6 @@ public class ImgPagerAdapter extends PagerAdapter {
     private ArrayList<FileObj> listFile;
 
     private ImgOnClickListener mImgOnClickListener;
-
-    // 进度条进度
-    private int progress = 0;
-    // 视频已经观看的秒数
-    private int finishTime = -1;
 
     public ImgPagerAdapter(Context mContext, ArrayList<FileObj> listFile) {
         this.mContext = mContext;
@@ -72,20 +69,36 @@ public class ImgPagerAdapter extends PagerAdapter {
         container.removeView(view);
     }
 
-    //对显示的资源进行初始化
-    @Override
-    public Object instantiateItem(ViewGroup container, int position) {
 
-        RelativeLayout view = new RelativeLayout(mContext);
+    //预加载界面
+    @Override
+    public Object instantiateItem(final ViewGroup container, final int position) {
+        final RelativeLayout view = new RelativeLayout(mContext);
         view.setBackgroundColor(Color.BLACK);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         view.setLayoutParams(layoutParams);
-        FileObj fileObj = listFile.get(position);
-        // 分别显示图片或者视频的对应的样式
-        if(fileObj instanceof Photo) {
-            showPhotoStyleView(view, position);
-        }else if(fileObj instanceof Video) {
-            showVideoStyleView(view, position);
+        final FileObj fileObj = listFile.get(position);
+
+        PathUtil mPathUtil = new PathUtil(mContext);
+        mPathUtil.setDownLoadFileFinishListener(new PathUtil.DownLoadFileFinishListener() {
+            @Override
+            public void downLoadFileFinish(NetBeen netBeen) {
+                if(netBeen == null) return;
+                fileObj.setPath(netBeen.getPath());
+                if(netBeen.getType() == 0) {
+                    showPhotoStyleView(view, position, netBeen);
+                }else {
+                    showVideoStyleView(view, position, netBeen);
+                }
+                container.removeAllViews();
+                container.addView(view);
+            }
+        });
+        NetBeen mNetBeen = mPathUtil.getNetBeen(fileObj.getPath());
+        if(mNetBeen.getType() == 0) {
+            showPhotoStyleView(view, position, mNetBeen);
+        }else {
+            showVideoStyleView(view, position, mNetBeen);
         }
         container.addView(view);
         return view;
@@ -108,7 +121,7 @@ public class ImgPagerAdapter extends PagerAdapter {
      * 当item是图片时需要显示的样式
      * @param view
      */
-    private void showPhotoStyleView(RelativeLayout view, int position) {
+    private void showPhotoStyleView(RelativeLayout view, int position, NetBeen mNetBeen) {
         ZoomImageView imageView = new ZoomImageView(mContext);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,150 +131,37 @@ public class ImgPagerAdapter extends PagerAdapter {
         });
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         imageView.setLayoutParams(params);
-        Glide.with(mContext).load(listFile.get(position).getPath()).into(imageView);
+        Glide.with(mContext).load(mNetBeen.getPath()).into(imageView);
         view.addView(imageView);
     }
+
 
     /**
      * 当item是视频时要显示的样式
      * @param view
      */
-    private void showVideoStyleView(RelativeLayout view, int position) {
-        final Video mVideo = (Video) listFile.get(position);
+    private void showVideoStyleView(RelativeLayout view, int position, NetBeen mNetBeen) {
+        final Video mVideo = new Video();
+        mVideo.setPath(mNetBeen.getPath());
+        mVideo.setStatus(listFile.get(position).getStatus());
 
-        LemageVideoView mLemageVideoView = new LemageVideoView(mContext);
+        final LemageVideoView mLemageVideoView = new LemageVideoView(mContext, mNetBeen.getPath());
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         mLemageVideoView.setLayoutParams(layoutParams);
-        view.addView(mLemageVideoView);
-
-        // 显示静态图片
-        MediaMetadataRetriever media = new MediaMetadataRetriever();
-        // 视频时长
-//        final long duration = mVideo.getDuration();
-        media.setDataSource(mVideo.getPath());
-        String durationStr = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-        final long duration = Long.parseLong(durationStr);
-        final int time = (int) Math.floor((duration / 1000));   // 秒
-        // 视频路径
-        final String path = mVideo.getPath();
-        media.setDataSource(path);
-        Bitmap bitmap = media.getFrameAtTime();
-        final ImageView mImageView = mLemageVideoView.getImageView();
-        mImageView.setImageBitmap(bitmap);
-        // 播放视频控件
-        final ScreenVideoView mVideoView = mLemageVideoView.getVideoView();
-        // 底部视频控制条
-        final ControlView mContralView = mLemageVideoView.getControlView();
-        // 进度条
-        final ProgressBar mProgressBar = mContralView.getProgressBar();
-
-        final Handler mHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                if(msg.what == 0) {
-                    if(progress < 101) {
-                        mProgressBar.setProgress(progress ++);
-                    }
-                }
-            }
-        };
-
-
-
-        final Thread mThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i = 0; i < 101; i ++) {
-                    try {
-                        Thread.sleep(duration / 100);
-                        mHandler.sendEmptyMessage(0);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        // 显示时间
-        final Handler timeHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                if(msg.what == 1) {
-                    Log.e(TAG, "Handler时间更新");
-                    finishTime ++;
-                    if(finishTime < time + 1) {
-                        mContralView.setTimeText(finishTime + " / " + time);
-                    }
-                }
-            }
-        };
-
-        final Timer mTimer = new Timer();
-        final TimerTask mTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                Log.e(TAG, "TimerTask时间更新");
-                timeHandler.sendEmptyMessage(1);
-            }
-        };
-
-        // 静态图片中的开始按钮的点击事件
-        final VideoStartImageView mVideoStartImageView = mLemageVideoView.getBigVideoStartImageView();
-        mVideoStartImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mVideoStartImageView.setVisibility(View.GONE);
-                mImageView.setVisibility(View.GONE);
-                Uri uri = Uri.parse(path);
-                mVideoView.setVideoURI(uri);
-                // 不调用控制器，否则系统的进度条没法全部去除
-//                MediaController mediaController = new MediaController(mContext);
-//                mediaController.setVisibility(View.GONE);
-//                mVideoView.setMediaController(mediaController);
-                mVideoView.requestFocus();
-                mVideoView.start();
-
-                mTimer.schedule(mTimerTask, 0,1000);
-                mThread.start();
-
-
-//                String path = "http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8";   // 中央一台
-////                String path = "http://ivi.bupt.edu.cn/hls/cctv5hd.m3u8";   // 中央五台
-////                String path = "http://221.228.226.23/6/n/a/y/l/naylspkwvsujoltcqursegarxzowax/hd.yinyuetai.com/C02F015B377EA255563C19FBEF88B071.mp4";
-////                String path = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
-////                String path = "http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400.mp4";
-//                mVideoView.setVideoURI(Uri.parse(path));
-//                mVideoView.requestFocus();
-//                mVideoView.start();
-            }
-        });
-
-        // 播放结束监听
-        mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mVideoStartImageView.setVisibility(View.VISIBLE);
-                mImageView.setVisibility(View.VISIBLE);
-                mTimer.cancel();
-                mTimerTask.cancel();
-            }
-        });
-        // 点击时，顶部条和底部条隐藏和显示交替
-        mVideoView.setOnTouchListener(new View.OnTouchListener() {
+        // 点击视频屏幕，顶部条和底部条显示和隐藏
+        mLemageVideoView.getVideoView().setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 int action = motionEvent.getAction();
                 switch (action) {
                     case MotionEvent.ACTION_UP:
-                        if(mContralView == null) return false;
-                        if(mContralView.isShow()) {
-                            mContralView.setShow(false);
-                            mContralView.setVisibility(View.GONE);
+                        if(mLemageVideoView.getControlView() == null) return false;
+                        if(mLemageVideoView.getControlView().isShow()) {
+                            mLemageVideoView.getControlView().setShow(false);
+                            mLemageVideoView.getControlView().setVisibility(View.GONE);
                         }else {
-                            mContralView.setShow(true);
-                            mContralView.setVisibility(View.VISIBLE);
+                            mLemageVideoView.getControlView().setShow(true);
+                            mLemageVideoView.getControlView().setVisibility(View.VISIBLE);
                         }
                         break;
                     case MotionEvent.ACTION_DOWN:
@@ -270,21 +170,7 @@ public class ImgPagerAdapter extends PagerAdapter {
                 return false;
             }
         });
-
-
-        // 底部条开始按钮
-        final VideoStartImageView videoStartImageView = mContralView.getVideoStartImageView();
-        videoStartImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mVideoView.isPlaying()) {
-                    mVideoView.pause();
-                    videoStartImageView.setPause(true);
-                }else {
-                    mVideoView.start();
-                    videoStartImageView.setPause(false);
-                }
-            }
-        });
+        view.addView(mLemageVideoView);
     }
+
 }

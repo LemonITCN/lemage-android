@@ -26,6 +26,13 @@
         android:text="都选择"
         app:layout_constraintLeft_toRightOf="@id/selectVideo"/>
 
+    <Button
+        android:id="@+id/testType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="获取类型"
+        app:layout_constraintLeft_toRightOf="@id/selectAll"/>
+
     <RelativeLayout
         android:id="@+id/layout"
         android:layout_width="0dp"

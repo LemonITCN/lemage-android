@@ -106,55 +106,77 @@ public class PreviewActivity extends AppCompatActivity {
 //        listPhotoAdapterData.addAll(LemageActivity.listPhotoSelect);
         ArrayList<String> listAll = intent.getStringArrayListExtra("listAll");
         ArrayList<String> listSelect = intent.getStringArrayListExtra("listSelect");
+
         for(String url : listAll) {
-            if(url.contains(".mp4") || url.contains(".3gp")) {
-                Video video = new Video();
-                video.setPath(url);
-                if(listSelect.contains(url)) {
-                    video.setStatus(1);
-                }else {
-                    video.setStatus(0);
-                }
-                listPhotoAll.add(video);
+            FileObj fileObj = new FileObj();
+            fileObj.setPath(url);
+            if(listSelect.contains(url)) {
+                fileObj.setStatus(1);
             }else {
-                Photo photo = new Photo();
-                photo.setPath(url);
-                if(listSelect.contains(url)) {
-                    photo.setStatus(1);
-                }else {
-                    photo.setStatus(0);
-                }
-                listPhotoAll.add(photo);
+                fileObj.setStatus(0);
             }
-//            FileObj fileObj = new FileObj();
-//            fileObj.setPath(url);
-//            if(listSelect.contains(url)) {
-//                fileObj.setStatus(1);
-//            }else {
-//                fileObj.setStatus(0);
-//            }
-//            listPhotoAll.add(fileObj);
+            listPhotoAll.add(fileObj);
         }
         for(String url : listSelect) {
-            if(url.contains(".mp4") || url.contains(".3gp")) {
-                Video video = new Video();
-                video.setPath(url);
-                video.setStatus(1);
-                listPhotoSelect.add(video);
-                listPhotoAdapterData.add(video);
-            }else {
-                Photo photo = new Photo();
-                photo.setPath(url);
-                photo.setStatus(1);
-                listPhotoSelect.add(photo);
-                listPhotoAdapterData.add(photo);
-            }
-//            FileObj fileObj = new FileObj();
-//            fileObj.setStatus(1);
-//            fileObj.setPath(url);
-//            listPhotoSelect.add(fileObj);
-//            listPhotoAdapterData.add(fileObj);
+            FileObj fileObj = new FileObj();
+            fileObj.setPath(url);
+            fileObj.setStatus(1);
+            listPhotoSelect.add(fileObj);
+            listPhotoAdapterData.add(fileObj);
         }
+
+//        for(String url : listAll) {
+//            if(url.contains(".mp4") || url.contains(".3gp")) {
+//                Video video = new Video();
+//                video.setPath(url);
+//                if(listSelect.contains(url)) {
+//                    video.setStatus(1);
+//                }else {
+//                    video.setStatus(0);
+//                }
+//                listPhotoAll.add(video);
+//            }else {
+//                Photo photo = new Photo();
+//                photo.setPath(url);
+////                photo.setPath(url.substring("lemage://album/localImage".length()));
+//                if(listSelect.contains(url)) {
+//                    photo.setStatus(1);
+//                }else {
+//                    photo.setStatus(0);
+//                }
+//                listPhotoAll.add(photo);
+//            }
+////            FileObj fileObj = new FileObj();
+////            fileObj.setPath(url);
+////            if(listSelect.contains(url)) {
+////                fileObj.setStatus(1);
+////            }else {
+////                fileObj.setStatus(0);
+////            }
+////            listPhotoAll.add(fileObj);
+//        }
+//        for(String url : listSelect) {
+//            if(url.contains(".mp4") || url.contains(".3gp")) {
+//                Video video = new Video();
+//                video.setPath(url);
+////                video.setPath(url.substring("lemage://album/localVideo".length()));
+//                video.setStatus(1);
+//                listPhotoSelect.add(video);
+//                listPhotoAdapterData.add(video);
+//            }else {
+//                Photo photo = new Photo();
+//                photo.setPath(url);
+////                photo.setPath(url.substring("lemage://album/localImage".length()));
+//                photo.setStatus(1);
+//                listPhotoSelect.add(photo);
+//                listPhotoAdapterData.add(photo);
+//            }
+////            FileObj fileObj = new FileObj();
+////            fileObj.setStatus(1);
+////            fileObj.setPath(url);
+////            listPhotoSelect.add(fileObj);
+////            listPhotoAdapterData.add(fileObj);
+//        }
 
     }
 
@@ -399,13 +421,6 @@ public class PreviewActivity extends AppCompatActivity {
                 previewBarLeftButton.changeText(listPhotoAdapterData.size(), currentIndex);
             }
 
-//            if(!TextUtils.isEmpty(from)) {
-//                if(from.equals("all")) {
-//                    previewBarLeftButton.changeText(listPhotoAll.size(), currentIndex);
-//                }else {
-//                    previewBarLeftButton.changeText(listPhotoAdapterData.size(), currentIndex);
-//                }
-//            }
 
 
             // 右侧按钮更新
@@ -424,20 +439,6 @@ public class PreviewActivity extends AppCompatActivity {
                 mCircleView.changeStatus(fileObj.getStatus(), listPhotoSelect.indexOf(fileObj) + 1);
             }
 
-//            if(!TextUtils.isEmpty(from)) {
-//                if(from.equals("all")) {
-//                    // 选中状态
-//                    FileObj fileObj = listPhotoAll.get(position);
-//                    if(fileObj.getStatus() == 1) {
-//                        mCircleView.changeStatus(1, listPhotoSelect.indexOf(fileObj) + 1);
-//                    }else {
-//                        mCircleView.changeStatus(0, 0);
-//                    }
-//                }else {
-//                    FileObj fileObj = listPhotoAdapterData.get(position);
-//                    mCircleView.changeStatus(fileObj.getStatus(), listPhotoSelect.indexOf(fileObj) + 1);
-//                }
-//            }
         }
 
         /**

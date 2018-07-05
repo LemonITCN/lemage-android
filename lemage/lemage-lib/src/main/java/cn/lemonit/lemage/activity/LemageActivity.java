@@ -438,9 +438,15 @@ public class LemageActivity extends AppCompatActivity {
             ArrayList<String> listUrlAll = new ArrayList<String>();  // 全部文件路径
             ArrayList<String> listUrlSelect = new ArrayList<String>(); // 已经选择的文件路径
             for(FileObj fileObj : listPhotoAll) {
-                listUrlAll.add(fileObj.getPath());
+                String path = fileObj.getPath();
+                if(path.endsWith(".mp4") || path.endsWith(".3gp")) {
+                    path = "lemage://album/localVideo" + path;
+                }else {
+                    path = "lemage://album/localImage" + path;
+                }
+                listUrlAll.add(path);
                 if(fileObj.getStatus() == 1) {
-                    listUrlSelect.add(fileObj.getPath());
+                    listUrlSelect.add(path);
                 }
             }
             Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
@@ -494,8 +500,14 @@ public class LemageActivity extends AppCompatActivity {
                 ArrayList<String> listUrlAll = new ArrayList<String>();   // 全部文件路径
                 ArrayList<String> listUrlSelect = new ArrayList<String>();  // 已经选择文件路径
                 for(FileObj fileObj : listPhotoSelect) {
-                    listUrlAll.add(fileObj.getPath());
-                    listUrlSelect.add(fileObj.getPath());
+                    String path = fileObj.getPath();
+                    if(path.endsWith(".mp4") || path.endsWith(".3gp")) {
+                        path = "lemage://album/localVideo" + path;
+                    }else {
+                        path = "lemage://album/localImage" + path;
+                    }
+                    listUrlAll.add(path);
+                    listUrlSelect.add(path);
                 }
                 PreviewActivity.setCallback(callbackToPreview);
                 Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
@@ -534,7 +546,7 @@ public class LemageActivity extends AppCompatActivity {
                 phototAdapterData.getFileList().get(i).setStatus(0);
                 phototAdapterData.getFileList().get(i).setNumber(0);
                 for(int m = 0; m < imageUrlList.size(); m ++) {
-                    if(phototAdapterData.getFileList().get(i).getPath().equals(imageUrlList.get(m))) {
+                    if(phototAdapterData.getFileList().get(i).getPath().equals(imageUrlList.get(m).substring("lemage://album/localImage".length()))) {
                         phototAdapterData.getFileList().get(i).setStatus(1);
                         phototAdapterData.getFileList().get(i).setNumber(m + 1);
                     }

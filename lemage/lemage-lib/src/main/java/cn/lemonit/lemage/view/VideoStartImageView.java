@@ -52,7 +52,6 @@ public class VideoStartImageView extends View {
         this.circleStroke = circleStroke;
         this.triangleStroke = triangleStroke;
         init();
-//        setWillNotDraw(false);
     }
 
     private void init() {
