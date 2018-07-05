@@ -36,6 +36,7 @@ import java.util.Map;
 import cn.lemonit.lemage.Lemage;
 import cn.lemonit.lemage.activity.PreviewActivity;
 import cn.lemonit.lemage.bean.FileObj;
+import cn.lemonit.lemage.core.LemageScanner;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -92,17 +93,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.selectPhoto:
-//                Lemage.startChooser(MainActivity.this, 5, false, R.color.colorPrimaryDark, LemageScanner.STYLE_ONLY_PICTURE, null);
+                Lemage.startChooser(MainActivity.this, 5, false, R.color.colorPrimaryDark, LemageScanner.STYLE_ONLY_PHOTO, null);
 
 //                actionVideo();
 //                addView();
 //                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ONLY_PHOTO, null);
                 break;
             case R.id.selectVideo:
-//                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ONLY_VIDEO, null);
+                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ONLY_VIDEO, null);
                 break;
             case R.id.selectAll:
-//                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ALL, null);
+                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ALL, null);
                 break;
             // 获取文件类型
             case R.id.testType:

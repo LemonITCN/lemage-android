@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 
 import cn.lemonit.lemage.util.ScreenUtil;
 
@@ -23,7 +24,8 @@ public class ControlView extends RelativeLayout {
     private Context mContext;
     private Paint mPaint;
     private VideoStartImageView mVideoStartImageView;
-    private ProgressBar mProgressBar;
+//    private ProgressBar mProgressBar;
+    private SeekBar mProgressBar;
     private String timeText = "";
     // 是否显示状态
     private boolean isShow = true;
@@ -57,8 +59,8 @@ public class ControlView extends RelativeLayout {
      * 添加进度条
      */
     private void addProgressBar() {
-        ProgressBar mProgressBar = new ProgressBar(mContext, null,android.R.attr.progressBarStyleHorizontal);
-//        mProgressBar.setBackgroundColor(Color.YELLOW);
+        SeekBar mProgressBar = new SeekBar(mContext, null,android.R.attr.progressBarStyleHorizontal);
+//        ProgressBar mProgressBar = new ProgressBar(mContext, null,android.R.attr.progressBarStyleHorizontal);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         layoutParams.setMargins(20 + 20 + ScreenUtil.dp2px(mContext, 20) * 2, 0, 20, ScreenUtil.dp2px(mContext, 5));
@@ -96,7 +98,7 @@ public class ControlView extends RelativeLayout {
         invalidate();
     }
 
-    public ProgressBar getProgressBar() {
+    public SeekBar getProgressBar() {
         return mProgressBar;
     }
 

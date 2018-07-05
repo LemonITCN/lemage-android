@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.VideoView;
 
 import java.util.Timer;
@@ -160,7 +161,43 @@ public class LemageVideoView extends RelativeLayout {
         mVideoStartImageView.setOnClickListener(bigStartVideoListener);
         // 底部条开始按钮事件
         mControlView.getVideoStartImageView().setOnClickListener(bottomStartVideoListener);
+        // 进度条改变
+        mControlView.getProgressBar().setOnSeekBarChangeListener(mOnSeekBarChangeListener);
     }
+
+    private SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+
+        /**
+         * 进度改变
+         * @param seekBar
+         * @param i
+         * @param b
+         */
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            Log.e(TAG, "onProgressChanged    progress ============= " + progress);
+//            mVideoView.seekTo(progress);
+        }
+
+        /**
+         * 开始拖动
+         * @param seekBar
+         */
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            Log.e(TAG, "onStartTrackingTouch    progress ============= ");
+        }
+
+        /**
+         * 停止拖动
+         * @param seekBar
+         */
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            Log.e(TAG, "onStopTrackingTouch ============= ");
+        }
+    };
+
 
     /**
      * 大屏幕开始按钮
