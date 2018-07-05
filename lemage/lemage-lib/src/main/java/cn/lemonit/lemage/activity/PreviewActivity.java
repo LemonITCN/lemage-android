@@ -29,6 +29,7 @@ import cn.lemonit.lemage.view.PreviewBarLeftButton;
 import cn.lemonit.lemage.view.PreviewOperationBar;
 
 /**
+ * 预览界面
  * @author: zhaoguangyang
  */
 public class PreviewActivity extends AppCompatActivity {

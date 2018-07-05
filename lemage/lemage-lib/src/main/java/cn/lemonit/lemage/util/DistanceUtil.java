@@ -4,6 +4,7 @@ import android.content.Context;
 
 /**
  *  适配距离，宽度，高度等
+ *  @author liuri
  */
 public class DistanceUtil {
 

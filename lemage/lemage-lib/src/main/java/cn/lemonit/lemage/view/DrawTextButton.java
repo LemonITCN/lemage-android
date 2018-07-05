@@ -15,6 +15,7 @@ import cn.lemonit.lemage.util.ScreenUtil;
 
 /**
  * 预览按钮
+ * @author zhaoguangyang
  */
 public class DrawTextButton extends CompoundButton {
 

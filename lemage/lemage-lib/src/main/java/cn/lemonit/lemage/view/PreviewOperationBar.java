@@ -12,6 +12,7 @@ import cn.lemonit.lemage.util.ScreenUtil;
 
 /**
  *  预览界面的底部条，只有完成一个按钮
+ *  @author zhaoguangyang
  */
 public class PreviewOperationBar extends LinearLayout {
 

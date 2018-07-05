@@ -38,6 +38,7 @@ import cn.lemonit.lemage.view.ZoomImageView;
 
 /**
  * 预览viewpager适配器
+ * @author: zhaoguangyang
  */
 public class ImgPagerAdapter extends PagerAdapter {
 

@@ -13,6 +13,7 @@ import cn.lemonit.lemage.util.ScreenUtil;
 
 /**
  * 原图按钮，左边是圆圈，右边是文字
+ * @author zhaoguangyang
  */
 public class DrawCircleTextButton extends CompoundButton {
 

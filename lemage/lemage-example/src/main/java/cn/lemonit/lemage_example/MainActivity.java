@@ -1,16 +1,11 @@
 package cn.lemonit.lemage_example;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -19,17 +14,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
-import android.widget.VideoView;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,29 +27,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import cn.lemonit.lemage.Lemage;
-import cn.lemonit.lemage.activity.LemageActivity;
 import cn.lemonit.lemage.activity.PreviewActivity;
-import cn.lemonit.lemage.bean.AlbumNew;
 import cn.lemonit.lemage.bean.FileObj;
-import cn.lemonit.lemage.bean.ImageSize;
-import cn.lemonit.lemage.bean.Video;
-import cn.lemonit.lemage.core.LemageScanner;
-import cn.lemonit.lemage.core.LemageScannerNew;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
-import cn.lemonit.lemage.interfaces.ScanCompleteCallback;
-import cn.lemonit.lemage.interfaces.VideoScanCompleteCallback;
-import cn.lemonit.lemage.util.PathUtil;
-import cn.lemonit.lemage.view.VideoStartImageView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -119,13 +96,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //                actionVideo();
 //                addView();
-                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ONLY_PHOTO, null);
+//                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ONLY_PHOTO, null);
                 break;
             case R.id.selectVideo:
-                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ONLY_VIDEO, null);
+//                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ONLY_VIDEO, null);
                 break;
             case R.id.selectAll:
-                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ALL, null);
+//                Lemage.startChooser(this, 100, false, 0, LemageScanner.STYLE_ALL, null);
                 break;
             // 获取文件类型
             case R.id.testType:

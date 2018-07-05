@@ -10,6 +10,10 @@ import android.view.View;
 
 import cn.lemonit.lemage.util.ScreenUtil;
 
+/**
+ * 小圆圈
+ * @author zhaoguangyang
+ */
 public class CircleView extends View {
 
     private final String TAG = "CircleView";

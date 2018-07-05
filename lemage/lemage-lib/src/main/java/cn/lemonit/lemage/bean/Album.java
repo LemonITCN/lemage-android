@@ -1,41 +1,37 @@
 package cn.lemonit.lemage.bean;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 相册信息对象
- *
- * @author liuri
+ * 相册或者视频所在文件夹对象
+ * @author: liuri
  */
 public class Album extends FileObj {
 
-    /**
-     * 相册中的所有照片信息
-     */
-    private List<Photo> photoList;
+    private List<FileObj> fileList;
 
     public Album(String name, String path) {
         this.name = name;
         this.path = path;
-        this.photoList = new ArrayList<>();
+        this.fileList = new ArrayList<>();
     }
 
-    public Album(String name, String path, List<Photo> photoList) {
+    public Album(String name, String path, List<FileObj> fileList) {
         this.name = name;
         this.path = path;
-        this.photoList = photoList;
+        this.fileList = fileList;
     }
 
-    public List<Photo> getPhotoList() {
-        if (photoList == null) {
-            photoList = new ArrayList<>();
+    public List<FileObj> getFileList() {
+        if (fileList == null) {
+            fileList = new ArrayList<>();
         }
-        return photoList;
+        return fileList;
     }
 
-    public void setPhotoList(List<Photo> photoList) {
-        this.photoList = photoList;
+    public void setFileList(List<FileObj> fileList) {
+        this.fileList = fileList;
     }
+
 }

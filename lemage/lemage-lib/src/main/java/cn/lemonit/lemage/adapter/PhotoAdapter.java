@@ -4,11 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -16,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.lemonit.lemage.bean.Album;
-import cn.lemonit.lemage.bean.AlbumNew;
 import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.util.ScreenUtil;
@@ -35,7 +32,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      * 当前正在显示的相册
      */
 //    private Album currentAlbum;
-    private AlbumNew currentAlbum;
+    private Album currentAlbum;
     /**
      * 上下文对象
      */
@@ -60,7 +57,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     private int number;
 
-    public PhotoAdapter(Context context, AlbumNew currentAlbum) {
+    public PhotoAdapter(Context context, Album currentAlbum) {
         this.context = context;
         this.currentAlbum = currentAlbum;
     }
@@ -231,7 +228,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         mPhotoView.changeStatus(1, number);
     }
 
-    public AlbumNew getAlbumNew() {
+    public Album getAlbumNew() {
         return currentAlbum;
     }
 

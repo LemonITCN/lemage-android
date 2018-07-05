@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,26 +16,17 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import cn.lemonit.lemage.Lemage;
 import cn.lemonit.lemage.R;
 import cn.lemonit.lemage.adapter.AlbumAdapter;
 import cn.lemonit.lemage.adapter.PhotoAdapter;
 import cn.lemonit.lemage.bean.Album;
-import cn.lemonit.lemage.bean.AlbumNew;
 import cn.lemonit.lemage.bean.FileObj;
-import cn.lemonit.lemage.bean.LemageUsageText;
-import cn.lemonit.lemage.bean.Photo;
-import cn.lemonit.lemage.bean.Video;
 import cn.lemonit.lemage.core.LemageScanner;
-import cn.lemonit.lemage.core.LemageScannerNew;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
-import cn.lemonit.lemage.interfaces.PhotoScanCompleteCallback;
 import cn.lemonit.lemage.interfaces.ScanCompleteCallback;
-import cn.lemonit.lemage.interfaces.VideoScanCompleteCallback;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
 import cn.lemonit.lemage.view.DrawCircleTextButton;
@@ -97,7 +87,7 @@ public class LemageActivity extends AppCompatActivity {
     /**
      * 图片列表控件的适配器的数据源
      */
-    private AlbumNew phototAdapterData;
+    private Album phototAdapterData;
 
     /**
      * 横向滑动的图片文件选择栏
@@ -151,11 +141,11 @@ public class LemageActivity extends AppCompatActivity {
      * 根据需要扫描图片还是视频并显示
      */
     private void showPictureOrVideo() {
-        new LemageScannerNew(this, style).scanFile(new ScanCompleteCallback() {
+        new LemageScanner(this, style).scanFile(new ScanCompleteCallback() {
             @Override
-            public void scanComplete(Collection<AlbumNew> albumList) {
+            public void scanComplete(Collection<Album> albumList) {
                 if(albumList.size() > 0) {
-                    for(AlbumNew album : albumList) {
+                    for(Album album : albumList) {
                         Log.e(TAG, "文件名称 === " + album.getName());
                         Log.e(TAG, "文件路径 === " + album.getPath());
                         Log.e(TAG, "文件数量 === " + album.getFileList().size());
@@ -166,7 +156,7 @@ public class LemageActivity extends AppCompatActivity {
                 }else {
                     Log.e(TAG, "albumList.size() =========== 0");
                 }
-                List<AlbumNew> list = sortList(albumList);
+                List<Album> list = sortList(albumList);
                 changeAlbum(list.get(0));
                 getHorizontal(list);
             }
@@ -178,7 +168,7 @@ public class LemageActivity extends AppCompatActivity {
      * 显示表格图片
      * @param album
      */
-    private void changeAlbum(AlbumNew album) {
+    private void changeAlbum(Album album) {
         getPhotoAdapter(album);
         getImageListView().setAdapter(photoAdapter);
     }
@@ -186,12 +176,12 @@ public class LemageActivity extends AppCompatActivity {
     /**
      * 给数据源排序，全部文件放在第一位
      */
-    private ArrayList<AlbumNew> sortList(Collection<AlbumNew> albumList) {
-        ArrayList<AlbumNew> mAlbumList = new ArrayList<AlbumNew>();
-        AlbumNew albumNewAll = null;
+    private ArrayList<Album> sortList(Collection<Album> albumList) {
+        ArrayList<Album> mAlbumList = new ArrayList<Album>();
+        Album albumNewAll = null;
         Iterator it = albumList.iterator();
         while (it.hasNext()) {
-            AlbumNew album = (AlbumNew) it.next();
+            Album album = (Album) it.next();
             if(album.getName().equals("全部照片")) {
                 albumNewAll = album;
             }
@@ -209,13 +199,13 @@ public class LemageActivity extends AppCompatActivity {
      * 显示横向栏
      * @return
      */
-    private void getHorizontal(Collection<AlbumNew> albumList) {
+    private void getHorizontal(Collection<Album> albumList) {
         if(mAlbumAdapter == null) {
-            ArrayList<AlbumNew> mAlbumList = new ArrayList<AlbumNew>();
-            AlbumNew albumNewAll = null;
+            ArrayList<Album> mAlbumList = new ArrayList<Album>();
+            Album albumNewAll = null;
             Iterator it = albumList.iterator();
             while (it.hasNext()) {
-                AlbumNew album = (AlbumNew) it.next();
+                Album album = (Album) it.next();
                 if(album.getName().equals("全部照片")) {
                     albumNewAll = album;
                 }
@@ -394,11 +384,11 @@ public class LemageActivity extends AppCompatActivity {
      * @param album
      * @return
      */
-    public PhotoAdapter getPhotoAdapter(AlbumNew album) {
+    public PhotoAdapter getPhotoAdapter(Album album) {
         if (photoAdapter == null) {
             // 此处不能直接用=赋值，否则是一个对象，item点击事件时会联动，应该new一个新对象，把属性传递过去即可
 //            phototAdapterData = album;
-            phototAdapterData = new AlbumNew(null, null);
+            phototAdapterData = new Album(null, null);
             phototAdapterData.setName(album.getName());
             phototAdapterData.setPath(album.getPath());
             phototAdapterData.setFileList(album.getFileList());
@@ -473,7 +463,7 @@ public class LemageActivity extends AppCompatActivity {
         }
 
         @Override
-        public void notifShow(AlbumNew mAlbum) {
+        public void notifShow(Album mAlbum) {
             if(horizontalLayout != null && horizontalLayout.isShown()) {
                 horizontalLayout.setVisibility(View.GONE);
                 navigationBar.getAlbumSelectButton().changeText(mAlbum.getName());

@@ -1,11 +1,12 @@
 package cn.lemonit.lemage.interfaces;
 
 import java.util.Collection;
-import java.util.List;
 
 import cn.lemonit.lemage.bean.Album;
-import cn.lemonit.lemage.bean.AlbumNew;
 
+/**
+ * @author: zhaoguangyang
+ */
 public interface PhotoScanCompleteCallback {
 
     /**
@@ -13,6 +14,6 @@ public interface PhotoScanCompleteCallback {
      *
      * @param albumList 相册列表
      */
-    void scanComplete(Collection<AlbumNew> albumList);
+    void scanComplete(Collection<Album> albumList);
 
 }

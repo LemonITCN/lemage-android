@@ -15,6 +15,7 @@ import cn.lemonit.lemage.util.ScreenUtil;
 
 /**
  * 底部条控件
+ * @author zhaoguangyang
  */
 public class OperationBar extends LinearLayout {
 

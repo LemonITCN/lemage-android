@@ -14,6 +14,7 @@ import cn.lemonit.lemage.util.ScreenUtil;
 
 /**
  * 预览界面的顶部条的左侧按钮
+ * @author zhaoguangyang
  */
 public class PreviewBarLeftButton extends CompoundButton {
 

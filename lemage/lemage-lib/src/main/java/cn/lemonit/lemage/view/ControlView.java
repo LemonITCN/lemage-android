@@ -14,6 +14,7 @@ import cn.lemonit.lemage.util.ScreenUtil;
 
 /**
  * VideoView的进度条，暂停按键，显示时间等信息的组合控件
+ * @author zhaoguangyang
  */
 public class ControlView extends RelativeLayout {
 

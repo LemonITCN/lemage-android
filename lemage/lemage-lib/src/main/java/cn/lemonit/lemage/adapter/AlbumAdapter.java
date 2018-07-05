@@ -3,13 +3,10 @@ package cn.lemonit.lemage.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -18,13 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.lemonit.lemage.bean.Album;
-import cn.lemonit.lemage.bean.AlbumNew;
-import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.PhotoView;
 
 /**
  * 图片文件夹横向移动栏适配器
+ * @author: zhaoguangyang
  */
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
 
@@ -32,7 +28,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     private Context mContext;
 
-    private ArrayList<AlbumNew> mAlbumList;
+    private ArrayList<Album> mAlbumList;
 
     private int imgWidth = 0;
     private int columnCount = 0;
@@ -44,7 +40,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     private AlbumItemOnClickListener mAlbumItemOnClickListener;
 
-    public AlbumAdapter(Context context, ArrayList<AlbumNew> albumList) {
+    public AlbumAdapter(Context context, ArrayList<Album> albumList) {
         mContext = context;
         mAlbumList = albumList;
         init();
@@ -191,7 +187,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
      */
     public interface AlbumItemOnClickListener {
         void constantShow();
-        void notifShow(AlbumNew mAlbum);
+        void notifShow(Album mAlbum);
     }
 
     public void setAlbumItemOnClickListener(AlbumItemOnClickListener mAlbumItemOnClickListener) {

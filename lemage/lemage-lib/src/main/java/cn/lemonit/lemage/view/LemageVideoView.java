@@ -23,6 +23,7 @@ import cn.lemonit.lemage.util.ScreenUtil;
 
 /**
  * 完整的视频播放器
+ * @author zhaoguangyang
  */
 public class LemageVideoView extends RelativeLayout {
 
