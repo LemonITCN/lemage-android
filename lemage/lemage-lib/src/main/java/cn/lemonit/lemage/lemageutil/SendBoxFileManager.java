@@ -95,7 +95,7 @@ public class SendBoxFileManager {
     }
 
     /**
-     * 根据URL获取指定文件的byte【】数据
+     * 根据URL获取指定文件的byte[]数据
      * @param url
      * @return
      */

@@ -20,6 +20,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +39,7 @@ import cn.lemonit.lemage.activity.PreviewActivity;
 import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.core.LemageScanner;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
+import cn.lemonit.lemage.lemageutil.SystemInfo;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private long MP4_size;
 
     /****************************/
-    private Button selectVideo, selectAll, testType;
+    private Button selectVideo, selectAll, testType, deleteButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         testType = findViewById(R.id.testType);
         testType.setOnClickListener(this);
+
+        deleteButton = findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(this);
     }
 
     private void initData() {
@@ -126,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ArrayList<String> listUrlSelect = new ArrayList<String>();  // 已经选择文件路径
                 listUrlAll.add("lemage://album/localImage/storage/emulated/0/Download/2e2eb9389b504fc2b3b590d7efdde71191ef6d7d.jpeg");
                 listUrlAll.add("lemage://album/localVideo/storage/emulated/0/DCIM/Camera/20180629_131558.mp4");
+                listUrlAll.add("lemage://album/localImage/storage/emulated/0/Download/d6ca7bcb0a46f21fe099b7bdfc246b600d33aeab.jpeg");
                 listUrlAll.add("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3742173999,1643624888&fm=27&gp=0.jpg");
 //                listUrlAll.add("http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400");
 //                listUrlAll.add("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
@@ -134,6 +140,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.putStringArrayListExtra("listAll", listUrlAll);
                 intent.putStringArrayListExtra("listSelect", listUrlSelect);
                 startActivity(intent);
+                break;
+
+            case R.id.deleteButton:
+                String baseUrl = "/storage/emulated/0/Android/data/";
+                String packageName = SystemInfo.getApplicationPackageName(this);
+                File file = new File(baseUrl + packageName + "/tmp/photo");
+                if(file == null) return;
+                if(!file.isDirectory()) return;
+                File[] files = file.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    File f = files[i];
+                    f.delete();
+                }
                 break;
         }
     }

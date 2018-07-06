@@ -80,19 +80,18 @@ public class ImgPagerAdapter extends PagerAdapter {
         view.setLayoutParams(layoutParams);
         final FileObj fileObj = listFile.get(position);
 
-        PathUtil mPathUtil = new PathUtil(mContext);
+        final PathUtil mPathUtil = new PathUtil(mContext);
         mPathUtil.setDownLoadFileFinishListener(new PathUtil.DownLoadFileFinishListener() {
             @Override
             public void downLoadFileFinish(NetBeen netBeen) {
                 if(netBeen == null) return;
-                fileObj.setPath(netBeen.getPath());
                 if(netBeen.getType() == 0) {
+                    fileObj.setPath("lemage://album/localImage" + netBeen.getPath());
                     showPhotoStyleView(view, position, netBeen);
                 }else {
+                    fileObj.setPath("lemage://album/localVideo" + netBeen.getPath());
                     showVideoStyleView(view, position, netBeen);
                 }
-                container.removeAllViews();
-                container.addView(view);
             }
         });
         NetBeen mNetBeen = mPathUtil.getNetBeen(fileObj.getPath());

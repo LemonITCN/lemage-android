@@ -33,6 +33,13 @@
         android:text="获取类型"
         app:layout_constraintLeft_toRightOf="@id/selectAll"/>
 
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="删除"
+        app:layout_constraintLeft_toRightOf="@id/testType"/>
+
     <RelativeLayout
         android:id="@+id/layout"
         android:layout_width="0dp"
