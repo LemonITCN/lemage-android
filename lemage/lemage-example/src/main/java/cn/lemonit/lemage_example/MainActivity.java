@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 listUrlAll.add("lemage://album/localImage/storage/emulated/0/Download/d6ca7bcb0a46f21fe099b7bdfc246b600d33aeab.jpeg");
                 listUrlAll.add("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3742173999,1643624888&fm=27&gp=0.jpg");
 //                listUrlAll.add("http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400");
-//                listUrlAll.add("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
+                listUrlAll.add("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
                 listUrlSelect.addAll(listUrlAll);
                 Intent intent = new Intent(this, PreviewActivity.class);
                 intent.putStringArrayListExtra("listAll", listUrlAll);
@@ -145,17 +145,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.deleteButton:
                 String baseUrl = "/storage/emulated/0/Android/data/";
                 String packageName = SystemInfo.getApplicationPackageName(this);
-                File file = new File(baseUrl + packageName + "/tmp/photo");
-                if(file == null) return;
-                if(!file.isDirectory()) return;
-                File[] files = file.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    File f = files[i];
-                    f.delete();
-                }
+                File filePhoto = new File(baseUrl + packageName + "/tmp/photo");
+                File fileVideo = new File(baseUrl + packageName + "/tmp/video");
+                deleteFile(filePhoto);
+                deleteFile(fileVideo);
                 break;
         }
     }
+
+
+    private void deleteFile(File file) {
+        if(file == null) return;
+        if(!file.isDirectory()) return;
+        File[] files = file.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File f = files[i];
+            f.delete();
+        }
+    }
+
 
     Handler myHandler = new Handler(){
         @Override

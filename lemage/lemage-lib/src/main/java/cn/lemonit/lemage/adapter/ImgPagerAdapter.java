@@ -95,10 +95,13 @@ public class ImgPagerAdapter extends PagerAdapter {
             }
         });
         NetBeen mNetBeen = mPathUtil.getNetBeen(fileObj.getPath());
-        if(mNetBeen.getType() == 0) {
-            showPhotoStyleView(view, position, mNetBeen);
-        }else {
-            showVideoStyleView(view, position, mNetBeen);
+//        Log.e(TAG, "网络视频 ==================== " + mNetBeen.getPath());
+        if(mNetBeen != null) {
+            if(mNetBeen.getType() == 0) {
+                showPhotoStyleView(view, position, mNetBeen);
+            }else {
+                showVideoStyleView(view, position, mNetBeen);
+            }
         }
         container.addView(view);
         return view;
@@ -144,7 +147,6 @@ public class ImgPagerAdapter extends PagerAdapter {
         final Video mVideo = new Video();
         mVideo.setPath(mNetBeen.getPath());
         mVideo.setStatus(listFile.get(position).getStatus());
-
         final LemageVideoView mLemageVideoView = new LemageVideoView(mContext, mNetBeen.getPath());
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         mLemageVideoView.setLayoutParams(layoutParams);

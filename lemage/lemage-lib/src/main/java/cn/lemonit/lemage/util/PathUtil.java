@@ -2,6 +2,8 @@ package cn.lemonit.lemage.util;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -39,18 +41,22 @@ public class PathUtil {
 
     private DownLoadFileFinishListener mDownLoadFileFinishListener;
 
-//    private static PathUtil instance;
-
     public PathUtil(Context context){
         this.mContext = context;
     }
 
-//    public static synchronized PathUtil getInstance(Context context) {
-//        if(instance == null) {
-//            instance = new PathUtil(context);
-//        }
-//        return instance;
-//    }
+    Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 0) {
+                NetBeen netBeen = new NetBeen();
+                netBeen.setPath("/storage/emulated/0/Android/data/cn.lemonit.lemage_example/tmp/video/bf2977e50cb5ed6a5783d50a39d554b8");
+                netBeen.setType(1);
+                mDownLoadFileFinishListener.downLoadFileFinish(netBeen);
+            }
+        }
+    };
 
     /**
      * 用户直接进入预览界面，传递的参数是URL
@@ -95,6 +101,7 @@ public class PathUtil {
             // 如果还是没有此文件，就下载
             if(TextUtils.isEmpty(url)) {
                 new DownLoadAsyncTask().execute(path);
+                return null;
             }else {
                 mNetBeen.setType(1);
                 mNetBeen.setPath(url);
@@ -156,16 +163,16 @@ public class PathUtil {
                     File filePhoto = new File(baseFileUrl + getPackageName() + "/tmp/photo");
                     File file = new File(filePhoto + "/" + stringToMD5(params[0]));  // 需要保持的文件
 //                    saveFile(filePhoto, file, data, inputStream);
-                    saveFileNew(filePhoto, file, inputStream, totalSize);
+                    saveFileNew(file, inputStream, totalSize);
                     mNetBeen.setPath(file.getPath());
                     mNetBeen.setType(0);
                 }else {
                     File fileVideo = new File(baseFileUrl + getPackageName() + "/tmp/video");
                     File file = new File(fileVideo + "/" + stringToMD5(params[0]));  // 需要保持的文件
 //                    saveFile(fileVideo, file, data, inputStream);
-                    saveFileNew(fileVideo, file, inputStream, totalSize);
+                    saveFileNew(file, inputStream, totalSize);
                     mNetBeen.setPath(file.getPath());
-                    mNetBeen.setType(0);
+                    mNetBeen.setType(1);
                 }
                 return mNetBeen;
             } catch (MalformedURLException e) {
@@ -247,26 +254,6 @@ public class PathUtil {
 
 
     /**
-     * 从输入流中获取字节数组
-     *
-     * @param inputStream
-     * @return
-     * @throws IOException
-     */
-    public static byte[] readInputStream(InputStream inputStream) throws IOException {
-        byte[] buffer = new byte[1024];
-        int len = 0;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        while ((len = inputStream.read(buffer)) != -1) {
-            bos.write(buffer, 0, len);
-        }
-        bos.close();
-        inputStream.close();
-        return bos.toByteArray();
-    }
-
-
-    /**
      * 下载文件时，根据响应头获取文件类型
      * @param conn
      * @return
@@ -296,31 +283,11 @@ public class PathUtil {
 
     /**
      * 保存文件
-     * @param parentFile
      * @param file
-     * @param data
+     * @param inputStream
+     * @param totalSize
      */
-    private void saveFile(File parentFile, File file, byte[] data, InputStream inputStream) {
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file);
-            fos.write(data);
-            if (fos != null) {
-                fos.close();
-            }
-            if (inputStream != null) {
-                inputStream.close();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-    private void saveFileNew(File parentFile, File file, InputStream inputStream, int totalSize) {
+    private void saveFileNew(File file, InputStream inputStream, int totalSize) {
         int currentSize = 0;
         try {
             OutputStream os = new FileOutputStream(file);
