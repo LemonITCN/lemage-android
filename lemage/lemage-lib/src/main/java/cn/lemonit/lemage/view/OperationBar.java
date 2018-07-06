@@ -50,13 +50,18 @@ public class OperationBar extends LinearLayout {
      */
     private int operationHeight;
     private int operationWidth;
+    /**
+     * 主题颜色
+     */
+    private int mColor;
 
     private OperationBarOnClickListener mOperationBarOnClickListener;
 
-    public OperationBar(Context context, int count) {
+    public OperationBar(Context context, int count, int color) {
         super(context);
         mContext = context;
         this.count = count;
+        mColor = color;
         this.setOrientation(LinearLayout.HORIZONTAL);
         init();
         addLeftView();
@@ -102,8 +107,9 @@ public class OperationBar extends LinearLayout {
         mPath.addRoundRect(new RectF(0, 0, width / count * (count - 1), height), radLeft, Path.Direction.CW);
         canvas.drawPath(mPath, mPaint);
 
-        // 右侧绿色按钮
-        mPaint.setColor(Color.GREEN);
+        // 右侧完成按钮
+//        mPaint.setColor(Color.GREEN);
+        mPaint.setColor(mColor);
         float[] radright = {0f, 0f, radiuXY, radiuXY, radiuXY, radiuXY, 0f, 0f};
         mPath.reset();
         mPath.addRoundRect(new RectF(width / count * (count - 1), 0, width, height), radright, Path.Direction.CW);

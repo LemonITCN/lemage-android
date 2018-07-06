@@ -306,7 +306,7 @@ public class PreviewActivity extends AppCompatActivity {
      */
     private PreviewOperationBar getOperationBar() {
         if(mPreviewOperationBar == null) {
-            mPreviewOperationBar = new PreviewOperationBar(this);
+            mPreviewOperationBar = new PreviewOperationBar(this, mColor);
 //            mOperationBar.setOperationBarOnClickListener(mOperationBarOnClickListener);
         }
         return mPreviewOperationBar;

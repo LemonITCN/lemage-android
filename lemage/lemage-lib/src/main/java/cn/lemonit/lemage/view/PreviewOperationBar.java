@@ -30,10 +30,15 @@ public class PreviewOperationBar extends LinearLayout {
 
     // 按钮
     private DrawTextButton mDrawTextButton;
+    /**
+     * 主题颜色
+     */
+    private int mColor;
 
-    public PreviewOperationBar(Context context) {
+    public PreviewOperationBar(Context context, int color) {
         super(context);
         mContext = context;
+        mColor = color;
         init();
         addView();
     }
@@ -70,7 +75,8 @@ public class PreviewOperationBar extends LinearLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        mPaint.setColor(Color.GREEN);
+//        mPaint.setColor(Color.GREEN);
+        mPaint.setColor(mColor);
         float radiuXY = height / 2;
         float[] radright = {radiuXY, radiuXY, radiuXY, radiuXY, radiuXY, radiuXY, radiuXY, radiuXY};
         Path mPath = new Path();

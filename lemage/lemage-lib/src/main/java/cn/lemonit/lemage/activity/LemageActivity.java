@@ -334,7 +334,7 @@ public class LemageActivity extends AppCompatActivity {
      */
     private OperationBar getOperationBar() {
         if(operationBar == null) {
-            operationBar = new OperationBar(this, operationBarItemCount);
+            operationBar = new OperationBar(this, operationBarItemCount, themeColor);
             operationBar.setOperationBarOnClickListener(mOperationBarOnClickListener);
         }
         return operationBar;
