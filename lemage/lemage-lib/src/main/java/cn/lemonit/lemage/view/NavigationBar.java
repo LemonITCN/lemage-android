@@ -45,9 +45,12 @@ public class NavigationBar extends RelativeLayout {
      */
     private CircleView mCircleView;
 
-    public NavigationBar(Context context, int style) {
+    private int mColor;
+
+    public NavigationBar(Context context, int style, int color) {
         super(context);
         mStyle = style;
+        mColor = color;
         init(context);
     }
 
@@ -99,7 +102,7 @@ public class NavigationBar extends RelativeLayout {
             paramsCircle.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
             paramsCircle.topMargin = mRadius / 2;
             paramsCircle.rightMargin = ScreenUtil.dp2px(context, 14);
-            mCircleView = new CircleView(context, mRadius);
+            mCircleView = new CircleView(context, mRadius, mColor);
             // 初始状态
 //            mCircleView.changeStatus(1, 1);
             mCircleView.setLayoutParams(paramsCircle);

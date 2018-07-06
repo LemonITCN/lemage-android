@@ -32,6 +32,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     private int imgWidth = 0;
     private int columnCount = 0;
+    /**
+     * 主题颜色
+     */
+    private int mColor;
 
     /**
      * 因为图片是同一个对象，所以用PhotoView来记录选中状态
@@ -40,9 +44,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     private AlbumItemOnClickListener mAlbumItemOnClickListener;
 
-    public AlbumAdapter(Context context, ArrayList<Album> albumList) {
+    public AlbumAdapter(Context context, ArrayList<Album> albumList, int mColor) {
         mContext = context;
         mAlbumList = albumList;
+        this.mColor = mColor;
         init();
     }
 
@@ -52,7 +57,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         }
         int count = mAlbumList.size();
         for(int i = 0; i < count; i ++) {
-            PhotoView mPhotoView = new PhotoView(mContext, 0);
+            PhotoView mPhotoView = new PhotoView(mContext, 0, mColor);
             if(i == 0) {
                 mPhotoView.setStatus(1);
             }else {
@@ -74,7 +79,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         view.setPadding(10,10,10,10);
 
         // 图片高度和文字高度比为 5 ： 1
-        PhotoView mPhotoView = new PhotoView(mContext, getImgWidth());
+        PhotoView mPhotoView = new PhotoView(mContext, getImgWidth(), mColor);
         LinearLayout.LayoutParams layoutParamsImg = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 5.0f);
 //        LinearLayout.LayoutParams layoutParamsImg = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, getImgWidth() - textHeight);
 //        layoutParamsImg.setMargins(0,0,0, 30);

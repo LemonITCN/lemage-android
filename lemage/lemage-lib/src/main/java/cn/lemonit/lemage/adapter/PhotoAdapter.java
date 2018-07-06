@@ -16,6 +16,8 @@ import java.util.List;
 import cn.lemonit.lemage.bean.Album;
 import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.Photo;
+import cn.lemonit.lemage.bean.Video;
+import cn.lemonit.lemage.core.LemageScanner;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.PhotoView;
 
@@ -56,10 +58,20 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      * 选中的序列号
      */
     private int number;
+    /**
+     * 如果，图片和视频都显示，但是只能选择一种，另外一种要有白色覆盖层
+     */
+    private int style;
+    /**
+     * 主题颜色
+     */
+    private int mColor;
 
-    public PhotoAdapter(Context context, Album currentAlbum) {
+    public PhotoAdapter(Context context, Album currentAlbum, int style, int color) {
         this.context = context;
         this.currentAlbum = currentAlbum;
+        this.style = style;
+        mColor = color;
     }
 
     /**
@@ -76,11 +88,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PhotoViewHolder(new PhotoView(context, getImgWidth()));
+        return new PhotoViewHolder(new PhotoView(context, getImgWidth(), mColor));
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        // 当有白色覆盖层时，不可点击
+        boolean clickable = true;
         RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(getImgWidth(), getImgWidth());
         // 最后一个图片，让其有下边距，使滑动空间变大
         if (position == (getItemCount() - 1)) {
@@ -108,16 +122,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((PhotoViewHolder) holder).getPhotoView().getImageView().setImageBitmap(bitmap);
         }
 
-//        if(currentAlbum.getFileList().get(position) instanceof Photo) {
-//            Glide.with(context).load(currentAlbum.getFileList().get(position % currentAlbum.getFileList().size()).getPath()).centerCrop().into(((PhotoViewHolder) holder).getPhotoView().getImageView());
-//        }else {
-//            MediaMetadataRetriever media = new MediaMetadataRetriever();
-//            String videoPath = currentAlbum.getFileList().get(position).getPath();
-//            media.setDataSource(videoPath);
-//            Bitmap bitmap = media.getFrameAtTime();
-//            ((PhotoViewHolder) holder).getPhotoView().getImageView().setImageBitmap(bitmap);
-//        }
-
         // 根据状态显示样式
         if(fileObj.getStatus() == 0) {
             notCheckView(((PhotoViewHolder) holder).photoView);
@@ -125,35 +129,46 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             checkView(((PhotoViewHolder) holder).photoView, fileObj.getNumber());
         }
 
-//        if(currentAlbum.getFileList().get(position).getStatus() == 0) {
-//            notCheckView(((PhotoViewHolder) holder).photoView);
-//        }else {
-//            checkView(((PhotoViewHolder) holder).photoView, currentAlbum.getFileList().get(position).getNumber());
+        // 如果用户的选择模式是都显示，但是只选择图片
+        if(style == LemageScanner.STYLE_ANYONE_PHOTO && fileObj instanceof Video || style == LemageScanner.STYLE_ANYONE_VIDEO && fileObj instanceof Photo) {
+            ((PhotoViewHolder) holder).photoView.setWhiteAlpha(0.5f);
+            clickable = false;
+        }
+//        if(style == LemageScanner.STYLE_ANYONE_VIDEO && fileObj instanceof Photo) {
+//            ((PhotoViewHolder) holder).photoView.setWhiteAlpha(0.5f);
+//            clickable = false;
 //        }
+
         // 事件
+        final boolean finalClickable = clickable;
         ((PhotoViewHolder) holder).photoView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
+                if(finalClickable) {
+                    if(event.getAction() == MotionEvent.ACTION_UP) {
+                        // 触摸点
+                        float touchX = event.getX();
+                        float touchY = event.getY();
+                        // 第二象限边界
+                        float borderX = view.getWidth() / 2;
+                        float borderY = view.getHeight() / 2;
 
-                if(event.getAction() == MotionEvent.ACTION_UP) {
-                    // 触摸点
-                    float touchX = event.getX();
-                    float touchY = event.getY();
-                    // 第二象限边界
-                    float borderX = view.getWidth() / 2;
-                    float borderY = view.getHeight() / 2;
-
-                    // 触摸点在第二象限, , 否则直接进入预览
-                    if(touchX > borderX && touchY < borderY) {
-                        switchSelectStatus(position, (PhotoView) view);
-                    }else {
-                        mPhotoViewOnClickListener.onClickPreviewListener(currentAlbum.getFileList(), position);
+                        // 触摸点在第二象限, , 否则直接进入预览
+                        if(touchX > borderX && touchY < borderY) {
+                            switchSelectStatus(position, (PhotoView) view);
+                        }else {
+                            mPhotoViewOnClickListener.onClickPreviewListener(currentAlbum.getFileList(), position);
+                        }
+                        return false;
                     }
-                    return false;
                 }
                 return true;
             }
         });
+
+//        if(position == 3) {
+//            ((PhotoViewHolder) holder).photoView.setWhiteAlpha(0.5f);
+//        }
     }
 
     /**

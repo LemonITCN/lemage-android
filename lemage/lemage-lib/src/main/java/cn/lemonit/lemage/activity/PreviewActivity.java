@@ -20,6 +20,7 @@ import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.bean.Video;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
+import cn.lemonit.lemage.util.FileUtil;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
 import cn.lemonit.lemage.view.CircleView;
@@ -76,6 +77,10 @@ public class PreviewActivity extends AppCompatActivity {
      * 如果是从item跳转过来，点击的position
      */
     private int fromPosition;
+    /**
+     * 主题颜色
+     */
+    private int mColor;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,10 +95,13 @@ public class PreviewActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // 清空网络临时文件夹
+        FileUtil.getInstance(this).clearNetFile();
     }
 
     private void getData() {
         Intent intent = getIntent();
+        mColor = intent.getIntExtra("themeColor", Color.GREEN);   // 默认绿色主题
         from = intent.getStringExtra("from");
         // 得到item的position
         if(!TextUtils.isEmpty(from) && from.equals("all")) {
@@ -125,59 +133,6 @@ public class PreviewActivity extends AppCompatActivity {
             listPhotoSelect.add(fileObj);
             listPhotoAdapterData.add(fileObj);
         }
-
-//        for(String url : listAll) {
-//            if(url.contains(".mp4") || url.contains(".3gp")) {
-//                Video video = new Video();
-//                video.setPath(url);
-//                if(listSelect.contains(url)) {
-//                    video.setStatus(1);
-//                }else {
-//                    video.setStatus(0);
-//                }
-//                listPhotoAll.add(video);
-//            }else {
-//                Photo photo = new Photo();
-//                photo.setPath(url);
-////                photo.setPath(url.substring("lemage://album/localImage".length()));
-//                if(listSelect.contains(url)) {
-//                    photo.setStatus(1);
-//                }else {
-//                    photo.setStatus(0);
-//                }
-//                listPhotoAll.add(photo);
-//            }
-////            FileObj fileObj = new FileObj();
-////            fileObj.setPath(url);
-////            if(listSelect.contains(url)) {
-////                fileObj.setStatus(1);
-////            }else {
-////                fileObj.setStatus(0);
-////            }
-////            listPhotoAll.add(fileObj);
-//        }
-//        for(String url : listSelect) {
-//            if(url.contains(".mp4") || url.contains(".3gp")) {
-//                Video video = new Video();
-//                video.setPath(url);
-////                video.setPath(url.substring("lemage://album/localVideo".length()));
-//                video.setStatus(1);
-//                listPhotoSelect.add(video);
-//                listPhotoAdapterData.add(video);
-//            }else {
-//                Photo photo = new Photo();
-//                photo.setPath(url);
-////                photo.setPath(url.substring("lemage://album/localImage".length()));
-//                photo.setStatus(1);
-//                listPhotoSelect.add(photo);
-//                listPhotoAdapterData.add(photo);
-//            }
-////            FileObj fileObj = new FileObj();
-////            fileObj.setStatus(1);
-////            fileObj.setPath(url);
-////            listPhotoSelect.add(fileObj);
-////            listPhotoAdapterData.add(fileObj);
-//        }
 
     }
 
@@ -231,34 +186,18 @@ public class PreviewActivity extends AppCompatActivity {
             }
             mImgPagerAdapter.setImgOnClickListener(imgOnClickListener);
             mViewPager.setAdapter(mImgPagerAdapter);
-//            if(!TextUtils.isEmpty(from)) {
-//                if(from.equals("all")) {
-//                    mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAll);
-//                }else {
-//                    mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAdapterData);
-//                }
-//                mImgPagerAdapter.setImgOnClickListener(imgOnClickListener);
-//                mViewPager.setAdapter(mImgPagerAdapter);
-//            }
         }
     }
 
 
     private void getNavigationBar() {
         if(mNavigationBar == null) {
-            mNavigationBar = new NavigationBar(this, 1);
+            mNavigationBar = new NavigationBar(this, 1, mColor);
             if(!TextUtils.isEmpty(from) && from.equals("all")) {
                 mNavigationBar.changeText(listPhotoAll.size(), 1);
             }else {
                 mNavigationBar.changeText(listPhotoSelect.size(), 1);
             }
-//            if(!TextUtils.isEmpty(from)) {
-//                if(from.equals("all")) {
-//                    mNavigationBar.changeText(listPhotoAll.size(), 1);
-//                }else {
-//                    mNavigationBar.changeText(listPhotoSelect.size(), 1);
-//                }
-//            }
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtil.dp2px(this, 56));
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
             mNavigationBar.setLayoutParams(layoutParams);

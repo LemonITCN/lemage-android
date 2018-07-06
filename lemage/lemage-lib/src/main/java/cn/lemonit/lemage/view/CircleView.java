@@ -45,10 +45,16 @@ public class CircleView extends View {
     private int twoEndX;
     private int twoEndY;
 
-    public CircleView(Context context, int radius) {
+    /**
+     * 选中时的高亮颜色
+     */
+    private int mColor;
+
+    public CircleView(Context context, int radius, int color) {
         super(context);
         mContext = context;
         mRadius = radius;
+        mColor = color;
         init();
     }
 
@@ -69,10 +75,7 @@ public class CircleView extends View {
         }
         mPaint.setStrokeWidth(2);
         mPaint.setAntiAlias(true);//抗锯齿
-//        mPaint.setStyle(Paint.Style.STROKE);  // 空心
         mPaint.setStyle(Paint.Style.FILL);
-//        mPaint.setColor(Color.parseColor("#C8C7C8"));
-//        mPaint.setColor(Color.GRAY);
 
     }
 
@@ -105,7 +108,6 @@ public class CircleView extends View {
         initPaint();
         mPaint.setColor(Color.GRAY);
         canvas.drawCircle(mRadius, mRadius, mRadius, mPaint);
-//        mPaint.reset();
     }
 
     /**
@@ -113,7 +115,8 @@ public class CircleView extends View {
      */
     private void drawLightNumber(Canvas canvas) {
         initPaint();
-        mPaint.setColor(Color.GREEN);
+//        mPaint.setColor(Color.GREEN);
+        mPaint.setColor(mColor);
         canvas.drawCircle(mRadius, mRadius, mRadius, mPaint);
         mPaint.setColor(Color.WHITE);
         int size = ScreenUtil.dp2px(getContext(), 12);
@@ -127,7 +130,8 @@ public class CircleView extends View {
      */
     private void drawLightTick(Canvas canvas) {
         initPaint();
-        mPaint.setColor(Color.GREEN);
+//        mPaint.setColor(Color.GREEN);
+        mPaint.setColor(mColor);
         canvas.drawCircle(mRadius, mRadius, mRadius, mPaint);
         if(mPath == null) {
             mPath = new Path();

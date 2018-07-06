@@ -45,19 +45,6 @@ public class PathUtil {
         this.mContext = context;
     }
 
-    Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if(msg.what == 0) {
-                NetBeen netBeen = new NetBeen();
-                netBeen.setPath("/storage/emulated/0/Android/data/cn.lemonit.lemage_example/tmp/video/bf2977e50cb5ed6a5783d50a39d554b8");
-                netBeen.setType(1);
-                mDownLoadFileFinishListener.downLoadFileFinish(netBeen);
-            }
-        }
-    };
-
     /**
      * 用户直接进入预览界面，传递的参数是URL
      * lemage://album/localImage/storage/emulated/0/Download/logo_index2.png

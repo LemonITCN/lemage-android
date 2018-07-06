@@ -24,9 +24,12 @@ import cn.lemonit.lemage.adapter.AlbumAdapter;
 import cn.lemonit.lemage.adapter.PhotoAdapter;
 import cn.lemonit.lemage.bean.Album;
 import cn.lemonit.lemage.bean.FileObj;
+import cn.lemonit.lemage.bean.Photo;
+import cn.lemonit.lemage.bean.Video;
 import cn.lemonit.lemage.core.LemageScanner;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
 import cn.lemonit.lemage.interfaces.ScanCompleteCallback;
+import cn.lemonit.lemage.util.FileUtil;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
 import cn.lemonit.lemage.view.DrawCircleTextButton;
@@ -43,6 +46,9 @@ public class LemageActivity extends AppCompatActivity {
 
     private int style;
 
+    /**
+     * 此接口实例是应用层调用者实现的实例，跳转时传递过来的
+     */
     private static LemageResultCallback callback;
 
     public static void setCallback(LemageResultCallback mCallback){
@@ -216,7 +222,7 @@ public class LemageActivity extends AppCompatActivity {
                 mAlbumList.remove(albumNewAll);
                 mAlbumList.add(0, albumNewAll);
             }
-            mAlbumAdapter = new AlbumAdapter(this, mAlbumList);
+            mAlbumAdapter = new AlbumAdapter(this, mAlbumList, themeColor);
             mAlbumAdapter.setAlbumItemOnClickListener(mAlbumItemOnClickListener);
         }
         albumRecyclerView.setAdapter(mAlbumAdapter);
@@ -267,7 +273,7 @@ public class LemageActivity extends AppCompatActivity {
      */
     public NavigationBar getNavigationBar() {
         if(navigationBar == null) {
-            navigationBar = new NavigationBar(this, 0);
+            navigationBar = new NavigationBar(this, 0, themeColor);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     ScreenUtil.dp2px(this, 56)
@@ -393,7 +399,7 @@ public class LemageActivity extends AppCompatActivity {
             phototAdapterData.setPath(album.getPath());
             phototAdapterData.setFileList(album.getFileList());
 //            phototAdapterData.setPhotoList(album.getPhotoList());
-            photoAdapter = new PhotoAdapter(this, phototAdapterData);
+            photoAdapter = new PhotoAdapter(this, phototAdapterData, style, themeColor);
             photoAdapter.setPhotoViewOnClickListener(mPhotoViewOnClickListener);
         }
         return photoAdapter;
@@ -442,6 +448,7 @@ public class LemageActivity extends AppCompatActivity {
             Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
             intent.putExtra("from", "all");
             intent.putExtra("position", position);
+            intent.putExtra("themeColor", themeColor);
             intent.putStringArrayListExtra("listAll", listUrlAll);
             intent.putStringArrayListExtra("listSelect", listUrlSelect);
             startActivity(intent);
@@ -503,6 +510,7 @@ public class LemageActivity extends AppCompatActivity {
                 }
                 PreviewActivity.setCallback(callbackToPreview);
                 Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
+                intent.putExtra("themeColor", themeColor);
                 intent.putStringArrayListExtra("listAll", listUrlAll);
                 intent.putStringArrayListExtra("listSelect", listUrlSelect);
                 startActivity(intent);
@@ -511,18 +519,36 @@ public class LemageActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * 原图按钮
+         */
         @Override
         public void centerButtonClick() {
-//            Toast.makeText(LemageActivity.this, "原图", Toast.LENGTH_SHORT).show();
             DrawCircleTextButton mDrawCircleTextButton = operationBar.getCenterButton();
             if(mDrawCircleTextButton != null) {
                 mDrawCircleTextButton.changeStatus();
             }
         }
 
+
+        /**
+         * 完成按钮
+         */
         @Override
         public void rightButtonClick() {
-            Toast.makeText(LemageActivity.this, "完成", Toast.LENGTH_SHORT).show();
+            ArrayList<String> list = new ArrayList<String>();
+            for(FileObj fileObj : listPhotoSelect) {
+                if(fileObj.getStatus() == 1) {
+                    String str = null;   //
+                    if(fileObj instanceof Photo) {
+                        list.add(FileUtil.getInstance(LemageActivity.this).getLocalImgagePath(fileObj.getPath()));
+                    }else if(fileObj instanceof Video) {
+                        list.add(FileUtil.getInstance(LemageActivity.this).getLocalVideoPath(fileObj.getPath()));
+                    }
+                }
+            }
+            callback.willClose(list, true, null);
+            LemageActivity.this.finish();
         }
     };
 

@@ -169,6 +169,7 @@ public class Lemage implements Serializable {
         intent.putExtra("needShowOriginalButton", needShowOriginalButton);
         intent.putExtra("themeColor", themeColor);
         intent.putExtra("style", style);
+        LemageActivity.setCallback(callback);
         mContext.startActivity(intent);
     }
 

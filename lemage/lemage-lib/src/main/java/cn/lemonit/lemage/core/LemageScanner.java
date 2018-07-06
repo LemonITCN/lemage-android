@@ -40,8 +40,13 @@ public class LemageScanner {
     public static final int STYLE_ONLY_VIDEO = 1;
     // 都可选
     public static final int STYLE_ALL = 2;
-    // 二选一
-    public static final int STYLE_ANYONE = 3;
+//    // 二选一
+//    public static final int STYLE_ANYONE = 3;
+    // 二选一(图片)
+    public static final int STYLE_ANYONE_PHOTO = 3;
+    // 二选一（视频）
+    public static final int STYLE_ANYONE_VIDEO = 4;
+
     /**
      * 具体执行的是扫描图片还是扫描视频 （扫描图片0， 扫描视频1）
      */
@@ -109,13 +114,16 @@ public class LemageScanner {
     public LemageScanner(FragmentActivity context, int style) {
         mContext = context;
         mStyle = style;
-        if(mStyle < 0 || mStyle > 3) mStyle = STYLE_ONLY_PHOTO;  // 传值超出范围默认只扫描图片
+        if(mStyle < 0 || mStyle > 4) mStyle = STYLE_ONLY_PHOTO;  // 传值超出范围默认只扫描图片
         // 如果扫描的是图片或者视频，那么只进行一次扫描
         if(mStyle == STYLE_ONLY_PHOTO || mStyle == STYLE_ONLY_VIDEO) {
             scanTarget = mStyle;
         }
         // 如果图片和视频都扫描，那么先扫描图片，再扫描视频
-        else if(mStyle == STYLE_ALL || mStyle == STYLE_ANYONE) {
+//        else if(mStyle == STYLE_ALL || mStyle == STYLE_ANYONE) {
+//            scanTarget = STYLE_ONLY_PHOTO;
+//        }
+        else if(mStyle == STYLE_ALL || mStyle == STYLE_ANYONE_PHOTO || mStyle == STYLE_ANYONE_VIDEO) {
             scanTarget = STYLE_ONLY_PHOTO;
         }
     }
@@ -328,7 +336,13 @@ public class LemageScanner {
             mScanCompleteCallback.scanComplete(albumMap.values());
         }
         // 如果扫描2次就再扫描一次返回结果(第一次扫描的是图片，所以第二次扫描的是视频)
-        else if(mStyle == STYLE_ALL || mStyle == STYLE_ANYONE) {
+//        else if(mStyle == STYLE_ALL || mStyle == STYLE_ANYONE) {
+//            mStyle = STYLE_ONLY_VIDEO;
+//            scanTarget = STYLE_ONLY_VIDEO;
+//            scanNumber = true;
+//            scanFile(mScanCompleteCallback);
+//        }
+        else if(mStyle == STYLE_ALL || mStyle == STYLE_ANYONE_PHOTO || mStyle == STYLE_ANYONE_VIDEO) {
             mStyle = STYLE_ONLY_VIDEO;
             scanTarget = STYLE_ONLY_VIDEO;
             scanNumber = true;

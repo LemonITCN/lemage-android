@@ -25,6 +25,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(":lemage-lib")
-    // 暂时添加，方便测试（可以让MainActivity继承AppCompatActivity直接调用）
-    implementation 'com.android.support:appcompat-v7:27.0.2'
 }

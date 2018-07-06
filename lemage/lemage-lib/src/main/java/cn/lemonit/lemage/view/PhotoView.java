@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -23,6 +24,7 @@ public class PhotoView extends RelativeLayout {
     private Context mContext;
     private ImageView imageView;
     private CircleView mCircleView;
+    private View whiteView;  // 白色透明覆盖层
     // 圆圈半径
     private int mRadius;
     /**
@@ -30,10 +32,15 @@ public class PhotoView extends RelativeLayout {
      * 0 未选中，1 选中
      */
     private int status;
+    /**
+     * 主题颜色
+     */
+    private int mColor;
 
-    public PhotoView(Context context, int width) {
+    public PhotoView(Context context, int width, int color) {
         super(context);
         mContext = context;
+        mColor = color;
         init(width);
     }
 
@@ -51,9 +58,17 @@ public class PhotoView extends RelativeLayout {
         paramsCircle.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
         paramsCircle.topMargin = mRadius / 2;
         paramsCircle.rightMargin = mRadius / 2;
-        mCircleView = new CircleView(mContext, mRadius);
+        mCircleView = new CircleView(mContext, mRadius, mColor);
         mCircleView.setLayoutParams(paramsCircle);
         addView(mCircleView);
+
+        // 添加覆盖层，不可点击时需要显示白色半透明
+        whiteView = new View(mContext);
+        RelativeLayout.LayoutParams paramsWhite = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        whiteView.setLayoutParams(paramsWhite);
+        whiteView.setBackgroundColor(Color.WHITE);
+        whiteView.setAlpha(0);
+        addView(whiteView);
     }
 
     public ImageView getImageView() {
@@ -69,6 +84,14 @@ public class PhotoView extends RelativeLayout {
         if(mCircleView != null) {
             mCircleView.changeStatus(mStatus, number);
         }
+    }
+
+    /**
+     * 设置白色覆盖层透明度
+     * @param alpha
+     */
+    public void setWhiteAlpha(float alpha) {
+        whiteView.setAlpha(alpha);
     }
 
     public int getStatus() {
