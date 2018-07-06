@@ -472,6 +472,8 @@ public class LemageActivity extends AppCompatActivity {
             phototAdapterData.setName(mAlbum.getName());
             phototAdapterData.setPath(mAlbum.getPath());
             phototAdapterData.setFileList(mAlbum.getFileList());
+            // 更改文件夹的时候，选中的都取消
+            photoAdapter.clearSelectFile();
             photoAdapter.notifyDataSetChanged();
         }
 

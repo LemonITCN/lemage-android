@@ -94,24 +94,42 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             params.topMargin = 10;
         }
         holder.itemView.setLayoutParams(params);
+
+        List<FileObj> list = currentAlbum.getFileList();
+        FileObj fileObj = list.get(position);
         // 加载图片
-        if(currentAlbum.getFileList().get(position) instanceof Photo) {
-            Glide.with(context).load(currentAlbum.getFileList().get(position % currentAlbum.getFileList().size()).getPath()).centerCrop().into(((PhotoViewHolder) holder).getPhotoView().getImageView());
+        if(fileObj instanceof Photo) {
+            Glide.with(context).load(list.get(position % list.size()).getPath()).centerCrop().into(((PhotoViewHolder) holder).getPhotoView().getImageView());
         }else {
             MediaMetadataRetriever media = new MediaMetadataRetriever();
-            String videoPath = currentAlbum.getFileList().get(position).getPath();
+            String videoPath = fileObj.getPath();
             media.setDataSource(videoPath);
             Bitmap bitmap = media.getFrameAtTime();
             ((PhotoViewHolder) holder).getPhotoView().getImageView().setImageBitmap(bitmap);
         }
 
+//        if(currentAlbum.getFileList().get(position) instanceof Photo) {
+//            Glide.with(context).load(currentAlbum.getFileList().get(position % currentAlbum.getFileList().size()).getPath()).centerCrop().into(((PhotoViewHolder) holder).getPhotoView().getImageView());
+//        }else {
+//            MediaMetadataRetriever media = new MediaMetadataRetriever();
+//            String videoPath = currentAlbum.getFileList().get(position).getPath();
+//            media.setDataSource(videoPath);
+//            Bitmap bitmap = media.getFrameAtTime();
+//            ((PhotoViewHolder) holder).getPhotoView().getImageView().setImageBitmap(bitmap);
+//        }
+
         // 根据状态显示样式
-        if(currentAlbum.getFileList().get(position).getStatus() == 0) {
+        if(fileObj.getStatus() == 0) {
             notCheckView(((PhotoViewHolder) holder).photoView);
         }else {
-//            int index = checkPhotoList.indexOf(currentAlbum.getPhotoList().get(position)) + 1;
-            checkView(((PhotoViewHolder) holder).photoView, currentAlbum.getFileList().get(position).getNumber());
+            checkView(((PhotoViewHolder) holder).photoView, fileObj.getNumber());
         }
+
+//        if(currentAlbum.getFileList().get(position).getStatus() == 0) {
+//            notCheckView(((PhotoViewHolder) holder).photoView);
+//        }else {
+//            checkView(((PhotoViewHolder) holder).photoView, currentAlbum.getFileList().get(position).getNumber());
+//        }
         // 事件
         ((PhotoViewHolder) holder).photoView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -240,5 +258,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         number = list.size();
         checkPhotoList.clear();
         checkPhotoList.addAll(list);
+    }
+
+    /**
+     * 更改文件夹的时候，选中的都取消
+     */
+    public void clearSelectFile() {
+        number = 0;
+        checkPhotoList.clear();
     }
 }
