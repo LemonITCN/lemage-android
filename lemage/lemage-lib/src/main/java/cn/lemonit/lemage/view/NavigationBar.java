@@ -221,7 +221,12 @@ public class NavigationBar extends RelativeLayout {
         mPreviewBarLeftButton.changeText(mCount, corrent);
     }
 
-    public void changeTextCircle(int current, int number) {
-        mCircleView.changeStatus(current, number);
+    /**
+     *
+     * @param mStatus   状态：0 灰色   1 号码高亮  2 对号
+     * @param number  状态是1的时候显示的号码
+     */
+    public void changeTextCircle(int mStatus, int number) {
+        mCircleView.changeStatus(mStatus, number);
     }
 }

@@ -433,6 +433,7 @@ public class LemageActivity extends AppCompatActivity {
             //  给预览界面传值，只传递URL
             ArrayList<String> listUrlAll = new ArrayList<String>();  // 全部文件路径
             ArrayList<String> listUrlSelect = new ArrayList<String>(); // 已经选择的文件路径
+            // 添加全部
             for(FileObj fileObj : listPhotoAll) {
                 String path = fileObj.getPath();
                 if(path.endsWith(".mp4") || path.endsWith(".3gp")) {
@@ -441,9 +442,19 @@ public class LemageActivity extends AppCompatActivity {
                     path = "lemage://album/localImage" + path;
                 }
                 listUrlAll.add(path);
-                if(fileObj.getStatus() == 1) {
-                    listUrlSelect.add(path);
+            }
+            // 添加选中（此时listPhotoSelect是按照选中的序号顺序）
+            for(FileObj fileObj : listPhotoSelect) {
+                String path = fileObj.getPath();
+                if(!path.contains("lemage://album/")) {
+                    if(path.endsWith(".mp4") || path.endsWith(".3gp")) {
+                        path = "lemage://album/localVideo" + path;
+                    }else {
+                        path = "lemage://album/localImage" + path;
+                    }
                 }
+//                listUrlAll.add(path);
+                listUrlSelect.add(path);
             }
             Intent intent = new Intent(LemageActivity.this, PreviewActivity.class);
             intent.putExtra("from", "all");
@@ -516,6 +527,7 @@ public class LemageActivity extends AppCompatActivity {
                 intent.putExtra("themeColor", themeColor);
                 intent.putStringArrayListExtra("listAll", listUrlAll);
                 intent.putStringArrayListExtra("listSelect", listUrlSelect);
+                intent.putExtra("maxChooseCount", maxChooseCount);
                 startActivity(intent);
             }else {
                 Toast.makeText(LemageActivity.this, "您还没有选中照片，不能预览", Toast.LENGTH_SHORT).show();

@@ -267,7 +267,10 @@ public class PreviewActivity extends AppCompatActivity {
             // 预览界面顶部条右侧按钮的初始状态（有时是选中状态，有时是未选中状态）,之后的翻页状态会自动刷新
             if(!TextUtils.isEmpty(from) && from.equals("all")) {
                 // 点哪个item进来就从哪个item开始预览
-                mNavigationBar.changeTextCircle(listPhotoAll.get(fromPosition).getStatus(), listPhotoAll.get(fromPosition).getNumber());
+                FileObj fileObj = listPhotoAll.get(fromPosition);
+//                int number = fileObj.getNumber();
+                int number = listPhotoSelect.indexOf(listPhotoAll.get(fromPosition)) + 1;
+                mNavigationBar.changeTextCircle(listPhotoAll.get(fromPosition).getStatus(), number);
             }else {
                 mNavigationBar.changeTextCircle(listPhotoSelect.get(0).getStatus(), 1);
             }
