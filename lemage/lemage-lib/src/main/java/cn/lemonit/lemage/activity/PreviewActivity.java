@@ -58,6 +58,10 @@ public class PreviewActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
     /**
+     * 白色覆盖层
+     */
+    private View whiteView;
+    /**
      * 可选择图片
      */
     private ArrayList<FileObj> listPhotoAll = new ArrayList<FileObj>();
@@ -81,6 +85,10 @@ public class PreviewActivity extends AppCompatActivity {
      * 主题颜色
      */
     private int mColor;
+    /**
+     * 允许最多可选择数量
+     */
+    private int maxChooseCount;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,6 +109,7 @@ public class PreviewActivity extends AppCompatActivity {
 
     private void getData() {
         Intent intent = getIntent();
+        maxChooseCount = intent.getIntExtra("maxChooseCount", 0);
         mColor = intent.getIntExtra("themeColor", Color.GREEN);   // 默认绿色主题
         from = intent.getStringExtra("from");
         // 得到item的position
@@ -108,11 +117,8 @@ public class PreviewActivity extends AppCompatActivity {
             fromPosition = intent.getIntExtra("position", 0);
         }
         listPhotoAll.clear();
-//        listPhotoAll.addAll(LemageActivity.listPhotoAll);
         listPhotoSelect.clear();
-//        listPhotoSelect.addAll(LemageActivity.listPhotoSelect);
         listPhotoAdapterData.clear();
-//        listPhotoAdapterData.addAll(LemageActivity.listPhotoSelect);
         ArrayList<String> listAll = intent.getStringArrayListExtra("listAll");
         ArrayList<String> listSelect = intent.getStringArrayListExtra("listSelect");
 
@@ -145,6 +151,8 @@ public class PreviewActivity extends AppCompatActivity {
 
     private void addView() {
         rootLayout.addView(mViewPager);
+        // 添加白色覆盖层
+        addWhitView();
         rootLayout.addView(mNavigationBar);
 
         // 底部条适配说明：
@@ -180,9 +188,9 @@ public class PreviewActivity extends AppCompatActivity {
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
             mViewPager.setLayoutParams(layoutParams);
             if(!TextUtils.isEmpty(from) && from.equals("all")) {
-                mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAll);
+                mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAll, maxChooseCount);
             }else {
-                mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAdapterData);
+                mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAdapterData, maxChooseCount);
             }
             mImgPagerAdapter.setImgOnClickListener(imgOnClickListener);
             mViewPager.setAdapter(mImgPagerAdapter);
@@ -222,6 +230,9 @@ public class PreviewActivity extends AppCompatActivity {
             mNavigationBar.setPreviewRightViewClickListener(new NavigationBar.PreviewRightViewClickListener() {
                 @Override
                 public void rightClickListener(CircleView view) {
+                    if(listPhotoSelect.size() >= maxChooseCount && view.getStatus() == 0) {
+                        return;
+                    }
                     if(!TextUtils.isEmpty(from) && from.equals("all")){
                         // 得到当前的photo
                         FileObj photo = listPhotoAll.get(currentIndex - 1);
@@ -250,35 +261,7 @@ public class PreviewActivity extends AppCompatActivity {
                         }
                     }
 
-//                    if(!TextUtils.isEmpty(from)) {
-//                        if(from.equals("all")) {
-//                            // 得到当前的photo
-//                            FileObj photo = listPhotoAll.get(currentIndex - 1);
-//                            Log.e(TAG, "photo.getPath() =============== " + photo.getPath());
-//                            // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
-//                            if(view.getStatus() == 0) {
-//                                listPhotoSelect.add(photo);
-//                                view.changeStatus(1, listPhotoSelect.size());
-//                                photo.setStatus(1);
-//                            }else {
-//                                listPhotoSelect.remove(photo);
-//                                view.changeStatus(0, 0);
-//                                photo.setStatus(0);
-//                            }
-//                        }else {
-//                            FileObj file = listPhotoAdapterData.get(currentIndex - 1);
-//                            // 未选中变选中，把当前的photo添加到listPhotoSelect，再根据所在的position显示number
-//                            if(view.getStatus() == 0) {
-//                                listPhotoSelect.add(file);
-//                                view.changeStatus(1, listPhotoSelect.size());
-//                                file.setStatus(1);
-//                            }else {
-//                                listPhotoSelect.remove(file);
-//                                view.changeStatus(0, 0);
-//                                file.setStatus(0);
-//                            }
-//                        }
-//                    }
+
                 }
             });
             // 预览界面顶部条右侧按钮的初始状态（有时是选中状态，有时是未选中状态）,之后的翻页状态会自动刷新
@@ -289,15 +272,6 @@ public class PreviewActivity extends AppCompatActivity {
                 mNavigationBar.changeTextCircle(listPhotoSelect.get(0).getStatus(), 1);
             }
 
-
-//            if(!TextUtils.isEmpty(from)) {
-//                if(from.equals("all")) {
-//                    // 点哪个item进来就从哪个item开始预览
-//                    mNavigationBar.changeTextCircle(listPhotoAll.get(fromPosition).getStatus(), listPhotoAll.get(fromPosition).getNumber());
-//                }else {
-//                    mNavigationBar.changeTextCircle(listPhotoSelect.get(0).getStatus(), 1);
-//                }
-//            }
         }
     }
 
@@ -379,6 +353,12 @@ public class PreviewActivity extends AppCompatActivity {
                 mCircleView.changeStatus(fileObj.getStatus(), listPhotoSelect.indexOf(fileObj) + 1);
             }
 
+            // 翻页时判断是否显示白色覆盖层
+            if(listPhotoSelect.size() >= maxChooseCount && mCircleView.getStatus() == 0) {
+                whiteView.setAlpha(0.5f);
+            }else {
+                whiteView.setAlpha(0);
+            }
         }
 
         /**
@@ -391,4 +371,13 @@ public class PreviewActivity extends AppCompatActivity {
         }
     };
 
+
+    private void addWhitView() {
+        whiteView = new View(this);
+        RelativeLayout.LayoutParams paramsWhite = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        whiteView.setLayoutParams(paramsWhite);
+        whiteView.setBackgroundColor(Color.WHITE);
+        whiteView.setAlpha(0);
+        rootLayout.addView(whiteView);
+    }
 }

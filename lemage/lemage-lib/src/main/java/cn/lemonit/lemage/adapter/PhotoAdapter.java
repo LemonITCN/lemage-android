@@ -59,6 +59,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     private int number;
     /**
+     * 允许最多选中数，超过后其他的item变白，且不可点击
+     */
+    private int maxChooseCount;
+    /**
      * 如果，图片和视频都显示，但是只能选择一种，另外一种要有白色覆盖层
      */
     private int style;
@@ -67,11 +71,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     private int mColor;
 
-    public PhotoAdapter(Context context, Album currentAlbum, int style, int color) {
+    public PhotoAdapter(Context context, Album currentAlbum, int style, int color, int maxChooseCount) {
         this.context = context;
         this.currentAlbum = currentAlbum;
         this.style = style;
         mColor = color;
+        this.maxChooseCount = maxChooseCount;
     }
 
     /**
@@ -129,15 +134,15 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             checkView(((PhotoViewHolder) holder).photoView, fileObj.getNumber());
         }
 
-        // 如果用户的选择模式是都显示，但是只选择图片
-        if(style == LemageScanner.STYLE_ANYONE_PHOTO && fileObj instanceof Video || style == LemageScanner.STYLE_ANYONE_VIDEO && fileObj instanceof Photo) {
+        // 如果用户的选择模式是都显示，但是只选择图片, 那么视频item变白且不可点击
+        // 如果调用者传入的最多可选择数量达到，其他的item变白且不可点击
+        if(style == LemageScanner.STYLE_ANYONE_PHOTO && fileObj instanceof Video
+                || style == LemageScanner.STYLE_ANYONE_VIDEO && fileObj instanceof Photo
+                || number >= maxChooseCount && fileObj.getStatus() == 0) {
             ((PhotoViewHolder) holder).photoView.setWhiteAlpha(0.5f);
             clickable = false;
         }
-//        if(style == LemageScanner.STYLE_ANYONE_VIDEO && fileObj instanceof Photo) {
-//            ((PhotoViewHolder) holder).photoView.setWhiteAlpha(0.5f);
-//            clickable = false;
-//        }
+
 
         // 事件
         final boolean finalClickable = clickable;
@@ -166,9 +171,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             }
         });
 
-//        if(position == 3) {
-//            ((PhotoViewHolder) holder).photoView.setWhiteAlpha(0.5f);
-//        }
     }
 
     /**

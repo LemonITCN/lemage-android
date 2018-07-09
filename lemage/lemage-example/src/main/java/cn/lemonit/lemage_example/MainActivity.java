@@ -49,7 +49,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     private void initView() {
         selectPhotoBut = findViewById(R.id.selectPhotoBut);
-        selectPhotoBut.setOnClickListener(this);
+        selectPhotoBut.setOnClickListener(this); 
 
         selectVideoBut = findViewById(R.id.selectVideoBut);
         selectVideoBut.setOnClickListener(this);

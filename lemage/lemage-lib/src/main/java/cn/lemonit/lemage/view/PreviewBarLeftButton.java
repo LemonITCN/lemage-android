@@ -166,6 +166,11 @@ public class PreviewBarLeftButton extends CompoundButton {
         return defaultHeight;
     }
 
+    /**
+     *
+     * @param mCount  总数
+     * @param corrent  当前
+     */
     public void changeText(int mCount, int corrent) {
         count = mCount;
         currentIndex = corrent;

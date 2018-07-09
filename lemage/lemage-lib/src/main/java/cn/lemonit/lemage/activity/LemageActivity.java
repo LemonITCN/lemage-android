@@ -399,7 +399,7 @@ public class LemageActivity extends AppCompatActivity {
             phototAdapterData.setPath(album.getPath());
             phototAdapterData.setFileList(album.getFileList());
 //            phototAdapterData.setPhotoList(album.getPhotoList());
-            photoAdapter = new PhotoAdapter(this, phototAdapterData, style, themeColor);
+            photoAdapter = new PhotoAdapter(this, phototAdapterData, style, themeColor, maxChooseCount);
             photoAdapter.setPhotoViewOnClickListener(mPhotoViewOnClickListener);
         }
         return photoAdapter;
@@ -451,6 +451,7 @@ public class LemageActivity extends AppCompatActivity {
             intent.putExtra("themeColor", themeColor);
             intent.putStringArrayListExtra("listAll", listUrlAll);
             intent.putStringArrayListExtra("listSelect", listUrlSelect);
+            intent.putExtra("maxChooseCount", maxChooseCount);
             startActivity(intent);
 
         }
@@ -500,10 +501,12 @@ public class LemageActivity extends AppCompatActivity {
                 ArrayList<String> listUrlSelect = new ArrayList<String>();  // 已经选择文件路径
                 for(FileObj fileObj : listPhotoSelect) {
                     String path = fileObj.getPath();
-                    if(path.endsWith(".mp4") || path.endsWith(".3gp")) {
-                        path = "lemage://album/localVideo" + path;
-                    }else {
-                        path = "lemage://album/localImage" + path;
+                    if(!path.contains("lemage://album/")) {
+                        if(path.endsWith(".mp4") || path.endsWith(".3gp")) {
+                            path = "lemage://album/localVideo" + path;
+                        }else {
+                            path = "lemage://album/localImage" + path;
+                        }
                     }
                     listUrlAll.add(path);
                     listUrlSelect.add(path);

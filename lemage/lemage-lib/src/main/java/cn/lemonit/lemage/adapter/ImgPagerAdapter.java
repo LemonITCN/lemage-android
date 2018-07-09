@@ -46,12 +46,17 @@ public class ImgPagerAdapter extends PagerAdapter {
 
     private Context mContext;
     private ArrayList<FileObj> listFile;
+    /**
+     * 允许最多选择的数量
+     */
+    private int maxChooseCount;
 
     private ImgOnClickListener mImgOnClickListener;
 
-    public ImgPagerAdapter(Context mContext, ArrayList<FileObj> listFile) {
+    public ImgPagerAdapter(Context mContext, ArrayList<FileObj> listFile, int maxChooseCount) {
         this.mContext = mContext;
         this.listFile = listFile;
+        this.maxChooseCount = maxChooseCount;
     }
 
     @Override
@@ -92,6 +97,7 @@ public class ImgPagerAdapter extends PagerAdapter {
                     fileObj.setPath("lemage://album/localVideo" + netBeen.getPath());
                     showVideoStyleView(view, position, netBeen);
                 }
+//                addWhiteView(view);
             }
         });
         NetBeen mNetBeen = mPathUtil.getNetBeen(fileObj.getPath());
@@ -102,6 +108,7 @@ public class ImgPagerAdapter extends PagerAdapter {
             }else {
                 showVideoStyleView(view, position, mNetBeen);
             }
+//            addWhiteView(view);
         }
         container.addView(view);
         return view;
@@ -175,4 +182,25 @@ public class ImgPagerAdapter extends PagerAdapter {
         view.addView(mLemageVideoView);
     }
 
+
+    /**
+     * 增加白色覆盖层
+     */
+    private void addWhiteView(RelativeLayout layout) {
+        View whiteView = new View(mContext);
+        RelativeLayout.LayoutParams paramsWhite = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        whiteView.setLayoutParams(paramsWhite);
+        whiteView.setBackgroundColor(Color.WHITE);
+        whiteView.setAlpha(0);
+        layout.addView(whiteView);
+        int shooseCount = 0;
+        for(FileObj fileObj : listFile) {
+            if(fileObj.getStatus() == 1) {
+                shooseCount ++;
+            }
+            if(shooseCount >= maxChooseCount && fileObj.getStatus() == 0) {
+                whiteView.setAlpha(0.5f);
+            }
+        }
+    }
 }
