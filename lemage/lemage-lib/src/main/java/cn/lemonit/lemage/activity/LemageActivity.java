@@ -294,16 +294,31 @@ public class LemageActivity extends AppCompatActivity {
                     }
                 }
             });
+            // 取消按钮
             navigationBar.setRightViewClickListener(new NavigationBar.RightViewClickListener() {
                 @Override
                 public void rightClickListener() {
                     if(operationBar != null) {
-                        if(operationBarItemCount == 3) {
-                            operationBarItemCount = 2;
-                        }else {
-                            operationBarItemCount = 3;
+                        for(FileObj fileObj : listPhotoAll) {
+                            fileObj.setStatus(0);
                         }
-                        operationBar.setCount(operationBarItemCount);
+                        listPhotoSelect.clear();
+                        List<FileObj> list = phototAdapterData.getFileList();
+                        for(FileObj fileObj : phototAdapterData.getFileList()) {
+                            fileObj.setStatus(0);
+                        }
+                        photoAdapter.clearSelectFile();
+                        photoAdapter.notifyDataSetChanged();
+
+                        callback.willClose(null, true, null);
+                        LemageActivity.this.finish();
+
+//                        if(operationBarItemCount == 3) {
+//                            operationBarItemCount = 2;
+//                        }else {
+//                            operationBarItemCount = 3;
+//                        }
+//                        operationBar.setCount(operationBarItemCount);
                     }
                 }
             });
@@ -587,8 +602,10 @@ public class LemageActivity extends AppCompatActivity {
             }
             // 预览界面更改了选中图片，要同步数据，告知选择器和选择器中的adapter
             listPhotoSelect.clear();
-            listPhotoSelect.addAll(list);
-            photoAdapter.changeList(list);
+//            listPhotoSelect.addAll(list);
+//            photoAdapter.changeList(list);
+            listPhotoSelect.addAll(phototAdapterData.getFileList());
+            photoAdapter.changeList(phototAdapterData.getFileList());
             photoAdapter.notifyDataSetChanged();
         }
 

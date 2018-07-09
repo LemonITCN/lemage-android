@@ -9,7 +9,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -87,6 +89,9 @@ public class LemageVideoView extends RelativeLayout {
      * 根据path得到视频相关参数
      */
     private void initVideoInfo() {
+        if(TextUtils.isEmpty(mPath)) {
+            return;
+        }
         mUri = Uri.parse(mPath);
 
         MediaMetadataRetriever media = new MediaMetadataRetriever();
@@ -164,6 +169,16 @@ public class LemageVideoView extends RelativeLayout {
         mControlView.getVideoStartImageView().setOnClickListener(bottomStartVideoListener);
         // 进度条改变
         mControlView.getProgressBar().setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+        // 当视频还没开始播放时，禁止拖动进度条
+        mControlView.getProgressBar().setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(isStart) {
+                    return false;
+                }
+                return true;
+            }
+        });
     }
 
     private SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
@@ -180,6 +195,7 @@ public class LemageVideoView extends RelativeLayout {
 //            if(fromUser) {
 //                progress = changePprogress;
 //            }
+            Log.e(TAG, "onProgressChanged");
         }
 
         /**
@@ -204,6 +220,7 @@ public class LemageVideoView extends RelativeLayout {
             progress = seekBar.getProgress();
             finishTime = durationTime * seekBar.getProgress() / 100;
             isPause = false;
+            mControlView.getVideoStartImageView().setPause(true);
         }
     };
 

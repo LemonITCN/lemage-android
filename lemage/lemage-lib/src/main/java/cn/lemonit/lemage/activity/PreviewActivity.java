@@ -21,6 +21,7 @@ import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.bean.Video;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
 import cn.lemonit.lemage.util.FileUtil;
+import cn.lemonit.lemage.util.PathUtil;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
 import cn.lemonit.lemage.view.CircleView;
@@ -89,6 +90,10 @@ public class PreviewActivity extends AppCompatActivity {
      * 允许最多可选择数量
      */
     private int maxChooseCount;
+    /**
+     * 进入图片预览器后默认首先展示的图片索引
+     */
+    private int showIndex;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,14 +108,20 @@ public class PreviewActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // 停止正在进行的下载任务
+//        mImgPagerAdapter.stopDownLoadTask();
         // 清空网络临时文件夹
-        FileUtil.getInstance(this).clearNetFile();
+//        FileUtil.getInstance(this).clearNetFile();
     }
 
     private void getData() {
         Intent intent = getIntent();
         maxChooseCount = intent.getIntExtra("maxChooseCount", 0);
+        if(maxChooseCount > 99) {
+            maxChooseCount = 99;
+        }
         mColor = intent.getIntExtra("themeColor", Color.GREEN);   // 默认绿色主题
+        showIndex = intent.getIntExtra("showIndex", 0);
         from = intent.getStringExtra("from");
         // 得到item的position
         if(!TextUtils.isEmpty(from) && from.equals("all")) {
@@ -172,6 +183,8 @@ public class PreviewActivity extends AppCompatActivity {
         // 如果是从item跳转过来
         if(!TextUtils.isEmpty(from) && from.equals("all")) {
             mViewPager.setCurrentItem(fromPosition);
+        }else {
+            mViewPager.setCurrentItem(showIndex);
         }
     }
 
@@ -188,9 +201,9 @@ public class PreviewActivity extends AppCompatActivity {
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
             mViewPager.setLayoutParams(layoutParams);
             if(!TextUtils.isEmpty(from) && from.equals("all")) {
-                mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAll, maxChooseCount);
+                mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAll);
             }else {
-                mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAdapterData, maxChooseCount);
+                mImgPagerAdapter = new ImgPagerAdapter(this, listPhotoAdapterData);
             }
             mImgPagerAdapter.setImgOnClickListener(imgOnClickListener);
             mViewPager.setAdapter(mImgPagerAdapter);
@@ -214,16 +227,21 @@ public class PreviewActivity extends AppCompatActivity {
             mNavigationBar.setPreviewLeftViewClickListener(new NavigationBar.PreviewLeftViewClickListener() {
                 @Override
                 public void leftClickListener(PreviewBarLeftButton view) {
-                    List<String> list = new ArrayList<String>();
-
-                    for(FileObj fileObj : listPhotoSelect) {
-                        if(fileObj.getStatus() == 1) {
-                            list.add(fileObj.getPath());
-                        }
-                    }
-                    Log.e(TAG, "选中的 ==================== " + list.size());
-                    callback.willClose(list, true, listPhotoSelect);
-                    PreviewActivity.this.finish();
+//                    List<String> list = new ArrayList<String>();
+//
+//                    for(FileObj fileObj : listPhotoSelect) {
+//                        if(fileObj.getStatus() == 1) {
+//                            String path = fileObj.getPath();
+//                            // 如果路径是以http开头，证明网络资源没有下载完成，此时不回传
+//                            if(!path.startsWith("http")) {
+//                                list.add(fileObj.getPath());
+//                            }
+//                        }
+//                    }
+//                    Log.e(TAG, "选中的 ==================== " + list.size());
+//                    callback.willClose(list, true, listPhotoSelect);
+//                    PreviewActivity.this.finish();
+                    finishCallback();
                 }
             });
             // 顶部条右侧按钮点击事件
@@ -275,6 +293,10 @@ public class PreviewActivity extends AppCompatActivity {
                 mNavigationBar.changeTextCircle(listPhotoSelect.get(0).getStatus(), 1);
             }
 
+            // 允许选择的图片数量，如果传<=0的数，表示关闭选择功能（选择器右上角是否有选择按钮）
+            if(maxChooseCount < 1) {
+                mNavigationBar.hideSelectButton();
+            }
         }
     }
 
@@ -284,10 +306,20 @@ public class PreviewActivity extends AppCompatActivity {
     private PreviewOperationBar getOperationBar() {
         if(mPreviewOperationBar == null) {
             mPreviewOperationBar = new PreviewOperationBar(this, mColor);
-//            mOperationBar.setOperationBarOnClickListener(mOperationBarOnClickListener);
+            mPreviewOperationBar.setPreviewOperationBarClickListener(mPreviewOperationBarClickListener);
         }
         return mPreviewOperationBar;
     }
+
+    /**
+     * 完成按钮回掉
+     */
+    private PreviewOperationBar.PreviewOperationBarClickListener mPreviewOperationBarClickListener = new PreviewOperationBar.PreviewOperationBarClickListener() {
+        @Override
+        public void previewOperationBarClick() {
+            finishCallback();
+        }
+    };
 
     private ImgPagerAdapter.ImgOnClickListener imgOnClickListener = new ImgPagerAdapter.ImgOnClickListener() {
         @Override
@@ -375,6 +407,9 @@ public class PreviewActivity extends AppCompatActivity {
     };
 
 
+    /**
+     * 添加白色覆盖层
+     */
     private void addWhitView() {
         whiteView = new View(this);
         RelativeLayout.LayoutParams paramsWhite = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -382,5 +417,34 @@ public class PreviewActivity extends AppCompatActivity {
         whiteView.setBackgroundColor(Color.WHITE);
         whiteView.setAlpha(0);
         rootLayout.addView(whiteView);
+    }
+
+    /**
+     * 返回键的处理
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishCallback();
+    }
+
+    /**
+     * 点击完成，顶部条左侧按钮，返回键都回掉的方法
+     */
+    private void finishCallback() {
+        List<String> list = new ArrayList<String>();
+
+        for(FileObj fileObj : listPhotoSelect) {
+            if(fileObj.getStatus() == 1) {
+                String path = fileObj.getPath();
+                // 如果路径是以http开头，证明网络资源没有下载完成，此时不回传
+                if(!path.startsWith("http")) {
+                    list.add(fileObj.getPath());
+                }
+            }
+        }
+        Log.e(TAG, "选中的 ==================== " + list.size());
+        callback.willClose(list, true, listPhotoSelect);
+        PreviewActivity.this.finish();
     }
 }

@@ -15,9 +15,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.lemonit.lemage.activity.LemageActivity;
+import cn.lemonit.lemage.activity.PreviewActivity;
 import cn.lemonit.lemage.bean.ImageSize;
 import cn.lemonit.lemage.bean.LemageUsageText;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
@@ -183,13 +185,22 @@ public class Lemage implements Serializable {
      * @param themeColor        主题颜色，这个颜色会作为完成按钮、选择顺序标识的背景色
      * @param callback          结果回调函数，若用户在选择器中点击了取消按钮，那么回调函数中的imageUrlList为null
      */
-    public static void startPreviewer(List<String> imageUrlArr,
+    public static void startPreviewer(Context mContext,
+                                      List<String> imageUrlArr,
                                       List<String> chooseImageUrlArr,
                                       int allowChooseCount,
                                       int showIndex,
                                       int themeColor,
                                       LemageResultCallback callback) {
 
+        Intent intent = new Intent(mContext, PreviewActivity.class);
+        intent.putStringArrayListExtra("listAll", (ArrayList<String>) imageUrlArr);
+        intent.putStringArrayListExtra("listSelect", (ArrayList<String>) chooseImageUrlArr);
+        intent.putExtra("maxChooseCount", allowChooseCount);
+        intent.putExtra("showIndex", showIndex);
+        intent.putExtra("themeColor", themeColor);
+        PreviewActivity.setCallback(callback);
+        mContext.startActivity(intent);
     }
 
 }

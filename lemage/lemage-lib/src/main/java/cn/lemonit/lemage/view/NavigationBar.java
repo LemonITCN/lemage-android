@@ -229,4 +229,10 @@ public class NavigationBar extends RelativeLayout {
     public void changeTextCircle(int mStatus, int number) {
         mCircleView.changeStatus(mStatus, number);
     }
+
+    public void hideSelectButton() {
+        if(mCircleView != null) {
+            mCircleView.setVisibility(View.GONE);
+        }
+    }
 }

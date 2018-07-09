@@ -22,6 +22,7 @@ import android.widget.VideoView;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -46,17 +47,15 @@ public class ImgPagerAdapter extends PagerAdapter {
 
     private Context mContext;
     private ArrayList<FileObj> listFile;
-    /**
-     * 允许最多选择的数量
-     */
-    private int maxChooseCount;
+
+    private PathUtil mPathUtil;
+    private List<PathUtil> listPathUtil = new ArrayList<PathUtil>();
 
     private ImgOnClickListener mImgOnClickListener;
 
-    public ImgPagerAdapter(Context mContext, ArrayList<FileObj> listFile, int maxChooseCount) {
+    public ImgPagerAdapter(Context mContext, ArrayList<FileObj> listFile) {
         this.mContext = mContext;
         this.listFile = listFile;
-        this.maxChooseCount = maxChooseCount;
     }
 
     @Override
@@ -85,7 +84,8 @@ public class ImgPagerAdapter extends PagerAdapter {
         view.setLayoutParams(layoutParams);
         final FileObj fileObj = listFile.get(position);
 
-        final PathUtil mPathUtil = new PathUtil(mContext);
+        mPathUtil = new PathUtil(mContext);
+        listPathUtil.add(mPathUtil);
         mPathUtil.setDownLoadFileFinishListener(new PathUtil.DownLoadFileFinishListener() {
             @Override
             public void downLoadFileFinish(NetBeen netBeen) {
@@ -182,25 +182,9 @@ public class ImgPagerAdapter extends PagerAdapter {
         view.addView(mLemageVideoView);
     }
 
-
-    /**
-     * 增加白色覆盖层
-     */
-    private void addWhiteView(RelativeLayout layout) {
-        View whiteView = new View(mContext);
-        RelativeLayout.LayoutParams paramsWhite = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        whiteView.setLayoutParams(paramsWhite);
-        whiteView.setBackgroundColor(Color.WHITE);
-        whiteView.setAlpha(0);
-        layout.addView(whiteView);
-        int shooseCount = 0;
-        for(FileObj fileObj : listFile) {
-            if(fileObj.getStatus() == 1) {
-                shooseCount ++;
-            }
-            if(shooseCount >= maxChooseCount && fileObj.getStatus() == 0) {
-                whiteView.setAlpha(0.5f);
-            }
+    public void stopDownLoadTask() {
+        for(PathUtil pathUtil : listPathUtil) {
+            pathUtil.stopDownLoad();
         }
     }
 }

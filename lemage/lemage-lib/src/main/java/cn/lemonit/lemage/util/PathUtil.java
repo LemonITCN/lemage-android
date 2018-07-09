@@ -39,6 +39,8 @@ public class PathUtil {
 
     private Context mContext;
 
+    private DownLoadAsyncTask mDownLoadAsyncTask;
+
     private DownLoadFileFinishListener mDownLoadFileFinishListener;
 
     public PathUtil(Context context){
@@ -87,7 +89,8 @@ public class PathUtil {
             }
             // 如果还是没有此文件，就下载
             if(TextUtils.isEmpty(url)) {
-                new DownLoadAsyncTask().execute(path);
+                mDownLoadAsyncTask = new DownLoadAsyncTask();
+                mDownLoadAsyncTask.execute(path);
                 return null;
             }else {
                 mNetBeen.setType(1);
@@ -150,14 +153,14 @@ public class PathUtil {
                     File filePhoto = new File(baseFileUrl + getPackageName() + "/tmp/photo");
                     File file = new File(filePhoto + "/" + stringToMD5(params[0]));  // 需要保持的文件
 //                    saveFile(filePhoto, file, data, inputStream);
-                    saveFileNew(file, inputStream, totalSize);
+                    saveFileNew(file, inputStream, totalSize, this);
                     mNetBeen.setPath(file.getPath());
                     mNetBeen.setType(0);
                 }else {
                     File fileVideo = new File(baseFileUrl + getPackageName() + "/tmp/video");
                     File file = new File(fileVideo + "/" + stringToMD5(params[0]));  // 需要保持的文件
 //                    saveFile(fileVideo, file, data, inputStream);
-                    saveFileNew(file, inputStream, totalSize);
+                    saveFileNew(file, inputStream, totalSize, this);
                     mNetBeen.setPath(file.getPath());
                     mNetBeen.setType(1);
                 }
@@ -274,13 +277,17 @@ public class PathUtil {
      * @param inputStream
      * @param totalSize
      */
-    private void saveFileNew(File file, InputStream inputStream, int totalSize) {
+    private void saveFileNew(File file, InputStream inputStream, int totalSize, DownLoadAsyncTask task) {
         int currentSize = 0;
         try {
             OutputStream os = new FileOutputStream(file);
             int bytesRead = 0;
             byte[] buffer = new byte[8192];
             while ((bytesRead = inputStream.read(buffer, 0, 8192)) != -1) {
+                // 停止下载任务
+                if(task.isCancelled()) {
+                    return;
+                }
                 os.write(buffer, 0, bytesRead);
                 currentSize += bytesRead;
                 int progressSize = (int)(currentSize/(double)totalSize * 100);
@@ -302,5 +309,14 @@ public class PathUtil {
 
     public void setDownLoadFileFinishListener(DownLoadFileFinishListener mDownLoadFileFinishListener) {
         this.mDownLoadFileFinishListener = mDownLoadFileFinishListener;
+    }
+
+    /**
+     * 停止下载
+     */
+    public void stopDownLoad() {
+        if(mDownLoadAsyncTask != null && mDownLoadAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
+            mDownLoadAsyncTask.cancel(true);
+        }
     }
 }

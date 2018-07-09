@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import cn.lemonit.lemage.util.ScreenUtil;
@@ -35,6 +36,8 @@ public class PreviewOperationBar extends LinearLayout {
      */
     private int mColor;
 
+    private PreviewOperationBarClickListener mPreviewOperationBarClickListener;
+
     public PreviewOperationBar(Context context, int color) {
         super(context);
         mContext = context;
@@ -60,6 +63,12 @@ public class PreviewOperationBar extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mDrawTextButton = new DrawTextButton(mContext, "完成");
         mDrawTextButton.setLayoutParams(layoutParams);
+        mDrawTextButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPreviewOperationBarClickListener.previewOperationBarClick();
+            }
+        });
         addView(mDrawTextButton);
     }
 
@@ -82,5 +91,13 @@ public class PreviewOperationBar extends LinearLayout {
         Path mPath = new Path();
         mPath.addRoundRect(new RectF(0, 0, width, height), radright, Path.Direction.CW);
         canvas.drawPath(mPath, mPaint);
+    }
+
+    public interface PreviewOperationBarClickListener {
+        void previewOperationBarClick();
+    }
+
+    public void setPreviewOperationBarClickListener(PreviewOperationBarClickListener mPreviewOperationBarClickListener) {
+        this.mPreviewOperationBarClickListener = mPreviewOperationBarClickListener;
     }
 }
