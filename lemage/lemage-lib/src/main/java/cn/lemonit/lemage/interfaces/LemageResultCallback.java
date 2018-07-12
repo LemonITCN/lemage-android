@@ -6,7 +6,7 @@ import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.Photo;
 
 /**
- * Lemage通用图片结果毁掉函数
+ * Lemage通用图片结果回调函数
  *
  * @author LemonITCN - liuri
  */

@@ -18,10 +18,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.lemonit.lemage.activity.CameraActivity;
 import cn.lemonit.lemage.activity.LemageActivity;
 import cn.lemonit.lemage.activity.PreviewActivity;
 import cn.lemonit.lemage.bean.ImageSize;
 import cn.lemonit.lemage.bean.LemageUsageText;
+import cn.lemonit.lemage.interfaces.LemageCameraCallback;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
 import cn.lemonit.lemage.lemageutil.SendBoxFileManager;
 import cn.lemonit.lemage.lemageutil.SystemInfo;
@@ -200,6 +202,20 @@ public class Lemage implements Serializable {
         intent.putExtra("showIndex", showIndex);
         intent.putExtra("themeColor", themeColor);
         PreviewActivity.setCallback(callback);
+        mContext.startActivity(intent);
+    }
+
+
+    /**
+     * 拍照视频启动器
+     * @param mContext
+     * @param videoTime 如果录像，传递的最多录制秒数，如果 =< 0, 录像默认是5秒
+     * @param cameraCallback
+     */
+    public static void startCamera(Context mContext, int videoTime,  LemageCameraCallback cameraCallback) {
+        Intent intent = new Intent(mContext, CameraActivity.class);
+        intent.putExtra("videoTime", videoTime);
+        CameraActivity.setCameraCallback(cameraCallback);
         mContext.startActivity(intent);
     }
 

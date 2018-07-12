@@ -19,18 +19,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.lemonit.lemage.Lemage;
+import cn.lemonit.lemage.activity.CameraActivity;
 import cn.lemonit.lemage.activity.PreviewActivity;
 import cn.lemonit.lemage.bean.FileObj;
+import cn.lemonit.lemage.bean.ImageSize;
 import cn.lemonit.lemage.core.LemageScanner;
+import cn.lemonit.lemage.interfaces.LemageCameraCallback;
 import cn.lemonit.lemage.interfaces.LemageResultCallback;
 import cn.lemonit.lemage.lemageutil.SystemInfo;
+import cn.lemonit.lemage.util.CameraFileUtil;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
     private final String TAG = "MainActivity";
 
-    private Button selectPhotoBut, selectVideoBut, allBut, onlyBut, changeColor, netSourceBut;
+    private Button selectPhotoBut, selectVideoBut, allBut, onlyBut, changeColor, netSourceBut, cameraBut;
     private TextView textview;
+//    private ImageView imageview;
 
     private int themeColor;
     /**
@@ -66,7 +71,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         netSourceBut = findViewById(R.id.netSourceBut);
         netSourceBut.setOnClickListener(this);
 
+        cameraBut = findViewById(R.id.cameraBut);
+        cameraBut.setOnClickListener(this);
+
         textview = findViewById(R.id.textview);
+
+//        imageview = findViewById(R.id.imageview);
     }
 
     private void initData() {
@@ -101,8 +111,42 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.netSourceBut:
                 netSourcePreview();
                 break;
+            // 拍照
+            case R.id.cameraBut:
+//                startActivity(new Intent(this, CameraActivity.class));
+//                textview.setVisibility(View.GONE);
+//                startActivityForResult(new Intent(this, CameraActivity.class), 0);
+                Lemage.startCamera(this, 5, new LemageCameraCallback() {
+                    @Override
+                    public void cameraActionFinish(List<String> list) {
+                        textview.setText("");
+                        StringBuffer sb = new StringBuffer();
+                        for(String url : list) {
+                            sb.append(url + "\n\n");
+                        }
+                        textview.setText(sb.toString());
+                    }
+                });
+                break;
         }
     }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if(requestCode == 0 && resultCode == 1) {
+////            String path = data.getStringExtra("bitmapPath");
+////            Log.e(TAG, "path ================ " + path);
+////            Bitmap bitmap = CameraFileUtil.getInstance(MainActivity.this).loadImage(path, null);
+////            if(bitmap != null) {
+////                imageview.setImageBitmap(bitmap);
+////            }else {
+////                Log.e(TAG, "bitmap ================ null");
+////            }
+//            String path = data.getStringExtra("path");
+//            Log.e(TAG, "path ================ " + path);
+//        }
+//    }
 
     /**
      * 只选图片
