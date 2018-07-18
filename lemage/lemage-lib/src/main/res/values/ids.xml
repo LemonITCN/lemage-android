@@ -2,4 +2,5 @@
 <resources>
     <item name="navigationBar" type="id" />
     <item name="albumadapter_image" type="id" />
+    <item name="camera_bottom_layout" type="id" />
 </resources>

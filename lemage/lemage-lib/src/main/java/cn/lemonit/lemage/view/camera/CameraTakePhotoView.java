@@ -37,13 +37,13 @@ public class CameraTakePhotoView extends View {
         mPaintOuter = new Paint();
         mPaintOuter.setStrokeWidth(4);
         mPaintOuter.setAntiAlias(true);
-        mPaintOuter.setColor(Color.parseColor("#5c5c54"));
+        mPaintOuter.setColor(Color.parseColor("#B3CF95"));
         mPaintOuter.setStyle(Paint.Style.FILL);
 
         mPaintInner = new Paint();
         mPaintInner.setStrokeWidth(4);
         mPaintInner.setAntiAlias(true);
-        mPaintInner.setColor(Color.WHITE);
+        mPaintInner.setColor(Color.parseColor("#D4EABC"));
         mPaintInner.setStyle(Paint.Style.FILL);
     }
 

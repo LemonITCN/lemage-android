@@ -41,7 +41,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     /**
      * 最多允许选择的个数
      */
-    private int maxCount = 0;
+    private int maxCount = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +155,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Lemage.startChooser(MainActivity.this, maxCount, false, themeColor, LemageScanner.STYLE_ONLY_PHOTO, new LemageResultCallback() {
             @Override
             public void willClose(List<String> imageUrlList, boolean isOriginal, List<FileObj> list) {
+                if(imageUrlList == null) return;
                 textview.setText("");
                 StringBuffer sb = new StringBuffer();
                 for(String url : imageUrlList) {

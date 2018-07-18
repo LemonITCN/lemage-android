@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
@@ -23,9 +24,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.lemonit.lemage.R;
 import cn.lemonit.lemage.interfaces.LemageCameraCallback;
 import cn.lemonit.lemage.util.CameraFileUtil;
 import cn.lemonit.lemage.util.ScreenUtil;
+import cn.lemonit.lemage.view.camera.BrightView;
 import cn.lemonit.lemage.view.camera.CameraBackView;
 import cn.lemonit.lemage.view.camera.CameraEvertButton;
 import cn.lemonit.lemage.view.camera.CameraNOView;
@@ -62,6 +65,10 @@ public class CameraActivity extends AppCompatActivity {
     private int currentCameraType = BACK;//当前打开的摄像头标记(默认是后置摄像头)
 
     private Camera mCamera;
+    /**
+     * 闪光灯
+     */
+    private BrightView mBrightView;
     /**
      * 底部条（用来展示返回，拍照，录像及时长的）
      */
@@ -165,6 +172,7 @@ public class CameraActivity extends AppCompatActivity {
         getSurfaceView();
         getEvertCameraButton();
         getBottomLayout();
+        getBrightView();
     }
 
     /**
@@ -195,8 +203,9 @@ public class CameraActivity extends AppCompatActivity {
         mEvertCameraButton = new CameraEvertButton(this);
         mEvertCameraButton.setOnClickListener(evertCameraClickListener);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params.setMargins(0, 30, 30, 0);
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+        params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+        params.setMargins(60, 0, 0, 0);
         mEvertCameraButton.setLayoutParams(params);
     }
 
@@ -205,9 +214,11 @@ public class CameraActivity extends AppCompatActivity {
      */
     private void getBottomLayout() {
         bottomLayout = new RelativeLayout(this);
+        bottomLayout.setId(R.id.camera_bottom_layout);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtil.getScreenHeight(this) / 6);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        layoutParams.setMargins(0, 0, 0, ScreenUtil.getScreenHeight(this) / 10);
+        // 距离底部距离
+        layoutParams.setMargins(0, 0, 0, ScreenUtil.getScreenHeight(this) / 12);
         bottomLayout.setLayoutParams(layoutParams);
         // 添加中间拍照圆圈
         mCameraTakePhotoView = new CameraTakePhotoView(this);
@@ -251,6 +262,7 @@ public class CameraActivity extends AppCompatActivity {
                     }
                     mCameraTakePhotoView.setVisibility(View.VISIBLE);
                     mCameraBackView.setVisibility(View.VISIBLE);
+                    mEvertCameraButton.setVisibility(View.VISIBLE);
                     mCameraOKView.setVisibility(View.GONE);
                     mCameraNOView.setVisibility(View.GONE);
                     mCamera.startPreview();
@@ -259,6 +271,7 @@ public class CameraActivity extends AppCompatActivity {
                 if(action == 1) {
                     mCameraTakePhotoView.setVisibility(View.VISIBLE);
                     mCameraBackView.setVisibility(View.VISIBLE);
+                    mEvertCameraButton.setVisibility(View.VISIBLE);
                     mCameraOKView.setVisibility(View.GONE);
                     mCameraNOView.setVisibility(View.GONE);
                     mCamera.startPreview();
@@ -307,6 +320,7 @@ public class CameraActivity extends AppCompatActivity {
         mCameraVideoProgressBar.setLayoutParams(layoutParamsProgressBar);
         mCameraVideoProgressBar.setCameraVideoFinishCallback(mCameraVideoFinishCallback);
 
+        bottomLayout.addView(mEvertCameraButton);
         bottomLayout.addView(mCameraTakePhotoView);
         bottomLayout.addView(mCameraBackView);
         bottomLayout.addView(mCameraNOView);
@@ -318,14 +332,30 @@ public class CameraActivity extends AppCompatActivity {
         mCameraVideoProgressBar.setVisibility(View.GONE);
     }
 
+    private void getBrightView() {
+        mBrightView = new BrightView(this);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ABOVE, bottomLayout.getId());
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+        layoutParams.setMargins(0, 0, 0, 15);
+        mBrightView.setLayoutParams(layoutParams);
+        mBrightView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openOrCloseLight();
+            }
+        });
+    }
+
     private void addView() {
         // 没有摄像头就关闭
         if(!checkCamera()) {
             this.finish();
         }
         rootLayout.addView(mSurfaceView);
-        rootLayout.addView(mEvertCameraButton);
+//        rootLayout.addView(mEvertCameraButton);
         rootLayout.addView(bottomLayout);
+        rootLayout.addView(mBrightView);
     }
 
 
@@ -485,6 +515,7 @@ public class CameraActivity extends AppCompatActivity {
                             if (bitmap == null) return;
                             mCameraTakePhotoView.setVisibility(View.GONE);
                             mCameraBackView.setVisibility(View.GONE);
+                            mEvertCameraButton.setVisibility(View.GONE);
                             mCameraOKView.setVisibility(View.VISIBLE);
                             mCameraNOView.setVisibility(View.VISIBLE);
                         }
@@ -594,6 +625,7 @@ public class CameraActivity extends AppCompatActivity {
             if(videoFinishType != 2) {
                 mCameraVideoProgressBar.setVisibility(View.GONE);
                 mCameraBackView.setVisibility(View.GONE);
+                mEvertCameraButton.setVisibility(View.GONE);
                 mCameraNOView.setVisibility(View.VISIBLE);
                 mCameraOKView.setVisibility(View.VISIBLE);
             }else {
@@ -690,39 +722,16 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-//    /**
-//     * 获取最接近当前手机的分辨率
-//     * @return
-//     */
-//    private Camera.Size getCameraSize() {
-//        // 目标size
-//        Camera.Size bestSize = null;
-//        // 手机宽高
-//        int width = ScreenUtil.getScreenWidth(this);
-//        int height = ScreenUtil.getScreenHeight(this);
-//        Log.e(TAG, "手机宽高 =============== " + width + "    " + height);
-//        // 手机分辨率
-//        int phoneResolution = width * height;
-//
-//        Camera.Parameters parameters = mCamera.getParameters();
-//        int yulanzhen = parameters.getPreviewFrameRate();
-//        Log.e(TAG, "yulanzhen =============== " + yulanzhen);
-//        //获取预览的各种分辨率
-//        List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
-//        //获取摄像头支持的各种分辨率
-//        List<Camera.Size> supportedPictureSizes = parameters.getSupportedPictureSizes();
-//
-//        bestSize = supportedPictureSizes.get(0);
-//        Log.e(TAG, "设置宽高 =============== " + bestSize.width + "    " + bestSize.height);
-////        int a = Math.abs(bestSize.width * bestSize.height - phoneResolution);  // 第一个size和手机的分辨率差值
-////        for(int i = 1; i < supportedPictureSizes.size(); i ++) {
-////            int b = Math.abs(supportedPictureSizes.get(i).width * supportedPictureSizes.get(i).height - phoneResolution);
-////            if(a > b) {
-////                a = b;
-////                bestSize = supportedPictureSizes.get(i);
-////            }
-////        }
-//        return bestSize;
-//    }
-
+    private void openOrCloseLight() {
+        Camera.Parameters parameters = mCamera.getParameters();
+        String flashMode = parameters.getFlashMode();
+        if (flashMode.equals("torch")) {
+            parameters.setFlashMode("off");
+            mBrightView.setLight(false);
+        } else {
+            parameters.setFlashMode("torch");
+            mBrightView.setLight(true);
+        }
+        mCamera.setParameters(parameters);
+    }
 }

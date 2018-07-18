@@ -92,19 +92,22 @@ public class CameraVideoProgressBar extends View {
         mPaintOuter = new Paint();
         mPaintOuter.setStrokeWidth(lineWidth);
         mPaintOuter.setAntiAlias(true);
-        mPaintOuter.setColor(Color.GRAY);
+//        mPaintOuter.setColor(Color.GRAY);
+        mPaintOuter.setColor(Color.parseColor("#B3CF95"));
         mPaintOuter.setStyle(Paint.Style.STROKE);
 
         mPaintInner = new Paint();
         mPaintInner.setStrokeWidth(lineWidth);
         mPaintInner.setAntiAlias(true);
-        mPaintInner.setColor(Color.WHITE);
+//        mPaintInner.setColor(Color.WHITE);
+        mPaintInner.setColor(Color.parseColor("#D4EABC"));
         mPaintInner.setStyle(Paint.Style.FILL);
 
         mPaintProgress = new Paint();
         mPaintProgress.setStrokeWidth(lineWidth);
         mPaintProgress.setAntiAlias(true);
-        mPaintProgress.setColor(Color.GREEN);
+//        mPaintProgress.setColor(Color.GREEN);
+        mPaintProgress.setColor(Color.parseColor("#5CAB00"));
         mPaintProgress.setStyle(Paint.Style.STROKE);
 
         intervalTime = 50;
