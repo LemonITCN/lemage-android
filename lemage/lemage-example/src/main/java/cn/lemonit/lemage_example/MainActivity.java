@@ -114,9 +114,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
             // 拍照
             case R.id.cameraBut:
-//                startActivity(new Intent(this, CameraActivity.class));
-//                textview.setVisibility(View.GONE);
-//                startActivityForResult(new Intent(this, CameraActivity.class), 0);
                 Lemage.startCamera(this, 5, new LemageCameraCallback() {
                     @Override
                     public void cameraActionFinish(List<String> list) {
@@ -125,7 +122,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         for(String url : list) {
                             sb.append(url + "\n\n");
                         }
-                        textview.setText(sb.toString()); 
+                        textview.setText(sb.toString());
                     }
                 });
                 break;
