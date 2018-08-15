@@ -128,6 +128,10 @@ public class CameraActivity extends AppCompatActivity {
      * 记录录像时开始和结束时间，如果短于5秒，提示时间过短失败
      */
     private long startVideoTime, stopVideoTime;
+    /**
+     * 是否打开闪光灯
+     */
+    private boolean lightOpen;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -722,8 +726,6 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    private boolean lightOpen;
-
     private void openOrCloseLight() {
         if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
             Toast.makeText(this, "你的手机没有闪光灯!", Toast.LENGTH_LONG).show();
@@ -739,15 +741,5 @@ public class CameraActivity extends AppCompatActivity {
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);//关闭
             mCamera.setParameters(parameters);
         }
-//        String flashMode = parameters.getFlashMode();
-//        if(flashMode == null) return;
-//        if (flashMode.equals("torch")) {
-//            parameters.setFlashMode("off");
-//            mBrightView.setLight(false);
-//        } else {
-//            parameters.setFlashMode("torch");
-//            mBrightView.setLight(true);
-//        }
-//        mCamera.setParameters(parameters);
     }
 }
