@@ -722,16 +722,32 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    private boolean lightOpen;
+
     private void openOrCloseLight() {
-        Camera.Parameters parameters = mCamera.getParameters();
-        String flashMode = parameters.getFlashMode();
-        if (flashMode.equals("torch")) {
-            parameters.setFlashMode("off");
-            mBrightView.setLight(false);
-        } else {
-            parameters.setFlashMode("torch");
-            mBrightView.setLight(true);
+        if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+            Toast.makeText(this, "你的手机没有闪光灯!", Toast.LENGTH_LONG).show();
+            return;
         }
-        mCamera.setParameters(parameters);
+        Camera.Parameters parameters = mCamera.getParameters();
+        if(!lightOpen) {
+            lightOpen = true;
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);//开启
+            mCamera.setParameters(parameters);
+        }else {
+            lightOpen = false;
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);//关闭
+            mCamera.setParameters(parameters);
+        }
+//        String flashMode = parameters.getFlashMode();
+//        if(flashMode == null) return;
+//        if (flashMode.equals("torch")) {
+//            parameters.setFlashMode("off");
+//            mBrightView.setLight(false);
+//        } else {
+//            parameters.setFlashMode("torch");
+//            mBrightView.setLight(true);
+//        }
+//        mCamera.setParameters(parameters);
     }
 }

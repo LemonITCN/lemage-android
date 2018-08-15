@@ -1,12 +1,18 @@
 package cn.lemonit.lemage_example;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,9 +36,10 @@ import cn.lemonit.lemage.interfaces.LemageResultCallback;
 import cn.lemonit.lemage.lemageutil.SystemInfo;
 import cn.lemonit.lemage.util.CameraFileUtil;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final String TAG = "MainActivity";
+    private final int REQUEST_PERMISSION_CODE = 0;
 
     private Button selectPhotoBut, selectVideoBut, allBut, onlyBut, changeColor, netSourceBut, cameraBut;
     private TextView textview;
@@ -43,6 +50,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
      * 最多允许选择的个数
      */
     private int maxCount = 5;
+    /**
+     * 权限相关
+     */
+    private ArrayList<String> requestPermissionList = new ArrayList<String>();
+    private String[] listPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +63,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
         initView();
         initData();
+        checkPermissions(listPermission);
     }
 
     private void initView() {
@@ -129,22 +142,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if(requestCode == 0 && resultCode == 1) {
-////            String path = data.getStringExtra("bitmapPath");
-////            Log.e(TAG, "path ================ " + path);
-////            Bitmap bitmap = CameraFileUtil.getInstance(MainActivity.this).loadImage(path, null);
-////            if(bitmap != null) {
-////                imageview.setImageBitmap(bitmap);
-////            }else {
-////                Log.e(TAG, "bitmap ================ null");
-////            }
-//            String path = data.getStringExtra("path");
-//            Log.e(TAG, "path ================ " + path);
-//        }
-//    }
 
     /**
      * 只选图片
@@ -280,4 +277,45 @@ public class MainActivity extends Activity implements View.OnClickListener {
         });
     }
 
+    private void checkPermissions(String[] listPermission) {
+        boolean checkPermission = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (String permission : listPermission) {
+                if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissionList.add(permission);
+                }
+            }
+            if (requestPermissionList.size() == 0) {
+                checkPermission = true;
+            } else {
+                checkPermission = false;
+            }
+        } else {
+            checkPermission = true;
+        }
+        if (checkPermission) {
+            Toast.makeText(this, "您开通了所有权限，请继续", Toast.LENGTH_LONG).show();
+        } else {
+            requestPermission(requestPermissionList, REQUEST_PERMISSION_CODE);
+        }
+    }
+
+    public void requestPermission(List<String> requestPermissionList, int requestCode) {
+        ActivityCompat.requestPermissions(this, requestPermissionList.toArray(new String[requestPermissionList.size()]), requestCode);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+            for (int grant : grantResults) {
+                if (grant != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "您拒绝了权限,将退出应用", Toast.LENGTH_LONG).show();
+                    MainActivity.this.finish();
+                    return;
+                }
+            }
+            Toast.makeText(this, "您开通了所有权限，请继续", Toast.LENGTH_LONG).show();
+        }
+    }
 }
