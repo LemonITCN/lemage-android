@@ -229,7 +229,7 @@ public class PathUtil {
     private String findFile(File file, String fileName) {
         String path = "";
         File[] files = file.listFiles();  // 得到文件夹中的所有文件
-        if(files.length == 0) {
+        if(files == null || files.length == 0) {
             Log.e(TAG, "文件夹是空的");
             return path;
         }
