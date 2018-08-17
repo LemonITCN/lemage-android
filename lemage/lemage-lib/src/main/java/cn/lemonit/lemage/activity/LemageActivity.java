@@ -133,6 +133,7 @@ public class LemageActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 //        LemageScannerNew.getInstance(this, style).destroyLoader();
+        Log.e(TAG, "onDestroy");
     }
 
     private void getData() {
@@ -152,15 +153,15 @@ public class LemageActivity extends AppCompatActivity {
             public void scanComplete(Collection<Album> albumList) {
                 if(albumList.size() > 0) {
                     for(Album album : albumList) {
-                        Log.e(TAG, "文件名称 === " + album.getName());
-                        Log.e(TAG, "文件路径 === " + album.getPath());
-                        Log.e(TAG, "文件数量 === " + album.getFileList().size());
+//                        Log.e(TAG, "文件名称 === " + album.getName());
+//                        Log.e(TAG, "文件路径 === " + album.getPath());
+//                        Log.e(TAG, "文件数量 === " + album.getFileList().size());
                         for(FileObj fileObj : album.getFileList()) {
                             Log.e(TAG, "子文件路径 ====== " + fileObj.getPath());
                         }
                     }
                 }else {
-                    Log.e(TAG, "albumList.size() =========== 0");
+//                    Log.e(TAG, "albumList.size() =========== 0");
                 }
                 List<Album> list = sortList(albumList);
                 changeAlbum(list.get(0));
@@ -421,7 +422,7 @@ public class LemageActivity extends AppCompatActivity {
     }
 
     /**
-     * 表格图片列表item点击事件回调
+     * 表格图片列表item选中事件回调
      */
     private PhotoAdapter.PhotoViewOnClickListener mPhotoViewOnClickListener = new PhotoAdapter.PhotoViewOnClickListener() {
         @Override
@@ -590,6 +591,7 @@ public class LemageActivity extends AppCompatActivity {
         @Override
         public void willClose(List<String> imageUrlList, boolean isOriginal, List<FileObj> list) {
 
+            listPhotoSelect.clear();
             for(int i = 0; i < phototAdapterData.getFileList().size(); i ++) {
                 phototAdapterData.getFileList().get(i).setStatus(0);
                 phototAdapterData.getFileList().get(i).setNumber(0);
@@ -599,13 +601,16 @@ public class LemageActivity extends AppCompatActivity {
                         phototAdapterData.getFileList().get(i).setNumber(m + 1);
                     }
                 }
+                if(phototAdapterData.getFileList().get(i).getStatus() == 1) {
+                    listPhotoSelect.add(phototAdapterData.getFileList().get(i));
+                }
             }
             // 预览界面更改了选中图片，要同步数据，告知选择器和选择器中的adapter
-            listPhotoSelect.clear();
 //            listPhotoSelect.addAll(list);
 //            photoAdapter.changeList(list);
-            listPhotoSelect.addAll(phototAdapterData.getFileList());
-            photoAdapter.changeList(phototAdapterData.getFileList());
+//            listPhotoSelect.addAll(phototAdapterData.getFileList());
+            List<FileObj> list_ = phototAdapterData.getFileList();
+            photoAdapter.changeList(list);
             photoAdapter.notifyDataSetChanged();
         }
 

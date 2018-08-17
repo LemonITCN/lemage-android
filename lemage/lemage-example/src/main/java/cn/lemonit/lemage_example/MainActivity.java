@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 最多允许选择的个数
      */
-    private int maxCount = 5;
+    private int maxCount = 6;
     /**
      * 权限相关
      */
@@ -173,12 +173,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Lemage.startChooser(MainActivity.this, maxCount, false, themeColor, LemageScanner.STYLE_ONLY_VIDEO, new LemageResultCallback() {
             @Override
             public void willClose(List<String> imageUrlList, boolean isOriginal, List<FileObj> list) {
-                textview.setText("");
-                StringBuffer sb = new StringBuffer();
-                for(String url : imageUrlList) {
-                    sb.append(url + "\n\n");
+                if(imageUrlList != null) {
+                    textview.setText("");
+                    StringBuffer sb = new StringBuffer();
+                    for(String url : imageUrlList) {
+                        sb.append(url + "\n\n");
+                    }
+                    textview.setText(sb.toString());
                 }
-                textview.setText(sb.toString());
             }
 
             @Override

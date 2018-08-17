@@ -433,7 +433,6 @@ public class PreviewActivity extends AppCompatActivity {
      */
     private void finishCallback() {
         List<String> list = new ArrayList<String>();
-
         for(FileObj fileObj : listPhotoSelect) {
             if(fileObj.getStatus() == 1) {
                 String path = fileObj.getPath();

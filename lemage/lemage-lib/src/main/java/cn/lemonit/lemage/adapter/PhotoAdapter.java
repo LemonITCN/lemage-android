@@ -137,9 +137,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         // 如果用户的选择模式是都显示，但是只选择图片, 那么视频item变白且不可点击
         // 如果调用者传入的最多可选择数量达到，其他的item变白且不可点击
-        if((style == LemageScanner.STYLE_ANYONE_PHOTO && fileObj instanceof Video)
-                || (style == LemageScanner.STYLE_ANYONE_VIDEO && fileObj instanceof Photo)
-                || (number >= maxChooseCount && fileObj.getStatus() == 0)) {
+        if((style == LemageScanner.STYLE_ANYONE_PHOTO && fileObj instanceof Video) || (style == LemageScanner.STYLE_ANYONE_VIDEO && fileObj instanceof Photo) || (number >= maxChooseCount && fileObj.getStatus() == 0)) {
             ((PhotoViewHolder) holder).photoView.setWhiteAlpha(0.5f);
             clickable = false;
         }
@@ -204,7 +202,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 currentFile.setStatus(0);
                 break;
         }
-        notifyDataSetChanged();
+//        notifyDataSetChanged();
+        notifyItemChanged(position, "lala");
         mPhotoViewOnClickListener.onClickSelectListener(checkPhotoList);
     }
 
