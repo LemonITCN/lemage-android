@@ -50,11 +50,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 最多允许选择的个数
      */
     private int maxCount = 6;
-    /**
-     * 权限相关
-     */
     private ArrayList<String> requestPermissionList = new ArrayList<String>();
-    private String[] listPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
+    private String[] listPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -278,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
 
     private void checkPermissions(String[] listPermission) {
         boolean checkPermission = false;

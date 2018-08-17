@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -514,6 +516,28 @@ public class LemageActivity extends AppCompatActivity {
 
     };
 
+    private void number(List<FileObj> plist) {
+        /*
+         * int compare(Person p1, Person p2) 返回一个基本类型的整型，
+         * 返回负数表示：p1 小于p2，
+         * 返回0 表示：p1和p2相等，
+         * 返回正数表示：p1大于p2
+         */
+        Collections.sort(plist, new Comparator<FileObj>(){
+            @Override
+            public int compare(FileObj o1, FileObj o2) {
+                //按照Person的年龄进行升序排列
+                if(o1.getNumber() > o2.getNumber()){
+                    return 1;
+                }
+                if(o1.getNumber() == o2.getNumber()){
+                    return 0;
+                }
+                return -1;
+            }
+        });
+    }
+
     /**
      * 底部条点击事件回调(预览)
      */
@@ -521,6 +545,8 @@ public class LemageActivity extends AppCompatActivity {
         @Override
         public void leftButtonClick() {
             if(listPhotoSelect.size() > 0) {
+                // 按number排序,保证是序号的顺序预览
+                number(listPhotoSelect);
                 listPhotoAll.clear();
                 listPhotoAll.addAll(photoAdapter.getAlbumNew().getFileList());
                 // 传值
@@ -601,8 +627,13 @@ public class LemageActivity extends AppCompatActivity {
                         phototAdapterData.getFileList().get(i).setNumber(m + 1);
                     }
                 }
-                if(phototAdapterData.getFileList().get(i).getStatus() == 1) {
-                    listPhotoSelect.add(phototAdapterData.getFileList().get(i));
+//                if(phototAdapterData.getFileList().get(i).getStatus() == 1) {
+//                    listPhotoSelect.add(phototAdapterData.getFileList().get(i));
+//                }
+            }
+            for(FileObj fileObj : list) {
+                if(fileObj.getStatus() == 1) {
+                    listPhotoSelect.add(fileObj);
                 }
             }
             // 预览界面更改了选中图片，要同步数据，告知选择器和选择器中的adapter

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import cn.lemonit.lemage.bean.Album;
@@ -140,7 +141,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if((style == LemageScanner.STYLE_ANYONE_PHOTO && fileObj instanceof Video) || (style == LemageScanner.STYLE_ANYONE_VIDEO && fileObj instanceof Photo) || (number >= maxChooseCount && fileObj.getStatus() == 0)) {
             ((PhotoViewHolder) holder).photoView.setWhiteAlpha(0.5f);
             clickable = false;
+        }else {
+            ((PhotoViewHolder) holder).photoView.setWhiteAlpha(0.0f);
+            clickable = true;
         }
+
+
 
 
         // 事件
@@ -197,14 +203,32 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
                 number --;
                 // 更改选中状态
-                checkPhotoList.remove(currentFile);
+//                checkPhotoList.remove(currentFile);
+//                for(FileObj fileObj : checkPhotoList) {
+//                    if(fileObj.getPath().contains(currentFile.getPath())) {
+//                        checkPhotoList.remove(fileObj);
+//                    }
+//                }
+                removeItem(checkPhotoList, currentFile);
                 currentFile.setNumber(0);
                 currentFile.setStatus(0);
                 break;
         }
-//        notifyDataSetChanged();
-        notifyItemChanged(position, "lala");
+        notifyDataSetChanged();
+//        notifyItemChanged(position, "lala");
         mPhotoViewOnClickListener.onClickSelectListener(checkPhotoList);
+    }
+
+    public void removeItem(List<FileObj> list, FileObj obj) {
+        Iterator<FileObj> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            String path = iterator.next().getPath();
+            if (path.contains(obj.getPath())) {
+                //list.remove(temp);// 出现java.util.ConcurrentModificationException
+                iterator.remove();// 推荐使用
+            }
+
+        }
     }
 
     @Override

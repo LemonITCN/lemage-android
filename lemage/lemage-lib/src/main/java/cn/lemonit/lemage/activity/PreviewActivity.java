@@ -379,7 +379,9 @@ public class PreviewActivity extends AppCompatActivity {
                 // 选中状态
                 FileObj fileObj = listPhotoAll.get(position);
                 if(fileObj.getStatus() == 1) {
-                    mCircleView.changeStatus(1, listPhotoSelect.indexOf(fileObj) + 1);
+                    int number = listPhotoSelect.indexOf(fileObj) + 1;
+//                    mCircleView.changeStatus(1, listPhotoSelect.indexOf(fileObj) + 1);
+                    mCircleView.changeStatus(1, number);
                 }else {
                     mCircleView.changeStatus(0, 0);
                 }

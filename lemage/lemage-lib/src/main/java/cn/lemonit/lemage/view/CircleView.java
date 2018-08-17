@@ -123,7 +123,6 @@ public class CircleView extends View {
         mPaint.setTextSize(size);
         mPaint.setTextAlign(Paint.Align.CENTER);
         canvas.drawText(String.valueOf(number), mRadius, mRadius + size / 3, mPaint);
-        Log.e(TAG, "number =============== " + number);
     }
 
     /**
