@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listUrlAll.add("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
 //        listUrlAll.add("http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8");
         listUrlSelect.addAll(listUrlAll);
-        Lemage.startPreviewer(this, listUrlAll, listUrlSelect, maxCount, 2, themeColor, new LemageResultCallback() {
+        Lemage.startPreviewer(this, listUrlAll, listUrlSelect, maxCount, 0, themeColor, new LemageResultCallback() {
             @Override
             public void willClose(List<String> imageUrlList, boolean isOriginal, List<FileObj> list) {
                 textview.setText("");

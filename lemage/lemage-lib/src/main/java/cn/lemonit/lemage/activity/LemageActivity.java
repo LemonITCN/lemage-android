@@ -1,6 +1,8 @@
 package cn.lemonit.lemage.activity;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -125,6 +127,7 @@ public class LemageActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTheme(android.support.v7.appcompat.R.style.Theme_AppCompat_DayNight_NoActionBar);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
         getData();
         setContentView(getRootLayout());
         getRootLayout().setBackgroundColor(Color.parseColor("#fafafa"));
@@ -650,4 +653,15 @@ public class LemageActivity extends AppCompatActivity {
 
         }
     };
+
+
+    /**
+     * 屏幕切换后不再执行onCreate方法，而是执行此方法
+     * @param newConfig
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.e("onConfigurationChanged", "LemageActivity");
+    }
 }

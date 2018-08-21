@@ -1,7 +1,9 @@
 package cn.lemonit.lemage.activity;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -137,6 +139,7 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTheme(android.support.v7.appcompat.R.style.Theme_AppCompat_DayNight_NoActionBar);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
         getData();
         initView();
         addView();
@@ -741,5 +744,15 @@ public class CameraActivity extends AppCompatActivity {
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);//关闭
             mCamera.setParameters(parameters);
         }
+    }
+
+    /**
+     * 屏幕切换后不再执行onCreate方法，而是执行此方法
+     * @param newConfig
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.e("onConfigurationChanged", "CameraActivity");
     }
 }

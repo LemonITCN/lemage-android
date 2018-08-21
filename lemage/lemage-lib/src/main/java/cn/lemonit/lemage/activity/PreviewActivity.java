@@ -1,6 +1,8 @@
 package cn.lemonit.lemage.activity;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +29,7 @@ import cn.lemonit.lemage.util.PathUtil;
 import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.AlbumSelectButton;
 import cn.lemonit.lemage.view.CircleView;
+import cn.lemonit.lemage.view.MyZoomImageView;
 import cn.lemonit.lemage.view.NavigationBar;
 import cn.lemonit.lemage.view.OperationBar;
 import cn.lemonit.lemage.view.PreviewBarLeftButton;
@@ -99,6 +104,7 @@ public class PreviewActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTheme(android.support.v7.appcompat.R.style.Theme_AppCompat_DayNight_NoActionBar);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
         getData();
         initView();
         addView();
@@ -351,6 +357,9 @@ public class PreviewActivity extends AppCompatActivity {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 //            Log.e(TAG, "翻页监听 onPageScrolled   position ==== " + position + "  positionOffset ==== " + positionOffset + "   positionOffsetPixels ====== " + positionOffsetPixels);
+            Log.e(TAG, "onPageScrolled       position == " + position);
+            Log.e(TAG, "onPageScrolled       listPhotoAdapterData == " + listPhotoAdapterData.get(position).getPath());
+//            currentPossion = position;
         }
 
         /**
@@ -359,6 +368,9 @@ public class PreviewActivity extends AppCompatActivity {
          */
         @Override
         public void onPageSelected(int position) {
+            showIndex = position;
+            Log.e(TAG, "onPageSelected       position == " + position);
+            Log.e(TAG, "onPageSelected       listPhotoAdapterData == " + listPhotoAdapterData.get(position).getPath());
             // 左侧按钮更新
             PreviewBarLeftButton previewBarLeftButton = mNavigationBar.getPreviewBarLeftButton();
             if(previewBarLeftButton == null) return;
@@ -447,5 +459,34 @@ public class PreviewActivity extends AppCompatActivity {
         Log.e(TAG, "选中的 ==================== " + list.size());
         callback.willClose(list, true, listPhotoSelect);
         PreviewActivity.this.finish();
+    }
+
+    /**
+     * 屏幕切换后不再执行onCreate方法，而是执行此方法
+     * @param newConfig
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.e("onConfigurationChanged", "PreviewActivity");
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(PreviewActivity.this, "当前是横屏", Toast.LENGTH_LONG).show();
+        } else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Toast.makeText(PreviewActivity.this, "当前是竖屏", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("showIndex", showIndex);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        showIndex = savedInstanceState.getInt("showIndex");
+        mViewPager.setCurrentItem(showIndex);
     }
 }

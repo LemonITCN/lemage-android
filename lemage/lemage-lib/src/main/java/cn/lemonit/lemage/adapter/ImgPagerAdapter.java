@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -26,13 +27,17 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import cn.lemonit.lemage.R;
 import cn.lemonit.lemage.bean.FileObj;
 import cn.lemonit.lemage.bean.NetBeen;
 import cn.lemonit.lemage.bean.Photo;
 import cn.lemonit.lemage.bean.Video;
 import cn.lemonit.lemage.util.PathUtil;
+import cn.lemonit.lemage.util.ScreenUtil;
 import cn.lemonit.lemage.view.ControlView;
 import cn.lemonit.lemage.view.LemageVideoView;
+import cn.lemonit.lemage.view.MyZoomImageView;
+import cn.lemonit.lemage.view.PhotoView;
 import cn.lemonit.lemage.view.ScreenVideoView;
 import cn.lemonit.lemage.view.VideoStartImageView;
 import cn.lemonit.lemage.view.ZoomImageView;
@@ -52,6 +57,8 @@ public class ImgPagerAdapter extends PagerAdapter {
     private List<PathUtil> listPathUtil = new ArrayList<PathUtil>();
 
     private ImgOnClickListener mImgOnClickListener;
+
+    private MyZoomImageView imageView;
 
     public ImgPagerAdapter(Context mContext, ArrayList<FileObj> listFile) {
         this.mContext = mContext;
@@ -132,17 +139,40 @@ public class ImgPagerAdapter extends PagerAdapter {
      * @param view
      */
     private void showPhotoStyleView(RelativeLayout view, int position, NetBeen mNetBeen) {
-        ZoomImageView imageView = new ZoomImageView(mContext);
+//        ZoomImageView imageView = new ZoomImageView(mContext);
+//        imageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mImgOnClickListener.imgOnClick();
+//            }
+//        });
+//        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+//        imageView.setLayoutParams(params);
+////        imageView.setAdjustViewBounds(true);
+////        imageView.setMaxHeight(ScreenUtil.getScreenHeight(mContext));
+////        imageView.setMaxWidth(ScreenUtil.getScreenWidth(mContext));
+////        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+//        Glide.with(mContext).load(mNetBeen.getPath()).into(imageView);
+//        imageView.setBackgroundColor(Color.parseColor("#FFcc00"));
+//        view.addView(imageView);
+
+//        MyZoomImageView imageView = new MyZoomImageView(mContext);
+        imageView = new MyZoomImageView(mContext);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mImgOnClickListener.imgOnClick();
             }
         });
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,  RelativeLayout.LayoutParams.MATCH_PARENT);
         imageView.setLayoutParams(params);
         Glide.with(mContext).load(mNetBeen.getPath()).into(imageView);
+        imageView.setBackgroundColor(Color.parseColor("#FFcc00"));
         view.addView(imageView);
+    }
+
+    public MyZoomImageView getImageView() {
+        return imageView;
     }
 
 
