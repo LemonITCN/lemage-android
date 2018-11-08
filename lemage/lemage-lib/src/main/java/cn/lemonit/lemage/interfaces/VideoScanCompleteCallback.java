@@ -2,7 +2,7 @@ package cn.lemonit.lemage.interfaces;
 
 import java.util.Collection;
 
-import cn.lemonit.lemage.bean.Album;
+import cn.lemonit.lemage.been.Album;
 
 /**
  * 扫描视频后的回调

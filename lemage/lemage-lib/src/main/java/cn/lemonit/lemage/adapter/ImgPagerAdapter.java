@@ -1,46 +1,28 @@
 package cn.lemonit.lemage.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
+import com.lemorage.file.LemixFileCommon;
+import com.lemorage.file.Lemorage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import cn.lemonit.lemage.R;
-import cn.lemonit.lemage.bean.FileObj;
-import cn.lemonit.lemage.bean.NetBeen;
-import cn.lemonit.lemage.bean.Photo;
-import cn.lemonit.lemage.bean.Video;
+import cn.lemonit.lemage.been.FileObj;
+import cn.lemonit.lemage.been.NetBeen;
+import cn.lemonit.lemage.been.Video;
 import cn.lemonit.lemage.util.PathUtil;
-import cn.lemonit.lemage.util.ScreenUtil;
-import cn.lemonit.lemage.view.ControlView;
-import cn.lemonit.lemage.view.LemageVideoView;
-import cn.lemonit.lemage.view.MyZoomImageView;
-import cn.lemonit.lemage.view.PhotoView;
-import cn.lemonit.lemage.view.ScreenVideoView;
-import cn.lemonit.lemage.view.VideoStartImageView;
-import cn.lemonit.lemage.view.ZoomImageView;
+import cn.lemonit.lemage.view.preview_view.LemageVideoView;
+import cn.lemonit.lemage.view.select_view.MyZoomImageView;
 
 /**
  * 预览viewpager适配器
@@ -93,15 +75,20 @@ public class ImgPagerAdapter extends PagerAdapter {
 
         mPathUtil = new PathUtil(mContext);
         listPathUtil.add(mPathUtil);
+        // 如果是网络资源，下载完成回调显示
         mPathUtil.setDownLoadFileFinishListener(new PathUtil.DownLoadFileFinishListener() {
             @Override
             public void downLoadFileFinish(NetBeen netBeen) {
-                if(netBeen == null) return;
+                if(netBeen == null) {
+                    return;
+                }
                 if(netBeen.getType() == 0) {
-                    fileObj.setPath("lemage://album/localImage" + netBeen.getPath());
+                    fileObj.setPath(netBeen.getPath());
+//                    fileObj.setPath(LemixFileCommon.getBaseUrl(mContext) + File.separator + Lemorage.SEND_BOX_SHORT);
                     showPhotoStyleView(view, position, netBeen);
                 }else {
-                    fileObj.setPath("lemage://album/localVideo" + netBeen.getPath());
+//                    fileObj.setPath(LemixFileCommon.getBaseUrl(mContext) + File.separator + Lemorage.SEND_BOX_SHORT);
+                    fileObj.setPath(netBeen.getPath());
                     showVideoStyleView(view, position, netBeen);
                 }
 //                addWhiteView(view);
@@ -167,7 +154,7 @@ public class ImgPagerAdapter extends PagerAdapter {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,  RelativeLayout.LayoutParams.MATCH_PARENT);
         imageView.setLayoutParams(params);
         Glide.with(mContext).load(mNetBeen.getPath()).into(imageView);
-        imageView.setBackgroundColor(Color.parseColor("#FFcc00"));
+        imageView.setBackgroundColor(Color.BLACK);
         view.addView(imageView);
     }
 
@@ -194,7 +181,9 @@ public class ImgPagerAdapter extends PagerAdapter {
                 int action = motionEvent.getAction();
                 switch (action) {
                     case MotionEvent.ACTION_UP:
-                        if(mLemageVideoView.getControlView() == null) return false;
+                        if(mLemageVideoView.getControlView() == null) {
+                            return false;
+                        }
                         if(mLemageVideoView.getControlView().isShow()) {
                             mLemageVideoView.getControlView().setShow(false);
                             mLemageVideoView.getControlView().setVisibility(View.GONE);

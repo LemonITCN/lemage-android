@@ -2,12 +2,12 @@ package cn.lemonit.lemage.util;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
+import com.lemorage.file.LemixFileCommon;
+import com.lemorage.file.Lemorage;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -20,12 +20,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.lemonit.lemage.bean.NetBeen;
-import cn.lemonit.lemage.lemageutil.SystemInfo;
+import cn.lemonit.lemage.been.NetBeen;
 
 /**
  * URL工具类
@@ -69,12 +67,14 @@ public class PathUtil {
             // 包名
             String packageName = getPackageName();
             // 网络图片文件夹
-            File filePhoto = new File(baseFileUrl + packageName + "/tmp/photo");
+//            File filePhoto = new File(baseFileUrl + packageName + "/tmp/photo");
+            File filePhoto = new File(LemixFileCommon.getBaseUrl(mContext) + File.separator + Lemorage.getSendBoxShort());
             if(!filePhoto.exists()) {
                 filePhoto.mkdirs();
             }
             // 网络视频
-            File fileVideo = new File(baseFileUrl + packageName + "/tmp/video");
+//            File fileVideo = new File(baseFileUrl + packageName + "/tmp/video");
+            File fileVideo = new File(LemixFileCommon.getBaseUrl(mContext) + File.separator + Lemorage.getSendBoxShort());
             if(!fileVideo.exists()) {
                 fileVideo.mkdirs();
             }
@@ -98,18 +98,24 @@ public class PathUtil {
                 return mNetBeen;
             }
         }
-        // 本地图片地址
-        else if(path.startsWith("lemage://album/localImage")){
-            mNetBeen.setPath(path.substring("lemage://album/localImage".length()));
+        // 本地
+        else if(path.startsWith("/storage/emulated/0/")) {
+            mNetBeen.setPath(path);
             mNetBeen.setType(0);
             return mNetBeen;
         }
-        // 本地视频地址
-        else if(path.startsWith("lemage://album/localVideo")) {
-            mNetBeen.setPath(path.substring("lemage://album/localVideo".length()));
-            mNetBeen.setType(1);
-            return mNetBeen;
-        }
+//        // 本地图片地址
+//        else if(path.startsWith("lemage://album/localImage")){
+//            mNetBeen.setPath(path.substring("lemage://album/localImage".length()));
+//            mNetBeen.setType(0);
+//            return mNetBeen;
+//        }
+//        // 本地视频地址
+//        else if(path.startsWith("lemage://album/localVideo")) {
+//            mNetBeen.setPath(path.substring("lemage://album/localVideo".length()));
+//            mNetBeen.setType(1);
+//            return mNetBeen;
+//        }
         return mNetBeen;
     }
 
@@ -150,14 +156,16 @@ public class PathUtil {
                 // 如果网络文件是图片，下载后就放到图片文件夹
                 NetBeen mNetBeen = new NetBeen();
                 if(fileType.startsWith("image/")) {
-                    File filePhoto = new File(baseFileUrl + getPackageName() + "/tmp/photo");
+//                    File filePhoto = new File(baseFileUrl + getPackageName() + "/tmp/photo");
+                    File filePhoto = new File(LemixFileCommon.getBaseUrl(mContext) + File.separator + Lemorage.getSendBoxShort());
                     File file = new File(filePhoto + "/" + stringToMD5(params[0]));  // 需要保持的文件
 //                    saveFile(filePhoto, file, data, inputStream);
                     saveFileNew(file, inputStream, totalSize, this);
                     mNetBeen.setPath(file.getPath());
                     mNetBeen.setType(0);
                 }else {
-                    File fileVideo = new File(baseFileUrl + getPackageName() + "/tmp/video");
+//                    File fileVideo = new File(baseFileUrl + getPackageName() + "/tmp/video");
+                    File fileVideo = new File(LemixFileCommon.getBaseUrl(mContext) + File.separator + Lemorage.getSendBoxShort());
                     File file = new File(fileVideo + "/" + stringToMD5(params[0]));  // 需要保持的文件
 //                    saveFile(fileVideo, file, data, inputStream);
                     saveFileNew(file, inputStream, totalSize, this);
@@ -215,8 +223,9 @@ public class PathUtil {
 
         StringBuilder hex = new StringBuilder(hash.length * 2);
         for (byte b : hash) {
-            if ((b & 0xFF) < 0x10)
+            if ((b & 0xFF) < 0x10) {
                 hex.append("0");
+            }
             hex.append(Integer.toHexString(b & 0xFF));
         }
 
@@ -267,7 +276,7 @@ public class PathUtil {
      * @return
      */
     private String getPackageName() {
-        return SystemInfo.getApplicationPackageName(mContext);
+        return LemixFileCommon.getPackageName(mContext);
     }
 
 

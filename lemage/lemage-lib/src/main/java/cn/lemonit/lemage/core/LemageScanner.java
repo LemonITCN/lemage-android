@@ -14,10 +14,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.lemonit.lemage.bean.Album;
-import cn.lemonit.lemage.bean.FileObj;
-import cn.lemonit.lemage.bean.Photo;
-import cn.lemonit.lemage.bean.Video;
+import cn.lemonit.lemage.been.Album;
+import cn.lemonit.lemage.been.FileObj;
+import cn.lemonit.lemage.been.Photo;
+import cn.lemonit.lemage.been.Video;
 import cn.lemonit.lemage.interfaces.ScanCompleteCallback;
 
 /**

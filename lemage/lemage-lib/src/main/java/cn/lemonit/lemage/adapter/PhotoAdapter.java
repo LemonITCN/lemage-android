@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +14,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import cn.lemonit.lemage.bean.Album;
-import cn.lemonit.lemage.bean.FileObj;
-import cn.lemonit.lemage.bean.Photo;
-import cn.lemonit.lemage.bean.Video;
+
+import cn.lemonit.lemage.been.Album;
+import cn.lemonit.lemage.been.FileObj;
+import cn.lemonit.lemage.been.Photo;
+import cn.lemonit.lemage.been.Video;
 import cn.lemonit.lemage.core.LemageScanner;
 import cn.lemonit.lemage.util.ScreenUtil;
-import cn.lemonit.lemage.view.PhotoView;
+import cn.lemonit.lemage.view.select_view.PhotoView;
 
 /**
  * 照片选择器的适配器
@@ -35,7 +35,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     /**
      * 当前正在显示的相册
      */
-//    private Album currentAlbum;
     private Album currentAlbum;
     /**
      * 上下文对象

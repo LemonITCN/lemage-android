@@ -1,8 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="cn.lemonit.lemage">
+    package="cn.lemonit.lemage" >
 
     <application>
+
+        <activity
+            android:name=".activity.CameraActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize">
+        </activity>
 
         <activity
             android:name=".activity.PreviewActivity"
@@ -10,19 +14,10 @@
         </activity>
 
         <activity
-            android:name=".activity.LemageActivity"
-            android:configChanges="orientation|keyboard|keyboardHidden|screenSize">
-        </activity>
-
-        <activity
-            android:name=".activity.CameraActivity"
+            android:name=".activity.SelectActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize">
         </activity>
 
     </application>
-    <!--<uses-permission android:name="android.permission.CAMERA" />-->
-    <!--<uses-feature android:name="android.hardware.camera" />-->
-    <!--<uses-permission android:name="android.permission.RECORD_AUDIO"/>-->
-    <!--<uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT" />-->
 
 </manifest>

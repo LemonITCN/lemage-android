@@ -1,22 +1,25 @@
 package cn.lemonit.lemage;
 
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.util.Log;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import com.lemorage.file.Lemorage;
+
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.lemonit.lemage.activity.CameraActivity;
+import cn.lemonit.lemage.activity.SelectActivity;
+import cn.lemonit.lemage.activity.PreviewActivity;
+import cn.lemonit.lemage.been.ImageSize;
+import cn.lemonit.lemage.been.LemageUsageText;
+import cn.lemonit.lemage.interfaces.LemageCameraCallback;
+import cn.lemonit.lemage.interfaces.LemageResultCallback;
+import cn.lemonit.lemage.util.BitmapUtil;
 
 /**
  * Lemage入口类
@@ -51,20 +54,15 @@ public class Lemage implements Serializable {
     }
 
     /**
-     * 根据Bitmap对象来生成LemageURL字符串
-     * 原理：将Bitmap转成二进制数据存储到沙盒中的文件，然后生成指向沙盒中二进制文件的Lemage格式的URL
-     * <p>
-     * lemage://album/localImage/xxxxxxxxxxxxxxxxxxxxx   本地相册地址
-     * lemage://album/localVideo/xxxxxxxxxxxxxxxxxxxxx    本地视频地址
-     * lemage://sandbox/long[short]/xxxxxxxxxxxxxxxx    沙盒文件地址
-     * lemage://tmp/image/xxxxxxxxxx    网络文件地址
-     *
-     * @param bitmap   要生成LemageURL的Bitmap对象
-     * @param longTerm 是否永久有效，如果传true，那么该URL直到调用Lemage.expiredAllLongTermUrl方法后才失效，如果传false，在下次APP启动调用Lemage.startUp方法时URL就会失效，也可以通过Lemage.expiredAllShortTermUrl来强制使其失效
-     * @return 生成的LemageURL
+     * 根据bitmap保存并返回沙盒路径
+     * @param context
+     * @param bitmap
+     * @param isLongTerm
+     * @return
      */
-    public static String generateLemageUrl(Context context, Bitmap bitmap, boolean longTerm) {
-        return SendBoxFileManager.getInstance(context).generateLemageUrl(bitmap, longTerm);
+    public static String generateLemageUrl(Context context, Bitmap bitmap, boolean isLongTerm) {
+//        return SendBoxFileManager.getInstance(context).generateLemageUrl(bitmap, longTerm);
+        return BitmapUtil.bitmap2Url(context, bitmap, isLongTerm);
     }
 
 
@@ -76,8 +74,9 @@ public class Lemage implements Serializable {
      * @param url LemageURL字符串
      * @return 根据LemageURL逆向转换回来的图片FileInputStream对象，如果URL无效会返回null
      */
-    public static InputStream loadImageInputStream(Context context, String url) {
-        return SendBoxFileManager.getInstance(context).loadImageInputStream(url);
+    public static OutputStream loadImageInputStream(Context context, String url) {
+//        return SendBoxFileManager.getInstance(context).loadImageInputStream(url);
+        return Lemorage.getWithOutputStream(url, context);
     }
 
     /**
@@ -89,7 +88,8 @@ public class Lemage implements Serializable {
      * @return 根据LemageURL逆向转换回来的图片byte[]，如果URL无效会返回null
      */
     public static byte[] loadImageData(Context context, String url) {
-        return SendBoxFileManager.getInstance(context).loadImageData(url);
+//        return SendBoxFileManager.getInstance(context).loadImageData(url);
+        return Lemorage.getWithByteArr(url, context);
     }
 
     /**
@@ -102,7 +102,8 @@ public class Lemage implements Serializable {
      * @return 根据LemageURL逆向转换回来的图片Bitmap对象，如果URL无效会返回null
      */
     public static Bitmap loadImage(Context context, String url, ImageSize size) {
-        return SendBoxFileManager.getInstance(context).loadImage(url, size);
+//        return SendBoxFileManager.getInstance(context).loadImage(url, size);
+        return BitmapUtil.url2Bitmap(url, size, context);
     }
 
     /**
@@ -114,7 +115,8 @@ public class Lemage implements Serializable {
      * @return 根据LemageURL逆向转换回来的图片Bitmap对象，如果URL无效会返回null
      */
     public static Bitmap loadImage(Context context, String url) {
-        return SendBoxFileManager.getInstance(context).loadImage(url);
+//        return SendBoxFileManager.getInstance(context).loadImage(url);
+        return loadImage(context, url, null);
     }
 
     /**
@@ -122,7 +124,7 @@ public class Lemage implements Serializable {
      * 原理：删除所有本地长期LemageURL对应的沙盒图片文件
      */
     public static void expiredAllLongTermUrl(Context context) {
-        SendBoxFileManager.getInstance(context).expiredAllLongTermUrl();
+//        SendBoxFileManager.getInstance(context).expiredAllLongTermUrl();
     }
 
     /**
@@ -130,7 +132,7 @@ public class Lemage implements Serializable {
      * 原理：删除所有本地短期LemageURL对应的沙盒图片文件
      */
     public static void expiredAllShortTermUrl(Context context) {
-        SendBoxFileManager.getInstance(context).expiredAllShortTermUrl();
+//        SendBoxFileManager.getInstance(context).expiredAllShortTermUrl();
     }
 
     /**
@@ -140,7 +142,7 @@ public class Lemage implements Serializable {
      * @param url 要使其过期的LemageURL
      */
     public static void expiredUrl(Context context, String url) {
-        SendBoxFileManager.getInstance(context).expiredUrl(url);
+//        SendBoxFileManager.getInstance(context).expiredUrl(url);
     }
 
     /**
@@ -158,12 +160,12 @@ public class Lemage implements Serializable {
                                     int themeColor,
                                     int style,
                                     LemageResultCallback callback) {
-        Intent intent = new Intent(mContext, LemageActivity.class);
+        Intent intent = new Intent(mContext, SelectActivity.class);
         intent.putExtra("maxChooseCount", maxChooseCount);
         intent.putExtra("needShowOriginalButton", needShowOriginalButton);
         intent.putExtra("themeColor", themeColor);
         intent.putExtra("style", style);
-        LemageActivity.setCallback(callback);
+        SelectActivity.setCallback(callback);
         mContext.startActivity(intent);
     }
 

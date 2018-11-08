@@ -14,9 +14,9 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.lemonit.lemage.bean.Album;
+import cn.lemonit.lemage.been.Album;
 import cn.lemonit.lemage.util.ScreenUtil;
-import cn.lemonit.lemage.view.PhotoView;
+import cn.lemonit.lemage.view.select_view.PhotoView;
 
 /**
  * 图片文件夹横向移动栏适配器
@@ -72,8 +72,11 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         // 文字是屏幕高度的 1 / 10
 //        int textHeight = ScreenUtil.getScreenHeight(mContext) / 15;
 
+        int height = ScreenUtil.getScreenHeight(mContext) / 6 + ScreenUtil.dp2px(mContext, 20);
+
         LinearLayout view = new LinearLayout(mContext);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(getImgWidth(), LinearLayout.LayoutParams.MATCH_PARENT);
+//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(getImgWidth(), LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(getImgWidth(), height);
         view.setLayoutParams(layoutParams);
         view.setOrientation(LinearLayout.VERTICAL);
         view.setPadding(10,10,10,10);
@@ -97,7 +100,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         mTextView.setGravity(Gravity.CENTER);
         mTextView.setTextColor(Color.WHITE);
         mTextView.setLayoutParams(layoutParamsText);
-        mTextView.setBackgroundColor(Color.BLUE);
+        mTextView.setBackgroundColor(Color.BLACK);
         view.addView(mTextView);
 
         ViewHolder mViewHolder = new ViewHolder(view);
