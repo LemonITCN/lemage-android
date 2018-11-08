@@ -18,16 +18,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.lemonit.lemage.activity.CameraActivity;
-import cn.lemonit.lemage.activity.LemageActivity;
-import cn.lemonit.lemage.activity.PreviewActivity;
-import cn.lemonit.lemage.bean.ImageSize;
-import cn.lemonit.lemage.bean.LemageUsageText;
-import cn.lemonit.lemage.interfaces.LemageCameraCallback;
-import cn.lemonit.lemage.interfaces.LemageResultCallback;
-import cn.lemonit.lemage.lemageutil.SendBoxFileManager;
-import cn.lemonit.lemage.lemageutil.SystemInfo;
-
 /**
  * Lemage入口类
  *

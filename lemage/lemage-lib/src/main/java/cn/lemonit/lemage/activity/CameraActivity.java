@@ -39,7 +39,7 @@ import cn.lemonit.lemage.view.camera.CameraVideoProgressBar;
 import cn.lemonit.lemage.view.camera.CameraTakePhotoView;
 
 /**
- * 拍照或者录像界面
+ * 拍照或者录像界面     测试
  * @author zhaoguangyang
  */
 public class CameraActivity extends AppCompatActivity {

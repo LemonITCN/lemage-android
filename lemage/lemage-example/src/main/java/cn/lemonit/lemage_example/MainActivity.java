@@ -25,16 +25,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.lemonit.lemage.Lemage;
-import cn.lemonit.lemage.activity.CameraActivity;
-import cn.lemonit.lemage.activity.PreviewActivity;
-import cn.lemonit.lemage.bean.FileObj;
-import cn.lemonit.lemage.bean.ImageSize;
-import cn.lemonit.lemage.core.LemageScanner;
-import cn.lemonit.lemage.interfaces.LemageCameraCallback;
-import cn.lemonit.lemage.interfaces.LemageResultCallback;
-import cn.lemonit.lemage.lemageutil.SystemInfo;
-import cn.lemonit.lemage.util.CameraFileUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
