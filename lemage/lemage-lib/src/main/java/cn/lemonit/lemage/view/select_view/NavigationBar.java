@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import cn.lemonit.lemage.util.ScreenUtil;
+import cn.lemonit.lemage.view.view_base.NumberView;
 
 /**
  * 导航条控件
@@ -40,6 +41,7 @@ public class NavigationBar extends RelativeLayout {
      * 预览时的右侧按钮
      */
     private CircleView mCircleView;
+//    private CircleViewNew mCircleView;
 
     private int mColor;
 
@@ -99,6 +101,7 @@ public class NavigationBar extends RelativeLayout {
             paramsCircle.topMargin = mRadius / 2;
             paramsCircle.rightMargin = ScreenUtil.dp2px(context, 14);
             mCircleView = new CircleView(context, mRadius, mColor);
+//            mCircleView = new CircleViewNew(context, mRadius, mColor);
             // 初始状态
 //            mCircleView.changeStatus(1, 1);
             mCircleView.setLayoutParams(paramsCircle);

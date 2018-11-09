@@ -92,7 +92,7 @@ public class SelectActivity extends MediaBaseActivity implements NavigationBar.L
     /**
      * 横向滑动的图片文件选择栏
      */
-    private LinearLayout horizontalLayout;
+    private LinearLayout topHorizontalLayout;
 
     private RecyclerView albumRecyclerView;
 
@@ -134,7 +134,7 @@ public class SelectActivity extends MediaBaseActivity implements NavigationBar.L
         super.init();
         imageListView = SelectUi.getImageListView(this);
         navigationBar = SelectUi.getNavigationBar(this, themeColor);
-        horizontalLayout = SelectUi.getHorizontalLayout(this);
+        topHorizontalLayout = SelectUi.getHorizontalLayout(this);
         albumRecyclerView = SelectUi.getHorizontalListView(this);
         operationBar = SelectUi.getOperationBar(this, themeColor, operationBarItemCount);
     }
@@ -144,9 +144,9 @@ public class SelectActivity extends MediaBaseActivity implements NavigationBar.L
         super.addView(rootLayout);
         rootLayout.addView(imageListView);
         rootLayout.addView(navigationBar);
-        horizontalLayout.addView(albumRecyclerView);
-        rootLayout.addView(horizontalLayout);
-        horizontalLayout.setVisibility(View.GONE);
+        topHorizontalLayout.addView(albumRecyclerView);
+        rootLayout.addView(topHorizontalLayout);
+        topHorizontalLayout.setVisibility(View.GONE);
         rootLayout.addView(operationBar);
     }
 
@@ -239,11 +239,11 @@ public class SelectActivity extends MediaBaseActivity implements NavigationBar.L
     @Override
     public void leftClickListener(AlbumSelectButton view) {
         view.changeArrow();
-        if (horizontalLayout != null) {
-            if (horizontalLayout.isShown()) {
-                horizontalLayout.setVisibility(View.GONE);
+        if (topHorizontalLayout != null) {
+            if (topHorizontalLayout.isShown()) {
+                topHorizontalLayout.setVisibility(View.GONE);
             } else {
-                horizontalLayout.setVisibility(View.VISIBLE);
+                topHorizontalLayout.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -310,8 +310,8 @@ public class SelectActivity extends MediaBaseActivity implements NavigationBar.L
      */
     @Override
     public void constantShow() {
-        if (horizontalLayout != null && horizontalLayout.isShown()) {
-            horizontalLayout.setVisibility(View.GONE);
+        if (topHorizontalLayout != null && topHorizontalLayout.isShown()) {
+            topHorizontalLayout.setVisibility(View.GONE);
             navigationBar.getAlbumSelectButton().changeArrow();
         }
     }
@@ -321,8 +321,8 @@ public class SelectActivity extends MediaBaseActivity implements NavigationBar.L
      */
     @Override
     public void notifShow(Album mAlbum) {
-        if (horizontalLayout != null && horizontalLayout.isShown()) {
-            horizontalLayout.setVisibility(View.GONE);
+        if (topHorizontalLayout != null && topHorizontalLayout.isShown()) {
+            topHorizontalLayout.setVisibility(View.GONE);
             navigationBar.getAlbumSelectButton().changeText(mAlbum.getName());
             navigationBar.getAlbumSelectButton().changeArrow();
         }
